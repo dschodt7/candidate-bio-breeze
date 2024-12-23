@@ -63,6 +63,18 @@ const MainContentPanel = () => {
     fetchCandidate();
   }, [searchParams, toast]);
 
+  const getCandidateName = () => {
+    if (!candidate?.linkedin_url) return "Select a Candidate";
+    // Extract just the name from the LinkedIn URL
+    const urlParts = candidate.linkedin_url.split('/').pop()?.split('-');
+    if (!urlParts) return "Unknown Candidate";
+    // Convert first two parts to proper case for the name
+    return urlParts
+      .slice(0, 2) // Take only first two parts for first and last name
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(' ');
+  };
+
   const handleCompile = async () => {
     try {
       setCompileState({ isCompiling: true, isCompiled: false });
@@ -87,14 +99,6 @@ const MainContentPanel = () => {
         variant: "destructive",
       });
     }
-  };
-
-  const getCandidateName = () => {
-    if (!candidate?.linkedin_url) return "Select a Candidate";
-    const match = candidate.linkedin_url.match(/in\/([\w-]+)$/);
-    return match ? match[1].split('-').map(word => 
-      word.charAt(0).toUpperCase() + word.slice(1)
-    ).join(' ') : "Unknown Candidate";
   };
 
   return (

@@ -6,7 +6,7 @@ export const FileUpload = () => {
   const {
     isDragging,
     isUploading,
-    file,
+    uploadedFileName,
     handleDragOver,
     handleDragLeave,
     handleDrop,
@@ -18,16 +18,12 @@ export const FileUpload = () => {
       <FileUploadZone
         isDragging={isDragging}
         isUploading={isUploading}
+        uploadedFileName={uploadedFileName}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
         onFileSelect={handleFileInput}
       />
-      {file && !isUploading && (
-        <div className="text-sm text-muted-foreground mt-2">
-          <p>Uploaded: {file.name}</p>
-        </div>
-      )}
     </Card>
   );
 };
