@@ -27,7 +27,7 @@ export const ExecutiveSummaryForm = () => {
 
   return (
     <Card className="p-6 animate-fadeIn">
-      <h3 className="text-lg font-medium mb-6">Executive Summary</h3>
+      <h3 className="text-lg font-medium mb-6">Executive Summary Components</h3>
       <Accordion type="single" collapsible className="space-y-4">
         <AccordionItem value="brass-tax">
           <AccordionTrigger>Brass Tax Job Matching Criteria</AccordionTrigger>
