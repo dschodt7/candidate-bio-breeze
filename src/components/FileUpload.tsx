@@ -51,6 +51,13 @@ export const FileUpload = () => {
     }
 
     try {
+      // Get the current user's ID
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        throw new Error("User not authenticated");
+      }
+
       setIsUploading(true);
       setFile(uploadedFile);
 
@@ -59,7 +66,7 @@ export const FileUpload = () => {
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
 
-      const { error: uploadError, data } = await supabase.storage
+      const { error: uploadError } = await supabase.storage
         .from('resumes')
         .upload(filePath, uploadedFile);
 
@@ -69,10 +76,11 @@ export const FileUpload = () => {
 
       console.log("File uploaded to storage:", filePath);
 
-      // Create a new candidate record
+      // Create a new candidate record with the user's profile ID
       const { error: dbError } = await supabase
         .from('candidates')
         .insert({
+          profile_id: user.id,
           resume_path: filePath
         });
 
