@@ -2,8 +2,13 @@ import { FileUpload } from "@/components/FileUpload";
 import { LinkedInInput } from "@/components/LinkedInInput";
 import { NotesInput } from "@/components/NotesInput";
 import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
+import { Button } from "@/components/ui/button";
 
 const Index = () => {
+  const handleCompile = () => {
+    console.log("Compiling executive summary components");
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <div className="container py-8 space-y-8 max-w-4xl">
@@ -20,6 +25,12 @@ const Index = () => {
           <FileUpload />
           <LinkedInInput />
           <NotesInput />
+          <Button 
+            onClick={handleCompile}
+            className="w-full py-6 text-lg font-medium"
+          >
+            Compile Executive Summary Components
+          </Button>
           <ExecutiveSummaryForm />
         </div>
       </div>
