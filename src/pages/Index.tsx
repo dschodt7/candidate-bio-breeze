@@ -53,10 +53,13 @@ const Index = () => {
       </header>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
-        <ResizablePanelGroup direction="horizontal">
+      <main className="flex-1 overflow-hidden">
+        <ResizablePanelGroup 
+          direction="horizontal" 
+          className="h-full rounded-lg border"
+        >
           {/* Left Panel - Candidates */}
-          <ResizablePanel defaultSize={20} minSize={15}>
+          <ResizablePanel defaultSize={20} minSize={15} className="p-0">
             <div className="h-full p-4 bg-gray-50">
               <h2 className="text-lg font-semibold mb-4">Candidates</h2>
               <div className="space-y-2">
@@ -69,7 +72,7 @@ const Index = () => {
           <ResizableHandle withHandle />
 
           {/* Middle Panel - Main Content */}
-          <ResizablePanel defaultSize={55}>
+          <ResizablePanel defaultSize={55} className="p-0">
             <div className="h-full p-6 overflow-y-auto">
               <div className="max-w-3xl mx-auto space-y-6">
                 <div className="space-y-4">
@@ -100,7 +103,7 @@ const Index = () => {
           <ResizableHandle withHandle />
 
           {/* Right Panel - AI Assistant */}
-          <ResizablePanel defaultSize={25} minSize={20}>
+          <ResizablePanel defaultSize={25} minSize={20} className="p-0">
             <div className="h-full p-4 bg-gray-50">
               <h2 className="text-lg font-semibold mb-4">Personal AI Assistant</h2>
               <div className="space-y-2">
@@ -110,7 +113,7 @@ const Index = () => {
             </div>
           </ResizablePanel>
         </ResizablePanelGroup>
-      </div>
+      </main>
     </div>
   );
 };
