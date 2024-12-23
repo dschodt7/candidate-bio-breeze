@@ -1,5 +1,5 @@
 import { ResizablePanel, ResizableHandle } from "@/components/ui/resizable";
-import { FileUpload } from "@/components/FileUpload";
+import { FileUpload } from "@/components/file-upload/FileUpload";
 import { LinkedInInput } from "@/components/LinkedInInput";
 import { NotesInput } from "@/components/NotesInput";
 import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
