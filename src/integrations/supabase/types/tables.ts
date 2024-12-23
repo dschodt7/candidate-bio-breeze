@@ -1,19 +1,20 @@
 import { Json } from './database';
 
-interface CandidateBase {
-  created_at: string
-  id: string
-  linkedin_url: string | null
-  profile_id: string
-  resume_path: string | null
-  screening_notes: string | null
-  updated_at: string
+interface BaseRecord {
+  created_at: string;
+  updated_at: string;
+  id: string;
 }
 
 export interface CandidatesTable {
-  Row: CandidateBase
-  Insert: Partial<CandidateBase> & Pick<CandidateBase, 'profile_id'>
-  Update: Partial<CandidateBase>
+  Row: BaseRecord & {
+    profile_id: string;
+    linkedin_url: string | null;
+    screening_notes: string | null;
+    resume_path: string | null;
+  }
+  Insert: Partial<CandidatesTable['Row']> & Pick<CandidatesTable['Row'], 'profile_id'>
+  Update: Partial<CandidatesTable['Row']>
   Relationships: [
     {
       foreignKeyName: "candidates_profile_id_fkey"
@@ -25,19 +26,14 @@ export interface CandidatesTable {
   ]
 }
 
-interface ExecutiveSummaryBase {
-  brass_tax_criteria: Json
-  candidate_id: string
-  created_at: string
-  id: string
-  sensory_criteria: Json
-  updated_at: string
-}
-
 export interface ExecutiveSummariesTable {
-  Row: ExecutiveSummaryBase
-  Insert: Partial<Omit<ExecutiveSummaryBase, 'candidate_id'>> & { candidate_id: string }
-  Update: Partial<ExecutiveSummaryBase>
+  Row: BaseRecord & {
+    brass_tax_criteria: Json;
+    candidate_id: string;
+    sensory_criteria: Json;
+  }
+  Insert: Partial<Omit<ExecutiveSummariesTable['Row'], 'candidate_id'>> & { candidate_id: string }
+  Update: Partial<ExecutiveSummariesTable['Row']>
   Relationships: [
     {
       foreignKeyName: "executive_summaries_candidate_id_fkey"
@@ -49,15 +45,9 @@ export interface ExecutiveSummariesTable {
   ]
 }
 
-interface ProfileBase {
-  created_at: string
-  id: string
-  updated_at: string
-}
-
 export interface ProfilesTable {
-  Row: ProfileBase
-  Insert: Partial<ProfileBase> & Pick<ProfileBase, 'id'>
-  Update: Partial<ProfileBase>
+  Row: BaseRecord
+  Insert: Partial<ProfilesTable['Row']> & Pick<ProfilesTable['Row'], 'id'>
+  Update: Partial<ProfilesTable['Row']>
   Relationships: []
 }
