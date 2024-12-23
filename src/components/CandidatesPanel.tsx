@@ -57,6 +57,16 @@ const CandidatesPanel = () => {
     try {
       console.log("Handling click for candidate:", name);
       
+      // Get the current user's session
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession();
+      
+      if (sessionError || !session) {
+        throw new Error("No authenticated session found");
+      }
+
+      const userId = session.user.id;
+      console.log("Current user ID:", userId);
+
       // Check if candidate already exists
       let candidate = candidates.find(c => 
         c.linkedin_url?.includes(name.toLowerCase()) || 
@@ -66,52 +76,24 @@ const CandidatesPanel = () => {
       if (!candidate) {
         console.log("Creating new candidate for:", name);
         
-        // First, try to get the user's profile
-        const { data: profile, error: profileError } = await supabase
-          .from("profiles")
-          .select("id")
-          .maybeSingle();
-
-        if (profileError) {
-          throw profileError;
-        }
-
-        // If no profile exists, create one
-        let profileId;
-        if (!profile) {
-          console.log("No profile found, creating one...");
-          const { data: newProfile, error: insertProfileError } = await supabase
-            .from("profiles")
-            .insert([{ id: crypto.randomUUID() }])
-            .select();
-
-          if (insertProfileError || !newProfile?.[0]) {
-            throw insertProfileError || new Error("Failed to create profile");
-          }
-
-          console.log("Created new profile:", newProfile[0]);
-          profileId = newProfile[0].id;
-        } else {
-          profileId = profile.id;
-        }
-
-        // Create new candidate using the profile ID
+        // Create new candidate using the user's ID directly
         const { data: newCandidate, error: insertError } = await supabase
           .from("candidates")
           .insert([
             { 
-              profile_id: profileId,
+              profile_id: userId,
               linkedin_url: `https://linkedin.com/in/${name.toLowerCase().replace(" ", "-")}`,
               screening_notes: `Initial notes for ${name}`,
             }
           ])
-          .select();
+          .select()
+          .single();
 
-        if (insertError || !newCandidate?.[0]) {
+        if (insertError || !newCandidate) {
           throw insertError || new Error("Failed to create candidate");
         }
 
-        candidate = newCandidate[0];
+        candidate = newCandidate;
         console.log("Created new candidate:", candidate);
         setCandidates(prev => [...prev, candidate]);
       }
@@ -127,7 +109,7 @@ const CandidatesPanel = () => {
       console.error("Error handling candidate click:", error);
       toast({
         title: "Error",
-        description: "Failed to load candidate profile",
+        description: error instanceof Error ? error.message : "Failed to load candidate profile",
         variant: "destructive",
       });
     }
