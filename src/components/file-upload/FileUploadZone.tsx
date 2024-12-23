@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 interface FileUploadZoneProps {
   isDragging: boolean;
   isUploading: boolean;
+  uploadedFileName: string | null;
   onDragOver: (e: React.DragEvent) => void;
   onDragLeave: () => void;
   onDrop: (e: React.DragEvent) => void;
@@ -13,6 +14,7 @@ interface FileUploadZoneProps {
 export const FileUploadZone = ({
   isDragging,
   isUploading,
+  uploadedFileName,
   onDragOver,
   onDragLeave,
   onDrop,
@@ -34,6 +36,11 @@ export const FileUploadZone = ({
           <p className="text-sm text-muted-foreground">
             Upload PDF or Word documents
           </p>
+          {uploadedFileName && (
+            <p className="mt-2 text-sm text-green-600">
+              Uploaded: {uploadedFileName}
+            </p>
+          )}
         </div>
         <input
           type="file"

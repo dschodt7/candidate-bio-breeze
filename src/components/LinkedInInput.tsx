@@ -1,20 +1,62 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { useSearchParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export const LinkedInInput = () => {
   const [url, setUrl] = useState("");
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const candidateId = searchParams.get('candidate');
+
+  useEffect(() => {
+    const fetchLinkedInUrl = async () => {
+      if (!candidateId) return;
+
+      try {
+        console.log("Fetching LinkedIn URL for candidate:", candidateId);
+        const { data, error } = await supabase
+          .from('candidates')
+          .select('linkedin_url')
+          .eq('id', candidateId)
+          .single();
+
+        if (error) throw error;
+
+        console.log("Fetched LinkedIn URL:", data.linkedin_url);
+        setUrl(data.linkedin_url || "");
+      } catch (error) {
+        console.error("Error fetching LinkedIn URL:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load LinkedIn URL",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchLinkedInUrl();
+  }, [candidateId, toast]);
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setUrl(e.target.value);
     console.log("LinkedIn URL updated:", e.target.value);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (!candidateId) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
     if (!url) {
       toast({
         title: "Error",
@@ -23,11 +65,29 @@ export const LinkedInInput = () => {
       });
       return;
     }
-    console.log("LinkedIn URL saved:", url);
-    toast({
-      title: "Success",
-      description: "LinkedIn URL saved successfully",
-    });
+
+    try {
+      console.log("Saving LinkedIn URL for candidate:", candidateId);
+      const { error } = await supabase
+        .from('candidates')
+        .update({ linkedin_url: url })
+        .eq('id', candidateId);
+
+      if (error) throw error;
+
+      console.log("LinkedIn URL saved successfully");
+      toast({
+        title: "Success",
+        description: "LinkedIn URL saved successfully",
+      });
+    } catch (error) {
+      console.error("Error saving LinkedIn URL:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save LinkedIn URL",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
