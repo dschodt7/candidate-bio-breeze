@@ -1,11 +1,8 @@
 import { useState } from "react";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Upload } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
-export const FileUpload = () => {
+export const useFileUpload = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [isUploading, setIsUploading] = useState(false);
@@ -20,21 +17,7 @@ export const FileUpload = () => {
     setIsDragging(false);
   };
 
-  const handleDrop = async (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const droppedFile = e.dataTransfer.files[0];
-    await handleFileUpload(droppedFile);
-  };
-
-  const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFile = e.target.files?.[0];
-    if (selectedFile) {
-      await handleFileUpload(selectedFile);
-    }
-  };
-
-  const handleFileUpload = async (uploadedFile: File) => {
+  const validateFile = (uploadedFile: File) => {
     const allowedTypes = [
       'application/pdf',
       'application/msword',
@@ -47,11 +30,15 @@ export const FileUpload = () => {
         description: "Please upload a PDF or Word document",
         variant: "destructive"
       });
-      return;
+      return false;
     }
+    return true;
+  };
+
+  const uploadFile = async (uploadedFile: File) => {
+    if (!validateFile(uploadedFile)) return;
 
     try {
-      // Get the current user's ID
       const { data: { user } } = await supabase.auth.getUser();
       
       if (!user) {
@@ -61,7 +48,6 @@ export const FileUpload = () => {
       setIsUploading(true);
       setFile(uploadedFile);
 
-      // Upload file to Supabase Storage
       const fileExt = uploadedFile.name.split('.').pop();
       const fileName = `${Math.random()}.${fileExt}`;
       const filePath = `${fileName}`;
@@ -76,7 +62,6 @@ export const FileUpload = () => {
 
       console.log("File uploaded to storage:", filePath);
 
-      // Create a new candidate record with the user's profile ID
       const { error: dbError } = await supabase
         .from('candidates')
         .insert({
@@ -106,42 +91,27 @@ export const FileUpload = () => {
     }
   };
 
-  return (
-    <Card
-      className={`p-8 border-2 border-dashed transition-all duration-200 ${
-        isDragging ? "border-primary bg-primary/5" : "border-border"
-      } animate-fadeIn`}
-      onDragOver={handleDragOver}
-      onDragLeave={handleDragLeave}
-      onDrop={handleDrop}
-    >
-      <div className="flex flex-col items-center justify-center gap-4">
-        <Upload className="w-12 h-12 text-muted-foreground" />
-        <div className="text-center">
-          <p className="text-lg font-medium">Drop your resume here</p>
-          <p className="text-sm text-muted-foreground">
-            Upload PDF or Word documents
-          </p>
-        </div>
-        <input
-          type="file"
-          accept=".pdf,.doc,.docx"
-          className="hidden"
-          onChange={handleFileInput}
-          id="file-upload"
-          disabled={isUploading}
-        />
-        <label htmlFor="file-upload">
-          <Button variant="outline" className="mt-2" asChild disabled={isUploading}>
-            <span>{isUploading ? "Uploading..." : "Select File"}</span>
-          </Button>
-        </label>
-        {file && !isUploading && (
-          <div className="text-sm text-muted-foreground mt-2">
-            <p>Uploaded: {file.name}</p>
-          </div>
-        )}
-      </div>
-    </Card>
-  );
+  const handleDrop = async (e: React.DragEvent) => {
+    e.preventDefault();
+    setIsDragging(false);
+    const droppedFile = e.dataTransfer.files[0];
+    await uploadFile(droppedFile);
+  };
+
+  const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+      await uploadFile(selectedFile);
+    }
+  };
+
+  return {
+    isDragging,
+    isUploading,
+    file,
+    handleDragOver,
+    handleDragLeave,
+    handleDrop,
+    handleFileInput
+  };
 };
