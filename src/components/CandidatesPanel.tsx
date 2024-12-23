@@ -77,58 +77,43 @@ const CandidatesPanel = () => {
         }
 
         // If no profile exists, create one
+        let profileId;
         if (!profile) {
           console.log("No profile found, creating one...");
           const { data: newProfile, error: insertProfileError } = await supabase
             .from("profiles")
-            .insert([{ }])
-            .select()
-            .single();
+            .insert([{ id: crypto.randomUUID() }])
+            .select();
 
-          if (insertProfileError) {
-            throw insertProfileError;
+          if (insertProfileError || !newProfile?.[0]) {
+            throw insertProfileError || new Error("Failed to create profile");
           }
 
-          console.log("Created new profile:", newProfile);
-          
-          // Use the newly created profile
-          const { data: newCandidate, error: insertError } = await supabase
-            .from("candidates")
-            .insert([
-              { 
-                profile_id: newProfile.id,
-                linkedin_url: `https://linkedin.com/in/${name.toLowerCase().replace(" ", "-")}`,
-                screening_notes: `Initial notes for ${name}`,
-              }
-            ])
-            .select()
-            .single();
-
-          if (insertError) throw insertError;
-          candidate = newCandidate;
-          
-          console.log("Created new candidate:", newCandidate);
-          setCandidates(prev => [...prev, newCandidate]);
+          console.log("Created new profile:", newProfile[0]);
+          profileId = newProfile[0].id;
         } else {
-          // Use existing profile
-          const { data: newCandidate, error: insertError } = await supabase
-            .from("candidates")
-            .insert([
-              { 
-                profile_id: profile.id,
-                linkedin_url: `https://linkedin.com/in/${name.toLowerCase().replace(" ", "-")}`,
-                screening_notes: `Initial notes for ${name}`,
-              }
-            ])
-            .select()
-            .single();
-
-          if (insertError) throw insertError;
-          candidate = newCandidate;
-          
-          console.log("Created new candidate:", newCandidate);
-          setCandidates(prev => [...prev, newCandidate]);
+          profileId = profile.id;
         }
+
+        // Create new candidate using the profile ID
+        const { data: newCandidate, error: insertError } = await supabase
+          .from("candidates")
+          .insert([
+            { 
+              profile_id: profileId,
+              linkedin_url: `https://linkedin.com/in/${name.toLowerCase().replace(" ", "-")}`,
+              screening_notes: `Initial notes for ${name}`,
+            }
+          ])
+          .select();
+
+        if (insertError || !newCandidate?.[0]) {
+          throw insertError || new Error("Failed to create candidate");
+        }
+
+        candidate = newCandidate[0];
+        console.log("Created new candidate:", candidate);
+        setCandidates(prev => [...prev, candidate]);
       }
 
       // Update URL with candidate ID
