@@ -9,7 +9,7 @@ const Index = () => {
       <div className="container py-8 space-y-8 max-w-4xl">
         <div className="space-y-4">
           <h1 className="text-4xl font-bold tracking-tight animate-fadeIn">
-            Executive Summary Generator
+            Executive Summary Components
           </h1>
           <p className="text-lg text-muted-foreground animate-fadeIn">
             Transform candidate information into comprehensive executive summaries
