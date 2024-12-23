@@ -9,7 +9,97 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      candidates: {
+        Row: {
+          created_at: string
+          id: string
+          linkedin_url: string | null
+          profile_id: string
+          resume_path: string | null
+          screening_notes: string | null
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          linkedin_url?: string | null
+          profile_id: string
+          resume_path?: string | null
+          screening_notes?: string | null
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          linkedin_url?: string | null
+          profile_id?: string
+          resume_path?: string | null
+          screening_notes?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "candidates_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      executive_summaries: {
+        Row: {
+          brass_tax_criteria: Json
+          candidate_id: string
+          created_at: string
+          id: string
+          sensory_criteria: Json
+          updated_at: string
+        }
+        Insert: {
+          brass_tax_criteria?: Json
+          candidate_id: string
+          created_at?: string
+          id?: string
+          sensory_criteria?: Json
+          updated_at?: string
+        }
+        Update: {
+          brass_tax_criteria?: Json
+          candidate_id?: string
+          created_at?: string
+          id?: string
+          sensory_criteria?: Json
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "executive_summaries_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

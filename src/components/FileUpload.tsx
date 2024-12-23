@@ -3,10 +3,12 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Upload } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 export const FileUpload = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
   const { toast } = useToast();
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -48,12 +50,52 @@ export const FileUpload = () => {
       return;
     }
 
-    setFile(uploadedFile);
-    console.log("File uploaded:", uploadedFile.name);
-    toast({
-      title: "File uploaded successfully",
-      description: uploadedFile.name
-    });
+    try {
+      setIsUploading(true);
+      setFile(uploadedFile);
+
+      // Upload file to Supabase Storage
+      const fileExt = uploadedFile.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { error: uploadError, data } = await supabase.storage
+        .from('resumes')
+        .upload(filePath, uploadedFile);
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      console.log("File uploaded to storage:", filePath);
+
+      // Create a new candidate record
+      const { error: dbError } = await supabase
+        .from('candidates')
+        .insert({
+          resume_path: filePath
+        });
+
+      if (dbError) {
+        throw dbError;
+      }
+
+      console.log("Candidate record created with resume path:", filePath);
+      
+      toast({
+        title: "Success",
+        description: "Resume uploaded successfully"
+      });
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      toast({
+        title: "Upload failed",
+        description: "There was an error uploading your file",
+        variant: "destructive"
+      });
+    } finally {
+      setIsUploading(false);
+    }
   };
 
   return (
@@ -79,13 +121,14 @@ export const FileUpload = () => {
           className="hidden"
           onChange={handleFileInput}
           id="file-upload"
+          disabled={isUploading}
         />
         <label htmlFor="file-upload">
-          <Button variant="outline" className="mt-2" asChild>
-            <span>Select File</span>
+          <Button variant="outline" className="mt-2" asChild disabled={isUploading}>
+            <span>{isUploading ? "Uploading..." : "Select File"}</span>
           </Button>
         </label>
-        {file && (
+        {file && !isUploading && (
           <div className="text-sm text-muted-foreground mt-2">
             <p>Uploaded: {file.name}</p>
           </div>
