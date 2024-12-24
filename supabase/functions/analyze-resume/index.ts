@@ -43,15 +43,14 @@ serve(async (req) => {
     const resumeText = await resumeFile.text();
     console.log('Resume text length:', resumeText.length);
 
-    // Simplified system prompt with explicit JSON format requirement
-    const systemPrompt = `You are an AI assistant that analyzes resumes. Return your analysis as a plain JSON object (no markdown formatting) with these exact fields:
+    const systemPrompt = `You are an AI assistant that analyzes resumes. Return a JSON object with exactly these fields (no markdown, no additional text):
 {
-  "credibilityStatements": "string with key achievements",
-  "caseStudies": "string with notable projects",
-  "jobAssessment": "string with career analysis",
-  "motivations": "string with career insights",
-  "businessProblems": "string with key challenges solved",
-  "additionalObservations": "string with unique elements"
+  "credibilityStatements": "detailed achievements and qualifications",
+  "caseStudies": "specific projects and their outcomes",
+  "jobAssessment": "career progression analysis",
+  "motivations": "career goals and drivers",
+  "businessProblems": "key challenges solved",
+  "additionalObservations": "unique elements worth noting"
 }`;
 
     console.log('Sending request to OpenAI');
@@ -80,36 +79,16 @@ serve(async (req) => {
 
     const openAIData = await openAIResponse.json();
     const content = openAIData.choices[0].message.content;
-    console.log('Raw OpenAI response content:', content);
+    console.log('Raw OpenAI response:', content);
 
     let analysis;
     try {
-      // More aggressive cleanup of any potential markdown or formatting
-      const cleanContent = content
-        .replace(/^```[\s\S]*?\n/, '') // Remove opening markdown
-        .replace(/\n```$/, '')         // Remove closing markdown
-        .replace(/^`{1,3}|`{1,3}$/g, '') // Remove any remaining backticks
-        .trim();
-      
-      console.log('Cleaned content before parsing:', cleanContent);
+      // Clean any potential formatting
+      const cleanContent = content.trim();
+      console.log('Cleaned content:', cleanContent);
       
       analysis = JSON.parse(cleanContent);
-      console.log('Successfully parsed analysis:', analysis);
-
-      // Validate the expected structure
-      const requiredFields = [
-        'credibilityStatements',
-        'caseStudies',
-        'jobAssessment',
-        'motivations',
-        'businessProblems',
-        'additionalObservations'
-      ];
-
-      const missingFields = requiredFields.filter(field => !(field in analysis));
-      if (missingFields.length > 0) {
-        throw new Error(`Response missing required fields: ${missingFields.join(', ')}`);
-      }
+      console.log('Parsed analysis:', analysis);
 
       // Store analysis results
       const { error: updateError } = await supabase
@@ -130,7 +109,7 @@ serve(async (req) => {
       });
     } catch (error) {
       console.error('Error processing OpenAI response:', error);
-      console.error('Raw response content:', content);
+      console.error('Raw response:', content);
       throw new Error(`Failed to process analysis results: ${error.message}`);
     }
   } catch (error) {

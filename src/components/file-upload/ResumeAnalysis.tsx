@@ -13,17 +13,13 @@ import {
 } from "@/components/ui/accordion";
 import { Textarea } from "@/components/ui/textarea";
 
-type BrassTaxCriteria = {
-  credibilityStatements?: string;
-  caseStudies?: string;
-  jobAssessment?: string;
-  motivations?: string;
-  businessProblems?: string;
-  additionalObservations?: string;
-};
-
-type ExecutiveSummaryData = {
-  brass_tax_criteria: BrassTaxCriteria;
+type ResumeAnalysis = {
+  credibilityStatements: string;
+  caseStudies: string;
+  jobAssessment: string;
+  motivations: string;
+  businessProblems: string;
+  additionalObservations: string;
 };
 
 export const ResumeAnalysis = () => {
@@ -52,28 +48,31 @@ export const ResumeAnalysis = () => {
       }
 
       console.log("Fetched executive summary:", data);
-      return data as ExecutiveSummaryData;
+      return data;
     },
     enabled: !!candidateId,
   });
 
-  const handleEdit = (key: keyof BrassTaxCriteria, content: string) => {
+  const analysis: ResumeAnalysis | undefined = executiveSummary?.brass_tax_criteria as ResumeAnalysis;
+  console.log("Current analysis data:", analysis);
+
+  const handleEdit = (key: keyof ResumeAnalysis, content: string) => {
     setEditingSection(key);
     setEditedContent(content);
   };
 
-  const handleSave = async (key: keyof BrassTaxCriteria) => {
-    if (!candidateId || !executiveSummary) return;
+  const handleSave = async (key: keyof ResumeAnalysis) => {
+    if (!candidateId || !analysis) return;
 
     try {
-      const updatedCriteria: BrassTaxCriteria = {
-        ...executiveSummary.brass_tax_criteria,
+      const updatedAnalysis = {
+        ...analysis,
         [key]: editedContent
       };
 
       const { error } = await supabase
         .from('executive_summaries')
-        .update({ brass_tax_criteria: updatedCriteria })
+        .update({ brass_tax_criteria: updatedAnalysis })
         .eq('candidate_id', candidateId);
 
       if (error) throw error;
@@ -94,18 +93,18 @@ export const ResumeAnalysis = () => {
     }
   };
 
-  if (!executiveSummary) return null;
+  if (!analysis) return null;
 
   const sections = [
-    { title: "Credibility Statements", key: "credibilityStatements" as keyof BrassTaxCriteria },
-    { title: "Case Studies", key: "caseStudies" as keyof BrassTaxCriteria },
-    { title: "Complete Assessment of Job", key: "jobAssessment" as keyof BrassTaxCriteria },
-    { title: "Motivations", key: "motivations" as keyof BrassTaxCriteria },
-    { title: "Business Problems They Solve Better Than Most", key: "businessProblems" as keyof BrassTaxCriteria },
-    { title: "Additional Observations", key: "additionalObservations" as keyof BrassTaxCriteria },
-  ];
+    { key: 'credibilityStatements', title: 'Credibility Statements' },
+    { key: 'caseStudies', title: 'Case Studies' },
+    { key: 'jobAssessment', title: 'Complete Assessment of Job' },
+    { key: 'motivations', title: 'Motivations' },
+    { key: 'businessProblems', title: 'Business Problems They Solve Better Than Most' },
+    { key: 'additionalObservations', title: 'Additional Observations' },
+  ] as const;
 
-  const hasContent = Object.values(executiveSummary.brass_tax_criteria).some(value => value);
+  const hasContent = Object.values(analysis).some(value => value && value !== "No data found");
 
   return (
     <div className="mt-4">
@@ -119,7 +118,7 @@ export const ResumeAnalysis = () => {
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4 pt-2">
-              {sections.map(({ title, key }) => (
+              {sections.map(({ key, title }) => (
                 <div key={key} className="space-y-1">
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-medium text-muted-foreground">{title}</h4>
@@ -127,7 +126,7 @@ export const ResumeAnalysis = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleEdit(key, executiveSummary.brass_tax_criteria[key] || "")}
+                        onClick={() => handleEdit(key, analysis[key] || "")}
                         className="h-8 px-2"
                       >
                         <Pencil className="h-4 w-4" />
@@ -151,7 +150,7 @@ export const ResumeAnalysis = () => {
                     />
                   ) : (
                     <p className="text-sm whitespace-pre-wrap">
-                      {executiveSummary.brass_tax_criteria[key] || "No data found"}
+                      {analysis[key] || "No data found"}
                     </p>
                   )}
                 </div>
