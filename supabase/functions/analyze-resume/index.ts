@@ -44,7 +44,7 @@ serve(async (req) => {
     const resumeText = await resumeFile.text();
     console.log('Resume text length:', resumeText.length);
 
-    const systemPrompt = `Analyze this resume and extract key insights. Be specific and detailed. Format response as JSON with these fields:
+    const systemPrompt = `Analyze this resume and extract key insights. Be specific and detailed. Return a JSON object with these fields:
 - credibilityStatements: Key achievements and qualifications
 - caseStudies: Notable projects with measurable outcomes
 - jobAssessment: Career progression analysis
@@ -82,11 +82,11 @@ serve(async (req) => {
 
     let analysis;
     try {
-      // Ensure we're working with a clean string
-      const cleanedContent = content.trim();
-      console.log('Attempting to parse:', cleanedContent);
+      // Clean up the response by removing markdown code blocks if present
+      const cleanContent = content.replace(/```json\n|\n```|```/g, '');
+      console.log('Cleaned content:', cleanContent);
       
-      analysis = JSON.parse(cleanedContent);
+      analysis = JSON.parse(cleanContent);
       console.log('Successfully parsed analysis:', analysis);
 
       // Validate the expected structure
