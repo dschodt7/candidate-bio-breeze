@@ -13,6 +13,18 @@ import {
 } from "@/components/ui/accordion";
 import { Pencil, Check } from "lucide-react";
 
+interface LinkedInAnalysisData {
+  credibilityStatements?: string;
+  caseStudies?: string;
+  jobAssessment?: string;
+  motivations?: string;
+  businessProblems?: string;
+  interests?: string;
+  activitiesAndHobbies?: string;
+  foundationalUnderstanding?: string;
+  [key: string]: string | undefined;
+}
+
 export const LinkedInAnalysis = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
@@ -37,7 +49,7 @@ export const LinkedInAnalysis = () => {
         .maybeSingle();
 
       if (error) throw error;
-      return data?.linked_in_analysis || {};
+      return (data?.linked_in_analysis || {}) as LinkedInAnalysisData;
     },
     enabled: !!searchParams.get('candidate'),
   });
