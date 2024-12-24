@@ -1,16 +1,28 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useSearchParams } from "react-router-dom";
+import { validateFile } from "@/utils/fileValidation";
+import { useFileState } from "@/hooks/useFileState";
+import { useSupabaseStorage } from "@/hooks/useSupabaseStorage";
 
 export const useFileUpload = () => {
-  const [isDragging, setIsDragging] = useState(false);
-  const [file, setFile] = useState<File | null>(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [uploadedFileName, setUploadedFileName] = useState<string | null>(null);
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
+  const { uploadToStorage, updateCandidateResume } = useSupabaseStorage();
+  const {
+    isDragging,
+    setIsDragging,
+    file,
+    setFile,
+    isUploading,
+    setIsUploading,
+    uploadedFileName,
+    setUploadedFileName,
+    handleDragOver,
+    handleDragLeave
+  } = useFileState();
 
   useEffect(() => {
     const fetchResumePath = async () => {
@@ -43,37 +55,10 @@ export const useFileUpload = () => {
     };
 
     fetchResumePath();
-  }, [candidateId, toast]);
-
-  const handleDragOver = (e: React.DragEvent) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = () => {
-    setIsDragging(false);
-  };
-
-  const validateFile = (uploadedFile: File) => {
-    const allowedTypes = [
-      'application/pdf',
-      'application/msword',
-      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-    ];
-
-    if (!allowedTypes.includes(uploadedFile.type)) {
-      toast({
-        title: "Invalid file type",
-        description: "Please upload a PDF or Word document",
-        variant: "destructive"
-      });
-      return false;
-    }
-    return true;
-  };
+  }, [candidateId, toast, setUploadedFileName]);
 
   const uploadFile = async (uploadedFile: File) => {
-    if (!validateFile(uploadedFile)) return;
+    if (!validateFile(uploadedFile, toast)) return;
     if (!candidateId) {
       toast({
         title: "Error",
@@ -86,40 +71,18 @@ export const useFileUpload = () => {
     try {
       setIsUploading(true);
       setFile(uploadedFile);
+      console.log("Starting file upload process for:", uploadedFile.name);
 
-      const fileExt = uploadedFile.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
+      const filePath = await uploadToStorage(uploadedFile, candidateId);
+      await updateCandidateResume(candidateId, filePath);
 
-      console.log("Uploading file for candidate:", candidateId);
-      const { error: uploadError } = await supabase.storage
-        .from('resumes')
-        .upload(filePath, uploadedFile);
-
-      if (uploadError) {
-        throw uploadError;
-      }
-
-      console.log("File uploaded to storage:", filePath);
-
-      const { error: updateError } = await supabase
-        .from('candidates')
-        .update({ resume_path: filePath })
-        .eq('id', candidateId);
-
-      if (updateError) {
-        throw updateError;
-      }
-
-      console.log("Resume path updated in database");
       setUploadedFileName(uploadedFile.name);
-      
       toast({
         title: "Success",
         description: "Resume uploaded successfully"
       });
     } catch (error) {
-      console.error("Error uploading file:", error);
+      console.error("Error in upload process:", error);
       toast({
         title: "Upload failed",
         description: "There was an error uploading your file",
