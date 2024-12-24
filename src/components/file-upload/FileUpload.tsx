@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { FileUploadZone } from "./FileUploadZone";
 import { useFileUpload } from "./useFileUpload";
