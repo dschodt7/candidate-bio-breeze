@@ -13,31 +13,17 @@ serve(async (req) => {
   }
 
   try {
-    const { screenshotUrls } = await req.json();
-    console.log('Processing LinkedIn screenshots:', screenshotUrls);
+    const { candidateId, screenshots } = await req.json();
+    console.log('Processing LinkedIn screenshots for candidate:', candidateId);
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Combine text from all screenshots
+    // Analyze each screenshot with GPT-4 Vision
     let combinedText = '';
-    for (const url of screenshotUrls) {
+    for (const base64Image of screenshots) {
       try {
-        const { data: fileData } = await supabase.storage
-          .from('linkedin-screenshots')
-          .download(url);
-
-        if (!fileData) {
-          console.error('Failed to download screenshot:', url);
-          continue;
-        }
-
-        // Convert image to text using OpenAI's GPT-4 Vision
-        const base64Image = await fileData.arrayBuffer().then(buffer => 
-          btoa(String.fromCharCode(...new Uint8Array(buffer)))
-        );
-
         const visionResponse = await fetch('https://api.openai.com/v1/chat/completions', {
           method: 'POST',
           headers: {
@@ -49,14 +35,14 @@ serve(async (req) => {
             messages: [
               {
                 role: 'system',
-                content: 'Extract and summarize the text content from this LinkedIn profile screenshot. Focus on professional details, skills, experience, and achievements.'
+                content: 'Extract and summarize the text content from this LinkedIn profile screenshot. Focus on professional details, endorsements, recommendations, and activities.'
               },
               {
                 role: 'user',
                 content: [
                   {
                     type: 'image_url',
-                    image_url: `data:image/jpeg;base64,${base64Image}`
+                    image_url: base64Image
                   }
                 ]
               }
@@ -75,7 +61,7 @@ serve(async (req) => {
       }
     }
 
-    // Analyze the combined text
+    // Analyze the combined text to generate structured insights
     const analysisResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -87,24 +73,24 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `Analyze this LinkedIn profile content and return a JSON object with these fields:
+            content: `Analyze this LinkedIn profile content and return a JSON object with exactly these fields:
               {
-                "professionalSummary": "overview of career and expertise",
-                "keySkills": "list of primary skills and competencies",
-                "industryExperience": "relevant industry experience",
-                "leadershipStyle": "leadership approach and management style",
-                "achievementsAndImpact": "notable accomplishments and results",
-                "culturalFit": "work style and cultural preferences",
-                "careerTrajectory": "career progression and growth pattern"
-              }`
+                "credibilityStatements": "focus on endorsements and recommendations",
+                "caseStudies": "notable projects and achievements",
+                "jobAssessment": "deeper insights into responsibilities and leadership",
+                "motivations": "career aspirations and professional interests",
+                "businessProblems": "areas of expertise based on skills and endorsements",
+                "interests": "professional and personal interests",
+                "activitiesAndHobbies": "volunteer work and extracurricular activities",
+                "foundationalUnderstanding": "personality traits and interpersonal skills"
+              }
+              If no information is available for a category, use "No additional insights from LinkedIn."`
           },
           {
             role: 'user',
             content: combinedText
           }
-        ],
-        temperature: 0.7,
-        max_tokens: 2000,
+        ]
       })
     });
 
@@ -114,6 +100,16 @@ serve(async (req) => {
 
     const analysisData = await analysisResponse.json();
     const analysis = JSON.parse(analysisData.choices[0].message.content);
+
+    // Store analysis results
+    const { error: updateError } = await supabase
+      .from('executive_summaries')
+      .upsert({
+        candidate_id: candidateId,
+        linked_in_analysis: analysis
+      });
+
+    if (updateError) throw updateError;
 
     return new Response(JSON.stringify({ 
       success: true,
