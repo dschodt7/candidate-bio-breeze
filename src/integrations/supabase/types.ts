@@ -53,6 +53,7 @@ export type Database = {
           candidate_id: string
           created_at: string
           id: string
+          linked_in_analysis: Json
           sensory_criteria: Json
           updated_at: string
         }
@@ -61,6 +62,7 @@ export type Database = {
           candidate_id: string
           created_at?: string
           id?: string
+          linked_in_analysis?: Json
           sensory_criteria?: Json
           updated_at?: string
         }
@@ -69,6 +71,7 @@ export type Database = {
           candidate_id?: string
           created_at?: string
           id?: string
+          linked_in_analysis?: Json
           sensory_criteria?: Json
           updated_at?: string
         }

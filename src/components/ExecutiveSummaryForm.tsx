@@ -7,6 +7,7 @@ import {
 } from "@/components/ui/accordion";
 import { BrassTaxCriteria } from "./BrassTaxCriteria";
 import { SensoryCriteria } from "./SensoryCriteria";
+import { LinkedInAnalysis } from "./LinkedInAnalysis";
 
 export const ExecutiveSummaryForm = () => {
   return (
@@ -28,6 +29,15 @@ export const ExecutiveSummaryForm = () => {
           </AccordionTrigger>
           <AccordionContent className="pt-4">
             <SensoryCriteria />
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="linkedin">
+          <AccordionTrigger>
+            LinkedIn Profile Analysis
+          </AccordionTrigger>
+          <AccordionContent className="pt-4">
+            <LinkedInAnalysis />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
