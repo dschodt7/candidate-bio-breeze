@@ -37,7 +37,7 @@ export const LinkedInAnalysis = () => {
         .maybeSingle();
 
       if (error) throw error;
-      return data?.linked_in_analysis;
+      return data?.linked_in_analysis || {};
     },
     enabled: !!searchParams.get('candidate'),
   });
