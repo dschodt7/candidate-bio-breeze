@@ -13,6 +13,19 @@ import {
 } from "@/components/ui/accordion";
 import { Textarea } from "@/components/ui/textarea";
 
+type BrassTaxCriteria = {
+  credibilityStatements?: string;
+  caseStudies?: string;
+  jobAssessment?: string;
+  motivations?: string;
+  businessProblems?: string;
+  additionalObservations?: string;
+};
+
+type ExecutiveSummaryData = {
+  brass_tax_criteria: BrassTaxCriteria;
+};
+
 export const ResumeAnalysis = () => {
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
@@ -37,22 +50,22 @@ export const ResumeAnalysis = () => {
       }
 
       console.log("Fetched executive summary:", data);
-      return data?.brass_tax_criteria;
+      return data as ExecutiveSummaryData;
     },
     enabled: !!candidateId,
   });
 
-  const handleEdit = (key: string, content: string) => {
+  const handleEdit = (key: keyof BrassTaxCriteria, content: string) => {
     setEditingSection(key);
     setEditedContent(content);
   };
 
-  const handleSave = async (key: string) => {
+  const handleSave = async (key: keyof BrassTaxCriteria) => {
     if (!candidateId || !executiveSummary) return;
 
     try {
-      const updatedCriteria = {
-        ...executiveSummary,
+      const updatedCriteria: BrassTaxCriteria = {
+        ...executiveSummary.brass_tax_criteria,
         [key]: editedContent
       };
 
@@ -82,15 +95,15 @@ export const ResumeAnalysis = () => {
   if (!executiveSummary) return null;
 
   const sections = [
-    { title: "Credibility Statements", key: "credibilityStatements" },
-    { title: "Case Studies", key: "caseStudies" },
-    { title: "Complete Assessment of Job", key: "jobAssessment" },
-    { title: "Motivations", key: "motivations" },
-    { title: "Business Problems They Solve Better Than Most", key: "businessProblems" },
-    { title: "Additional Observations", key: "additionalObservations" },
+    { title: "Credibility Statements", key: "credibilityStatements" as keyof BrassTaxCriteria },
+    { title: "Case Studies", key: "caseStudies" as keyof BrassTaxCriteria },
+    { title: "Complete Assessment of Job", key: "jobAssessment" as keyof BrassTaxCriteria },
+    { title: "Motivations", key: "motivations" as keyof BrassTaxCriteria },
+    { title: "Business Problems They Solve Better Than Most", key: "businessProblems" as keyof BrassTaxCriteria },
+    { title: "Additional Observations", key: "additionalObservations" as keyof BrassTaxCriteria },
   ];
 
-  const hasContent = Object.values(executiveSummary).some(value => value);
+  const hasContent = Object.values(executiveSummary.brass_tax_criteria).some(value => value);
 
   return (
     <div className="mt-4">
@@ -112,7 +125,7 @@ export const ResumeAnalysis = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleEdit(key, executiveSummary[key] || "")}
+                        onClick={() => handleEdit(key, executiveSummary.brass_tax_criteria[key] || "")}
                         className="h-8 px-2"
                       >
                         <Pencil className="h-4 w-4" />
@@ -136,7 +149,7 @@ export const ResumeAnalysis = () => {
                     />
                   ) : (
                     <p className="text-sm whitespace-pre-wrap">
-                      {executiveSummary[key] || "No data found"}
+                      {executiveSummary.brass_tax_criteria[key] || "No data found"}
                     </p>
                   )}
                 </div>
