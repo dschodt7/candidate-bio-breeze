@@ -42,9 +42,8 @@ serve(async (req) => {
 
     // Convert resume file to text
     const resumeText = await resumeFile.text();
-    console.log('Extracted resume text length:', resumeText.length);
+    console.log('Resume text length:', resumeText.length);
 
-    // Optimize the prompt to be more concise but specific
     const systemPrompt = `Analyze this resume and extract key insights. Be specific and detailed. Format response as JSON with these fields:
 - credibilityStatements: Key achievements and qualifications
 - caseStudies: Notable projects with measurable outcomes
@@ -67,7 +66,7 @@ serve(async (req) => {
           { role: 'user', content: resumeText }
         ],
         temperature: 0.7,
-        max_tokens: 2000, // Limit response length
+        max_tokens: 2000,
       }),
     });
 
@@ -78,12 +77,24 @@ serve(async (req) => {
     }
 
     const openAIData = await openAIResponse.json();
-    console.log('Received OpenAI response');
+    const content = openAIData.choices[0].message.content;
+    console.log('Raw OpenAI response:', content);
 
     let analysis;
     try {
-      const content = openAIData.choices[0].message.content;
-      analysis = JSON.parse(content);
+      // Ensure we're working with a clean string
+      const cleanedContent = content.trim();
+      console.log('Attempting to parse:', cleanedContent);
+      
+      analysis = JSON.parse(cleanedContent);
+      console.log('Successfully parsed analysis:', analysis);
+
+      // Validate the expected structure
+      if (!analysis.credibilityStatements || !analysis.caseStudies || 
+          !analysis.jobAssessment || !analysis.motivations || 
+          !analysis.businessProblems || !analysis.additionalObservations) {
+        throw new Error('Response missing required properties');
+      }
 
       // Format the analysis for storage
       const formattedAnalysis = {
@@ -120,7 +131,8 @@ serve(async (req) => {
       });
     } catch (error) {
       console.error('Error processing OpenAI response:', error);
-      throw new Error('Failed to process analysis results');
+      console.error('Raw response:', content);
+      throw new Error(`Failed to process analysis results: ${error.message}`);
     }
   } catch (error) {
     console.error('Error in analyze-resume function:', error);
