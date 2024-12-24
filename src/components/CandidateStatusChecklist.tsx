@@ -29,13 +29,13 @@ export const CandidateStatusChecklist = () => {
     enabled: !!candidate?.id,
   });
 
-  const brassTaxCount = executiveSummary ? 
+  const brassTaxCount = executiveSummary?.brass_tax_criteria ? 
     Object.values(executiveSummary.brass_tax_criteria).filter(value => value).length : 0;
-  const sensoryCount = executiveSummary ? 
+  const sensoryCount = executiveSummary?.sensory_criteria ? 
     Object.values(executiveSummary.sensory_criteria).filter(value => value).length : 0;
 
-  const BRASS_TAX_TOTAL = 7; // Total number of Brass Tax criteria
-  const SENSORY_TOTAL = 5; // Total number of Sensory criteria
+  const BRASS_TAX_TOTAL = 7;
+  const SENSORY_TOTAL = 5;
 
   const checklistItems = [
     {
