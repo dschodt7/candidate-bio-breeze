@@ -46,7 +46,7 @@ serve(async (req) => {
     const resumeText = await resumeFile.text();
     console.log('Successfully extracted resume text');
 
-    const systemPrompt = `You are an expert resume analyzer. Analyze the provided resume and extract specific insights mapped to predefined categories. Return ONLY a valid JSON object with the following structure:
+    const systemPrompt = `You are an expert resume analyzer. Analyze the provided resume and extract specific insights mapped to predefined categories. Return ONLY a valid JSON object with the following structure, no markdown formatting or additional text:
 
 {
   "credibilityStatements": string[],
@@ -85,7 +85,29 @@ For any category where no relevant information is found, use "No data found". Ke
     const openAIData = await openAIResponse.json();
     console.log('Received OpenAI response');
 
-    const analysis = JSON.parse(openAIData.choices[0].message.content);
+    let analysis;
+    try {
+      // Get the content from the OpenAI response
+      const content = openAIData.choices[0].message.content;
+      
+      // Clean up any potential markdown formatting
+      const cleanedContent = content.replace(/```json\n|\n```/g, '').trim();
+      console.log('Cleaned content:', cleanedContent);
+      
+      // Parse the cleaned content
+      analysis = JSON.parse(cleanedContent);
+      
+      // Validate the expected structure
+      const requiredKeys = ['credibilityStatements', 'caseStudies', 'jobAssessment', 'motivations', 'businessProblems', 'additionalObservations'];
+      for (const key of requiredKeys) {
+        if (!(key in analysis)) {
+          throw new Error(`Missing required key: ${key}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error parsing OpenAI response:', error);
+      throw new Error('Failed to parse analysis results');
+    }
 
     // Store analysis results
     const { error: updateError } = await supabase
@@ -93,10 +115,12 @@ For any category where no relevant information is found, use "No data found". Ke
       .upsert({
         candidate_id: candidateId,
         brass_tax_criteria: {
-          ...analysis,
-          timeframe: "No data found",
-          workPreferences: "No data found",
-          compensationExpectations: "No data found"
+          credibilityStatements: analysis.credibilityStatements.join('\n'),
+          caseStudies: analysis.caseStudies.join('\n'),
+          jobAssessment: analysis.jobAssessment,
+          motivations: analysis.motivations,
+          businessProblems: analysis.businessProblems.join('\n'),
+          additionalObservations: analysis.additionalObservations
         }
       });
 
