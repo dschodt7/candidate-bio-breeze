@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Check, RotateCw } from "lucide-react";
+import { Check, RotateCw, HelpCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Tooltip,
