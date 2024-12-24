@@ -7,6 +7,7 @@ import { FileSearch } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
+import { ResumeAnalysis } from "./ResumeAnalysis";
 
 export const FileUpload = () => {
   const {
@@ -83,14 +84,17 @@ export const FileUpload = () => {
           onFileSelect={handleFileInput}
         />
         {uploadedFileName && (
-          <Button
-            onClick={handleAnalyzeResume}
-            className="w-full"
-            disabled={isAnalyzing}
-          >
-            <FileSearch className="w-4 h-4 mr-2" />
-            {isAnalyzing ? "Analyzing Resume..." : "Analyze Resume"}
-          </Button>
+          <>
+            <Button
+              onClick={handleAnalyzeResume}
+              className="w-full"
+              disabled={isAnalyzing}
+            >
+              <FileSearch className="w-4 h-4 mr-2" />
+              {isAnalyzing ? "Analyzing Resume..." : "Analyze Resume"}
+            </Button>
+            <ResumeAnalysis />
+          </>
         )}
       </div>
     </Card>
