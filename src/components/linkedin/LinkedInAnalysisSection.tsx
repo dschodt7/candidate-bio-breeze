@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Pencil, Check } from "lucide-react";
+import { LinkedInAnalysis } from "./types";
 
 interface LinkedInAnalysisSectionProps {
   title: string;
@@ -57,7 +58,7 @@ export const LinkedInAnalysisSection = ({
         />
       ) : (
         <p className="text-sm whitespace-pre-wrap">
-          {content || "No data available from LinkedIn for this section"}
+          {content || "No additional insights from LinkedIn."}
         </p>
       )}
     </div>
