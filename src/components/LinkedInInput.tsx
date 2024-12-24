@@ -3,12 +3,14 @@ import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Check, RotateCw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 export const LinkedInInput = () => {
   const [url, setUrl] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
@@ -29,6 +31,7 @@ export const LinkedInInput = () => {
 
         console.log("Fetched LinkedIn URL:", data.linkedin_url);
         setUrl(data.linkedin_url || "");
+        setIsSubmitted(!!data.linkedin_url);
       } catch (error) {
         console.error("Error fetching LinkedIn URL:", error);
         toast({
@@ -42,12 +45,7 @@ export const LinkedInInput = () => {
     fetchLinkedInUrl();
   }, [candidateId, toast]);
 
-  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setUrl(e.target.value);
-    console.log("LinkedIn URL updated:", e.target.value);
-  };
-
-  const handleSave = async () => {
+  const handleSubmit = async () => {
     if (!candidateId) {
       toast({
         title: "Error",
@@ -67,7 +65,7 @@ export const LinkedInInput = () => {
     }
 
     try {
-      console.log("Saving LinkedIn URL for candidate:", candidateId);
+      console.log("Submitting LinkedIn URL for candidate:", candidateId);
       const { error } = await supabase
         .from('candidates')
         .update({ linkedin_url: url })
@@ -75,19 +73,30 @@ export const LinkedInInput = () => {
 
       if (error) throw error;
 
-      console.log("LinkedIn URL saved successfully");
+      console.log("LinkedIn URL submitted successfully");
+      setIsSubmitted(true);
       toast({
         title: "Success",
-        description: "LinkedIn URL saved successfully",
+        description: "LinkedIn URL submitted successfully",
       });
     } catch (error) {
-      console.error("Error saving LinkedIn URL:", error);
+      console.error("Error submitting LinkedIn URL:", error);
       toast({
         title: "Error",
-        description: "Failed to save LinkedIn URL",
+        description: "Failed to submit LinkedIn URL",
         variant: "destructive",
       });
     }
+  };
+
+  const handleReset = () => {
+    setUrl("");
+    setIsSubmitted(false);
+    console.log("LinkedIn URL reset");
+    toast({
+      title: "Reset",
+      description: "LinkedIn URL has been reset",
+    });
   };
 
   return (
@@ -100,10 +109,24 @@ export const LinkedInInput = () => {
             type="url"
             placeholder="https://linkedin.com/in/username"
             value={url}
-            onChange={handleUrlChange}
+            onChange={(e) => {
+              setUrl(e.target.value);
+              setIsSubmitted(false);
+            }}
             className="flex-1"
           />
-          <Button onClick={handleSave}>Save</Button>
+          <div className="flex gap-2">
+            <Button onClick={handleSubmit} className="gap-2">
+              {isSubmitted && <Check className="h-4 w-4 text-green-500" />}
+              {isSubmitted ? "Submitted" : "Submit"}
+            </Button>
+            {isSubmitted && (
+              <Button variant="outline" onClick={handleReset} className="gap-2">
+                <RotateCw className="h-4 w-4" />
+                Reset
+              </Button>
+            )}
+          </div>
         </div>
       </div>
     </Card>

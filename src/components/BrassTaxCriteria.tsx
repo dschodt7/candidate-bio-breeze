@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Check, HelpCircle } from "lucide-react";
+import { Check, RotateCw } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
   Tooltip,
@@ -59,21 +59,34 @@ export const BrassTaxCriteria = () => {
 
   const [savedSections, setSavedSections] = useState<Record<string, boolean>>({});
 
-  const handleSave = (sectionKey: string) => {
+  const handleSubmit = (sectionKey: string) => {
     if (!sections[sectionKey].value) {
       toast({
         title: "Error",
-        description: "Please enter some content before saving",
+        description: "Please enter some content before submitting",
         variant: "destructive",
       });
       return;
     }
 
     setSavedSections((prev) => ({ ...prev, [sectionKey]: true }));
-    console.log(`Saved ${sectionKey}:`, sections[sectionKey].value);
+    console.log(`Submitted ${sectionKey}:`, sections[sectionKey].value);
     toast({
       title: "Success",
-      description: `${sections[sectionKey].title} saved successfully`,
+      description: `${sections[sectionKey].title} submitted successfully`,
+    });
+  };
+
+  const handleReset = (sectionKey: string) => {
+    setSections((prev) => ({
+      ...prev,
+      [sectionKey]: { ...prev[sectionKey], value: "" },
+    }));
+    setSavedSections((prev) => ({ ...prev, [sectionKey]: false }));
+    console.log(`Reset ${sectionKey}`);
+    toast({
+      title: "Reset",
+      description: `${sections[sectionKey].title} has been reset`,
     });
   };
 
@@ -99,15 +112,28 @@ export const BrassTaxCriteria = () => {
                 <TooltipContent className="max-w-xs">{section.helpText}</TooltipContent>
               </Tooltip>
             </Label>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => handleSave(key)}
-              className="gap-2"
-            >
-              {savedSections[key] ? <Check className="h-4 w-4 text-green-500" /> : null}
-              Save
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleSubmit(key)}
+                className="gap-2"
+              >
+                {savedSections[key] ? <Check className="h-4 w-4 text-green-500" /> : null}
+                {savedSections[key] ? "Submitted" : "Submit"}
+              </Button>
+              {savedSections[key] && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleReset(key)}
+                  className="gap-2"
+                >
+                  <RotateCw className="h-4 w-4" />
+                  Reset
+                </Button>
+              )}
+            </div>
           </div>
           <Textarea
             value={section.value}

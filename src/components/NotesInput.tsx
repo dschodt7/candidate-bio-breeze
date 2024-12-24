@@ -3,12 +3,14 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
+import { Check, RotateCw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
 export const NotesInput = () => {
   const [notes, setNotes] = useState("");
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
@@ -29,6 +31,7 @@ export const NotesInput = () => {
 
         console.log("Fetched notes:", data.screening_notes);
         setNotes(data.screening_notes || "");
+        setIsSubmitted(!!data.screening_notes);
       } catch (error) {
         console.error("Error fetching notes:", error);
         toast({
@@ -42,12 +45,7 @@ export const NotesInput = () => {
     fetchNotes();
   }, [candidateId, toast]);
 
-  const handleNotesChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setNotes(e.target.value);
-    console.log("Notes updated:", e.target.value);
-  };
-
-  const handleSave = async () => {
+  const handleSubmit = async () => {
     if (!candidateId) {
       toast({
         title: "Error",
@@ -67,7 +65,7 @@ export const NotesInput = () => {
     }
 
     try {
-      console.log("Saving notes for candidate:", candidateId);
+      console.log("Submitting notes for candidate:", candidateId);
       const { error } = await supabase
         .from('candidates')
         .update({ screening_notes: notes })
@@ -75,19 +73,30 @@ export const NotesInput = () => {
 
       if (error) throw error;
 
-      console.log("Notes saved successfully");
+      console.log("Notes submitted successfully");
+      setIsSubmitted(true);
       toast({
         title: "Success",
-        description: "Notes saved successfully",
+        description: "Notes submitted successfully",
       });
     } catch (error) {
-      console.error("Error saving notes:", error);
+      console.error("Error submitting notes:", error);
       toast({
         title: "Error",
-        description: "Failed to save notes",
+        description: "Failed to submit notes",
         variant: "destructive",
       });
     }
+  };
+
+  const handleReset = () => {
+    setNotes("");
+    setIsSubmitted(false);
+    console.log("Notes reset");
+    toast({
+      title: "Reset",
+      description: "Notes have been reset",
+    });
   };
 
   return (
@@ -98,11 +107,23 @@ export const NotesInput = () => {
           id="screening-notes"
           placeholder="Enter your screening notes here..."
           value={notes}
-          onChange={handleNotesChange}
+          onChange={(e) => {
+            setNotes(e.target.value);
+            setIsSubmitted(false);
+          }}
           className="min-h-[200px] resize-none"
         />
-        <div className="flex justify-end">
-          <Button onClick={handleSave}>Save</Button>
+        <div className="flex justify-end gap-2">
+          <Button onClick={handleSubmit} className="gap-2">
+            {isSubmitted && <Check className="h-4 w-4 text-green-500" />}
+            {isSubmitted ? "Submitted" : "Submit"}
+          </Button>
+          {isSubmitted && (
+            <Button variant="outline" onClick={handleReset} className="gap-2">
+              <RotateCw className="h-4 w-4" />
+              Reset
+            </Button>
+          )}
         </div>
       </div>
     </Card>
