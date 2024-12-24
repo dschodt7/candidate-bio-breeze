@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
+import { useSearchParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 interface CompileState {
   isCompiling: boolean;
@@ -9,24 +11,38 @@ interface CompileState {
 
 export const ExecutiveSummaryCompiler = () => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
   const [compileState, setCompileState] = useState<CompileState>({
     isCompiling: false,
     isCompiled: false,
   });
 
   const handleCompile = async () => {
+    const candidateId = searchParams.get('candidate');
+    if (!candidateId) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       setCompileState({ isCompiling: true, isCompiled: false });
-      console.log("Starting compilation of executive summary components");
+      console.log("Starting compilation for candidate:", candidateId);
 
-      // Simulate processing time (remove this when implementing actual OpenAI integration)
-      await new Promise((resolve) => setTimeout(resolve, 1500));
+      const { data, error } = await supabase.functions.invoke('synthesize-candidate', {
+        body: { candidateId }
+      });
 
+      if (error) throw error;
+
+      console.log("Compilation completed:", data);
       setCompileState({ isCompiling: false, isCompiled: true });
-      console.log("Executive summary components compiled successfully");
       
       toast({
-        title: "Compilation Complete",
+        title: "Success",
         description: "Executive summary components have been compiled successfully.",
       });
     } catch (error) {
