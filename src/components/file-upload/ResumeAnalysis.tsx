@@ -42,6 +42,8 @@ export const ResumeAnalysis = () => {
         .from('executive_summaries')
         .select('brass_tax_criteria')
         .eq('candidate_id', candidateId)
+        .order('created_at', { ascending: false })
+        .limit(1)
         .maybeSingle();
 
       if (error) {
