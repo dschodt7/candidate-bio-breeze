@@ -4,6 +4,7 @@ import { LinkedInInput } from "@/components/LinkedInInput";
 import { NotesInput } from "@/components/NotesInput";
 import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
 import { ExecutiveSummaryCompiler } from "@/components/ExecutiveSummaryCompiler";
+import { CandidateStatusChecklist } from "@/components/CandidateStatusChecklist";
 import { useCandidate } from "@/hooks/useCandidate";
 
 const MainContentPanel = () => {
@@ -25,6 +26,7 @@ const MainContentPanel = () => {
 
             {candidate && (
               <div className="grid gap-6">
+                <CandidateStatusChecklist />
                 <FileUpload />
                 <LinkedInInput />
                 <NotesInput />
