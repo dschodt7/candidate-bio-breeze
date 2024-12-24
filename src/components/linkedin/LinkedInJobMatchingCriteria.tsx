@@ -12,17 +12,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Pencil, Check, CheckCircle } from "lucide-react";
-
-interface LinkedInAnalysis {
-  credibilityStatements: string;
-  caseStudies: string;
-  jobAssessment: string;
-  motivations: string;
-  businessProblems: string;
-  interests: string;
-  activitiesAndHobbies: string;
-  foundationalUnderstanding: string;
-}
+import { LinkedInAnalysis } from "./types";
 
 export const LinkedInJobMatchingCriteria = () => {
   const [searchParams] = useSearchParams();
@@ -30,7 +20,7 @@ export const LinkedInJobMatchingCriteria = () => {
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [editedContent, setEditedContent] = useState("");
 
-  const { data: analysis, refetch } = useQuery({
+  const { data: executiveSummary, refetch } = useQuery({
     queryKey: ['linkedInAnalysis', searchParams.get('candidate')],
     queryFn: async () => {
       const candidateId = searchParams.get('candidate');
@@ -47,7 +37,12 @@ export const LinkedInJobMatchingCriteria = () => {
 
       if (error) throw error;
       console.log("Fetched LinkedIn analysis:", data?.linked_in_analysis);
-      return data?.linked_in_analysis as LinkedInAnalysis;
+      
+      // Ensure the data matches our expected type
+      const analysis = data?.linked_in_analysis as LinkedInAnalysis;
+      if (!analysis) return null;
+      
+      return analysis;
     },
     enabled: !!searchParams.get('candidate'),
   });
@@ -59,11 +54,11 @@ export const LinkedInJobMatchingCriteria = () => {
 
   const handleSave = async (key: keyof LinkedInAnalysis) => {
     const candidateId = searchParams.get('candidate');
-    if (!candidateId || !analysis) return;
+    if (!candidateId || !executiveSummary) return;
 
     try {
       const updatedAnalysis = {
-        ...analysis,
+        ...executiveSummary,
         [key]: editedContent
       };
 
@@ -90,7 +85,7 @@ export const LinkedInJobMatchingCriteria = () => {
     }
   };
 
-  if (!analysis) return null;
+  if (!executiveSummary) return null;
 
   const sections = [
     { key: 'credibilityStatements', title: 'Credibility Statements' },
@@ -103,7 +98,7 @@ export const LinkedInJobMatchingCriteria = () => {
     { key: 'foundationalUnderstanding', title: 'Foundational Understanding' },
   ] as const;
 
-  const hasContent = Object.values(analysis).some(value => value && value !== "No additional insights from LinkedIn.");
+  const hasContent = Object.values(executiveSummary).some(value => value && value !== "No additional insights from LinkedIn.");
 
   return (
     <div className="mt-4">
@@ -125,7 +120,7 @@ export const LinkedInJobMatchingCriteria = () => {
                       <Button
                         variant="ghost"
                         size="sm"
-                        onClick={() => handleEdit(key, analysis[key] || "")}
+                        onClick={() => handleEdit(key, executiveSummary[key] || "")}
                         className="h-8 px-2"
                       >
                         <Pencil className="h-4 w-4" />
@@ -149,7 +144,7 @@ export const LinkedInJobMatchingCriteria = () => {
                     />
                   ) : (
                     <p className="text-sm whitespace-pre-wrap">
-                      {analysis[key] || "No additional insights from LinkedIn."}
+                      {executiveSummary[key] || "No additional insights from LinkedIn."}
                     </p>
                   )}
                 </div>

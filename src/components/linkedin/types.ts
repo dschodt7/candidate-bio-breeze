@@ -1,4 +1,4 @@
-export interface LinkedInAnalysisResult {
+export interface LinkedInAnalysis {
   credibilityStatements: string;
   caseStudies: string;
   jobAssessment: string;
@@ -7,9 +7,4 @@ export interface LinkedInAnalysisResult {
   interests: string;
   activitiesAndHobbies: string;
   foundationalUnderstanding: string;
-}
-
-export interface LinkedInScreenshot {
-  path: string;
-  name: string;
 }
