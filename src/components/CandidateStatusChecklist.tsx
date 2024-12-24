@@ -11,11 +11,19 @@ export const CandidateStatusChecklist = () => {
     queryKey: ['executiveSummary', candidate?.id],
     queryFn: async () => {
       if (!candidate?.id) return null;
-      const { data } = await supabase
+      console.log("Fetching executive summary for candidate:", candidate.id);
+      const { data, error } = await supabase
         .from('executive_summaries')
         .select('*')
         .eq('candidate_id', candidate.id)
-        .single();
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error fetching executive summary:", error);
+        throw error;
+      }
+
+      console.log("Fetched executive summary:", data);
       return data;
     },
     enabled: !!candidate?.id,
