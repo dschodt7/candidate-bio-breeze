@@ -32,8 +32,6 @@ serve(async (req) => {
       throw new Error('No resume found for this candidate');
     }
 
-    console.log('Found resume path:', candidate.resume_path);
-
     // Get resume content from storage
     const { data: resumeFile, error: storageError } = await supabase
       .storage
@@ -44,28 +42,16 @@ serve(async (req) => {
 
     // Convert resume file to text
     const resumeText = await resumeFile.text();
-    console.log('Successfully extracted resume text:', resumeText.substring(0, 200) + '...');
+    console.log('Extracted resume text length:', resumeText.length);
 
-    const systemPrompt = `You are an expert resume analyzer. Analyze the provided resume and extract specific insights for each category. Be thorough and specific in your analysis. For each category, provide detailed, resume-specific information. Never return "No data found" unless the category is truly empty. Format your response as a JSON object with the following structure:
-
-{
-  "credibilityStatements": string[],
-  "caseStudies": string[],
-  "jobAssessment": string,
-  "motivations": string,
-  "businessProblems": string[],
-  "additionalObservations": string
-}
-
-Guidelines for each category:
-- credibilityStatements: List specific achievements, certifications, and notable positions
-- caseStudies: Extract specific projects or initiatives with measurable outcomes
-- jobAssessment: Evaluate their career progression and key responsibilities
-- motivations: Analyze career choices and patterns to identify driving factors
-- businessProblems: List specific challenges they've solved or expertise areas
-- additionalObservations: Note any unique patterns or standout elements
-
-If you can't find information for a category, explain what's missing rather than just saying "No data found".`;
+    // Optimize the prompt to be more concise but specific
+    const systemPrompt = `Analyze this resume and extract key insights. Be specific and detailed. Format response as JSON with these fields:
+- credibilityStatements: Key achievements and qualifications
+- caseStudies: Notable projects with measurable outcomes
+- jobAssessment: Career progression analysis
+- motivations: Career trajectory insights
+- businessProblems: Key challenges solved
+- additionalObservations: Unique elements`;
 
     console.log('Sending request to OpenAI');
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -75,12 +61,13 @@ If you can't find information for a category, explain what's missing rather than
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: resumeText }
         ],
         temperature: 0.7,
+        max_tokens: 2000, // Limit response length
       }),
     });
 
@@ -91,15 +78,14 @@ If you can't find information for a category, explain what's missing rather than
     }
 
     const openAIData = await openAIResponse.json();
-    console.log('Received OpenAI response:', openAIData.choices[0].message.content);
+    console.log('Received OpenAI response');
 
     let analysis;
     try {
       const content = openAIData.choices[0].message.content;
-      const cleanedContent = content.replace(/```json\n|\n```/g, '').trim();
-      analysis = JSON.parse(cleanedContent);
+      analysis = JSON.parse(content);
 
-      // Convert arrays to strings for storage
+      // Format the analysis for storage
       const formattedAnalysis = {
         credibilityStatements: Array.isArray(analysis.credibilityStatements) 
           ? analysis.credibilityStatements.join('\n') 
@@ -133,8 +119,8 @@ If you can't find information for a category, explain what's missing rather than
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       });
     } catch (error) {
-      console.error('Error parsing OpenAI response:', error);
-      throw new Error('Failed to parse analysis results');
+      console.error('Error processing OpenAI response:', error);
+      throw new Error('Failed to process analysis results');
     }
   } catch (error) {
     console.error('Error in analyze-resume function:', error);
