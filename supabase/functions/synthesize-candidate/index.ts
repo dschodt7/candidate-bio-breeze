@@ -30,40 +30,39 @@ serve(async (req) => {
     if (candidateError) throw candidateError;
     console.log('Fetched candidate data:', candidate);
 
-    const systemPrompt = `You are an expert executive recruiter assistant tasked with analyzing candidate information and creating structured executive summaries. Focus on extracting and organizing key professional attributes, achievements, and potential into two main categories:
+    const systemPrompt = `You are an expert executive recruiter assistant. Your task is to analyze candidate information and create a structured executive summary in JSON format. You must return ONLY a valid JSON object with exactly two properties: "brassTaxCriteria" and "sensoryCriteria".
 
-1. Brass Tax Criteria - covering practical aspects
-2. Sensory Criteria - covering personal and cultural fit aspects
+Each property should be an object containing the respective criteria. Do not include any explanatory text or markdown formatting. The response must be parseable by JSON.parse().`;
 
-Provide detailed, well-structured responses that can be directly mapped to our executive summary format.`;
+    const userPrompt = `Analyze this candidate's information and return a JSON object with the following structure:
 
-    const userPrompt = `Please analyze this candidate's information and create a structured executive summary:
+{
+  "brassTaxCriteria": {
+    "compensationExpectations": "...",
+    "workPreferences": "...",
+    "credibilityStatements": "...",
+    "caseStudies": "...",
+    "jobAssessment": "...",
+    "motivations": "...",
+    "timeframe": "..."
+  },
+  "sensoryCriteria": {
+    "interests": "...",
+    "businessProblems": "...",
+    "personalUnderstanding": "...",
+    "flowStateActivities": "...",
+    "activitiesAndHobbies": "..."
+  }
+}
 
+Use this candidate data to fill in the values:
 LinkedIn Profile: ${candidate.linkedin_url || 'Not provided'}
 Screening Notes: ${candidate.screening_notes || 'Not provided'}
 Resume Path: ${candidate.resume_path || 'Not provided'}
 
-Please provide structured responses for each category:
+Remember: Return ONLY the JSON object, no additional text or formatting.`;
 
-1. Brass Tax Criteria:
-- Compensation Expectations
-- Work/Travel Preferences
-- Credibility Statements
-- Case Studies
-- Job Assessment
-- Motivations
-- Timeframe
-
-2. Sensory Criteria:
-- Interests
-- Business Problems They Solve
-- Personal Understanding
-- Flow State Activities
-- Activities and Hobbies
-
-Format the response as a JSON object with these exact keys.`;
-
-    console.log('Sending request to OpenAI with prompts');
+    console.log('Sending request to OpenAI');
 
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -78,7 +77,7 @@ Format the response as a JSON object with these exact keys.`;
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.7,
-        max_tokens: 4000, // Setting a reasonable token limit
+        max_tokens: 4000,
       }),
     });
 
@@ -91,15 +90,22 @@ Format the response as a JSON object with these exact keys.`;
     const openAIData = await openAIResponse.json();
     console.log('Received OpenAI response');
 
-    // Parse the response into structured data
     const generatedText = openAIData.choices[0].message.content;
     console.log('Generated text:', generatedText);
 
     let parsedContent;
     try {
-      parsedContent = JSON.parse(generatedText);
+      // Remove any potential whitespace or newlines
+      const cleanedText = generatedText.trim();
+      parsedContent = JSON.parse(cleanedText);
+
+      // Validate the expected structure
+      if (!parsedContent.brassTaxCriteria || !parsedContent.sensoryCriteria) {
+        throw new Error('Response missing required properties');
+      }
     } catch (error) {
       console.error('Error parsing OpenAI response:', error);
+      console.error('Raw response:', generatedText);
       throw new Error('Failed to parse OpenAI response into JSON format');
     }
 
@@ -108,8 +114,8 @@ Format the response as a JSON object with these exact keys.`;
       .from('executive_summaries')
       .upsert({
         candidate_id: candidateId,
-        brass_tax_criteria: parsedContent.brassTaxCriteria || {},
-        sensory_criteria: parsedContent.sensoryCriteria || {}
+        brass_tax_criteria: parsedContent.brassTaxCriteria,
+        sensory_criteria: parsedContent.sensoryCriteria
       });
 
     if (updateError) throw updateError;
