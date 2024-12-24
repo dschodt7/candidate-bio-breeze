@@ -20,6 +20,34 @@ export const FileUploadZone = ({
   onDrop,
   onFileSelect,
 }: FileUploadZoneProps) => {
+  if (uploadedFileName) {
+    return (
+      <div className="p-4 border rounded-lg animate-fadeIn">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-2">
+            <Upload className="w-4 h-4 text-green-600" />
+            <p className="text-sm text-green-600">
+              {uploadedFileName}
+            </p>
+          </div>
+          <input
+            type="file"
+            accept=".pdf,.doc,.docx"
+            className="hidden"
+            onChange={onFileSelect}
+            id="file-upload"
+            disabled={isUploading}
+          />
+          <label htmlFor="file-upload">
+            <Button variant="outline" size="sm" asChild disabled={isUploading}>
+              <span>{isUploading ? "Uploading..." : "Replace File"}</span>
+            </Button>
+          </label>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={`p-8 border-2 border-dashed transition-all duration-200 ${
@@ -36,11 +64,6 @@ export const FileUploadZone = ({
           <p className="text-sm text-muted-foreground">
             Upload PDF or Word documents
           </p>
-          {uploadedFileName && (
-            <p className="mt-2 text-sm text-green-600">
-              Uploaded: {uploadedFileName}
-            </p>
-          )}
         </div>
         <input
           type="file"
