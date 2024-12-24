@@ -44,9 +44,9 @@ serve(async (req) => {
 
     // Convert resume file to text
     const resumeText = await resumeFile.text();
-    console.log('Successfully extracted resume text');
+    console.log('Successfully extracted resume text:', resumeText.substring(0, 200) + '...');
 
-    const systemPrompt = `You are an expert resume analyzer. Analyze the provided resume and extract specific insights mapped to predefined categories. Return ONLY a valid JSON object with the following structure, no markdown formatting or additional text:
+    const systemPrompt = `You are an expert resume analyzer. Analyze the provided resume and extract specific insights for each category. Be thorough and specific in your analysis. For each category, provide detailed, resume-specific information. Never return "No data found" unless the category is truly empty. Format your response as a JSON object with the following structure:
 
 {
   "credibilityStatements": string[],
@@ -57,7 +57,15 @@ serve(async (req) => {
   "additionalObservations": string
 }
 
-For any category where no relevant information is found, use "No data found". Keep responses concise and relevant.`;
+Guidelines for each category:
+- credibilityStatements: List specific achievements, certifications, and notable positions
+- caseStudies: Extract specific projects or initiatives with measurable outcomes
+- jobAssessment: Evaluate their career progression and key responsibilities
+- motivations: Analyze career choices and patterns to identify driving factors
+- businessProblems: List specific challenges they've solved or expertise areas
+- additionalObservations: Note any unique patterns or standout elements
+
+If you can't find information for a category, explain what's missing rather than just saying "No data found".`;
 
     console.log('Sending request to OpenAI');
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -67,7 +75,7 @@ For any category where no relevant information is found, use "No data found". Ke
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: resumeText }
@@ -83,57 +91,51 @@ For any category where no relevant information is found, use "No data found". Ke
     }
 
     const openAIData = await openAIResponse.json();
-    console.log('Received OpenAI response');
+    console.log('Received OpenAI response:', openAIData.choices[0].message.content);
 
     let analysis;
     try {
-      // Get the content from the OpenAI response
       const content = openAIData.choices[0].message.content;
-      
-      // Clean up any potential markdown formatting
       const cleanedContent = content.replace(/```json\n|\n```/g, '').trim();
-      console.log('Cleaned content:', cleanedContent);
-      
-      // Parse the cleaned content
       analysis = JSON.parse(cleanedContent);
-      
-      // Validate the expected structure
-      const requiredKeys = ['credibilityStatements', 'caseStudies', 'jobAssessment', 'motivations', 'businessProblems', 'additionalObservations'];
-      for (const key of requiredKeys) {
-        if (!(key in analysis)) {
-          throw new Error(`Missing required key: ${key}`);
-        }
-      }
+
+      // Convert arrays to strings for storage
+      const formattedAnalysis = {
+        credibilityStatements: Array.isArray(analysis.credibilityStatements) 
+          ? analysis.credibilityStatements.join('\n') 
+          : analysis.credibilityStatements,
+        caseStudies: Array.isArray(analysis.caseStudies) 
+          ? analysis.caseStudies.join('\n') 
+          : analysis.caseStudies,
+        jobAssessment: analysis.jobAssessment,
+        motivations: analysis.motivations,
+        businessProblems: Array.isArray(analysis.businessProblems) 
+          ? analysis.businessProblems.join('\n') 
+          : analysis.businessProblems,
+        additionalObservations: analysis.additionalObservations
+      };
+
+      // Store analysis results
+      const { error: updateError } = await supabase
+        .from('executive_summaries')
+        .upsert({
+          candidate_id: candidateId,
+          brass_tax_criteria: formattedAnalysis
+        });
+
+      if (updateError) throw updateError;
+      console.log('Stored analysis results in database');
+
+      return new Response(JSON.stringify({ 
+        success: true,
+        data: analysis
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      });
     } catch (error) {
       console.error('Error parsing OpenAI response:', error);
       throw new Error('Failed to parse analysis results');
     }
-
-    // Store analysis results
-    const { error: updateError } = await supabase
-      .from('executive_summaries')
-      .upsert({
-        candidate_id: candidateId,
-        brass_tax_criteria: {
-          credibilityStatements: analysis.credibilityStatements.join('\n'),
-          caseStudies: analysis.caseStudies.join('\n'),
-          jobAssessment: analysis.jobAssessment,
-          motivations: analysis.motivations,
-          businessProblems: analysis.businessProblems.join('\n'),
-          additionalObservations: analysis.additionalObservations
-        }
-      });
-
-    if (updateError) throw updateError;
-    console.log('Stored analysis results in database');
-
-    return new Response(JSON.stringify({ 
-      success: true,
-      data: analysis
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-
   } catch (error) {
     console.error('Error in analyze-resume function:', error);
     return new Response(JSON.stringify({ 
