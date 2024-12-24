@@ -1,41 +1,15 @@
-import { CheckSquare, Square, FileText, User, NotepadText, FileCheck } from "lucide-react";
+import { FileText, User, NotepadText, FileCheck } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { useCandidate } from "@/hooks/useCandidate";
-import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
+import { useExecutiveSummary } from "@/hooks/useExecutiveSummary";
+import { ChecklistItem } from "./checklist/ChecklistItem";
+
+const BRASS_TAX_TOTAL = 7;
+const SENSORY_TOTAL = 5;
 
 export const CandidateStatusChecklist = () => {
   const { candidate } = useCandidate();
-
-  const { data: executiveSummary } = useQuery({
-    queryKey: ['executiveSummary', candidate?.id],
-    queryFn: async () => {
-      if (!candidate?.id) return null;
-      console.log("Fetching executive summary for candidate:", candidate.id);
-      const { data, error } = await supabase
-        .from('executive_summaries')
-        .select('*')
-        .eq('candidate_id', candidate.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Error fetching executive summary:", error);
-        throw error;
-      }
-
-      console.log("Fetched executive summary:", data);
-      return data;
-    },
-    enabled: !!candidate?.id,
-  });
-
-  const brassTaxCount = executiveSummary?.brass_tax_criteria ? 
-    Object.values(executiveSummary.brass_tax_criteria).filter(value => value).length : 0;
-  const sensoryCount = executiveSummary?.sensory_criteria ? 
-    Object.values(executiveSummary.sensory_criteria).filter(value => value).length : 0;
-
-  const BRASS_TAX_TOTAL = 7;
-  const SENSORY_TOTAL = 5;
+  const { brassTaxCount, sensoryCount } = useExecutiveSummary(candidate?.id);
 
   const checklistItems = [
     {
@@ -75,35 +49,13 @@ export const CandidateStatusChecklist = () => {
       <h3 className="text-lg font-semibold mb-4">Candidate Status Checklist</h3>
       <div className="space-y-3">
         {checklistItems.map((item, index) => (
-          <div key={index} className="space-y-2">
-            <div className="flex items-center space-x-3">
-              {item.isComplete ? (
-                <CheckSquare className="h-5 w-5 text-green-500" />
-              ) : (
-                <Square className="h-5 w-5 text-gray-300" />
-              )}
-              <item.icon className="h-4 w-4 text-gray-500" />
-              <span className={item.isComplete ? "text-gray-900" : "text-gray-500"}>
-                {item.label}
-              </span>
-            </div>
-            {item.subItems && (
-              <div className="ml-8 space-y-2">
-                {item.subItems.map((subItem, subIndex) => (
-                  <div key={subIndex} className="flex items-center space-x-3">
-                    {subItem.isComplete ? (
-                      <CheckSquare className="h-4 w-4 text-green-500" />
-                    ) : (
-                      <Square className="h-4 w-4 text-gray-300" />
-                    )}
-                    <span className={subItem.isComplete ? "text-gray-900" : "text-gray-500"}>
-                      {subItem.label}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          <ChecklistItem
+            key={index}
+            label={item.label}
+            isComplete={item.isComplete}
+            icon={item.icon}
+            subItems={item.subItems}
+          />
         ))}
       </div>
     </Card>
