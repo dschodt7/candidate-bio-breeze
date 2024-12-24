@@ -40,17 +40,19 @@ serve(async (req) => {
 
     if (storageError) throw storageError;
 
-    // Convert resume file to text
     const resumeText = await resumeFile.text();
     console.log('Resume text length:', resumeText.length);
 
-    const systemPrompt = `Analyze this resume and extract key insights. Be specific and detailed. Return a JSON object with these fields:
-- credibilityStatements: Key achievements and qualifications
-- caseStudies: Notable projects with measurable outcomes
-- jobAssessment: Career progression analysis
-- motivations: Career trajectory insights
-- businessProblems: Key challenges solved
-- additionalObservations: Unique elements`;
+    // Simplified system prompt with explicit JSON format requirement
+    const systemPrompt = `You are an AI assistant that analyzes resumes. Return your analysis as a plain JSON object (no markdown formatting) with these exact fields:
+{
+  "credibilityStatements": "string with key achievements",
+  "caseStudies": "string with notable projects",
+  "jobAssessment": "string with career analysis",
+  "motivations": "string with career insights",
+  "businessProblems": "string with key challenges solved",
+  "additionalObservations": "string with unique elements"
+}`;
 
     console.log('Sending request to OpenAI');
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -78,46 +80,43 @@ serve(async (req) => {
 
     const openAIData = await openAIResponse.json();
     const content = openAIData.choices[0].message.content;
-    console.log('Raw OpenAI response:', content);
+    console.log('Raw OpenAI response content:', content);
 
     let analysis;
     try {
-      // Clean up the response by removing markdown code blocks if present
-      const cleanContent = content.replace(/```json\n|\n```|```/g, '');
-      console.log('Cleaned content:', cleanContent);
+      // More aggressive cleanup of any potential markdown or formatting
+      const cleanContent = content
+        .replace(/^```[\s\S]*?\n/, '') // Remove opening markdown
+        .replace(/\n```$/, '')         // Remove closing markdown
+        .replace(/^`{1,3}|`{1,3}$/g, '') // Remove any remaining backticks
+        .trim();
+      
+      console.log('Cleaned content before parsing:', cleanContent);
       
       analysis = JSON.parse(cleanContent);
       console.log('Successfully parsed analysis:', analysis);
 
       // Validate the expected structure
-      if (!analysis.credibilityStatements || !analysis.caseStudies || 
-          !analysis.jobAssessment || !analysis.motivations || 
-          !analysis.businessProblems || !analysis.additionalObservations) {
-        throw new Error('Response missing required properties');
-      }
+      const requiredFields = [
+        'credibilityStatements',
+        'caseStudies',
+        'jobAssessment',
+        'motivations',
+        'businessProblems',
+        'additionalObservations'
+      ];
 
-      // Format the analysis for storage
-      const formattedAnalysis = {
-        credibilityStatements: Array.isArray(analysis.credibilityStatements) 
-          ? analysis.credibilityStatements.join('\n') 
-          : analysis.credibilityStatements,
-        caseStudies: Array.isArray(analysis.caseStudies) 
-          ? analysis.caseStudies.join('\n') 
-          : analysis.caseStudies,
-        jobAssessment: analysis.jobAssessment,
-        motivations: analysis.motivations,
-        businessProblems: Array.isArray(analysis.businessProblems) 
-          ? analysis.businessProblems.join('\n') 
-          : analysis.businessProblems,
-        additionalObservations: analysis.additionalObservations
-      };
+      const missingFields = requiredFields.filter(field => !(field in analysis));
+      if (missingFields.length > 0) {
+        throw new Error(`Response missing required fields: ${missingFields.join(', ')}`);
+      }
 
       // Store analysis results
       const { error: updateError } = await supabase
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: formattedAnalysis
+          brass_tax_criteria: analysis
         });
 
       if (updateError) throw updateError;
@@ -131,7 +130,7 @@ serve(async (req) => {
       });
     } catch (error) {
       console.error('Error processing OpenAI response:', error);
-      console.error('Raw response:', content);
+      console.error('Raw response content:', content);
       throw new Error(`Failed to process analysis results: ${error.message}`);
     }
   } catch (error) {
