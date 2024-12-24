@@ -8,6 +8,7 @@ import {
 import { BrassTaxCriteria } from "./BrassTaxCriteria";
 import { SensoryCriteria } from "./SensoryCriteria";
 import { LinkedInAnalysis } from "./LinkedInAnalysis";
+import { LinkedInJobMatchingCriteria } from "./linkedin/LinkedInJobMatchingCriteria";
 
 export const ExecutiveSummaryForm = () => {
   return (
@@ -29,6 +30,15 @@ export const ExecutiveSummaryForm = () => {
           </AccordionTrigger>
           <AccordionContent className="pt-4">
             <SensoryCriteria />
+          </AccordionContent>
+        </AccordionItem>
+
+        <AccordionItem value="linkedin-job-matching">
+          <AccordionTrigger>
+            LinkedIn Job Matching Criteria
+          </AccordionTrigger>
+          <AccordionContent className="pt-4">
+            <LinkedInJobMatchingCriteria />
           </AccordionContent>
         </AccordionItem>
 
