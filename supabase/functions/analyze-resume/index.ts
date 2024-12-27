@@ -56,6 +56,11 @@ serve(async (req) => {
 }`;
 
     console.log('Sending request to OpenAI');
+
+    // IMPORTANT: DO NOT CHANGE THE MODEL WITHOUT EXPLICIT PERMISSION
+    // This function requires gpt-4o due to the need for a large context window
+    // to properly analyze resume content. Using a smaller model will result
+    // in incomplete or inaccurate analysis.
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -63,7 +68,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',  // DO NOT CHANGE: Required for resume analysis
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: resumeText }
@@ -80,11 +85,14 @@ serve(async (req) => {
     }
 
     const openAIData = await openAIResponse.json();
+    console.log('Received OpenAI response');
+
     const content = openAIData.choices[0].message.content;
     console.log('Raw OpenAI response:', content);
 
     let analysis;
     try {
+      // Remove any potential whitespace or newlines
       const cleanContent = content.trim();
       console.log('Cleaned content:', cleanContent);
       
