@@ -24,7 +24,7 @@ export const ResumeAnalysis = () => {
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
 
-  const { data: executiveSummary } = useQuery({
+  const { data: executiveSummary, isLoading } = useQuery({
     queryKey: ['executiveSummary', candidateId],
     queryFn: async () => {
       if (!candidateId) return null;
@@ -57,9 +57,9 @@ export const ResumeAnalysis = () => {
     setEditedContent
   } = useAnalysisState(candidateId, analysis);
 
-  if (!analysis) return null;
+  if (!analysis && !isLoading) return null;
 
-  const hasContent = Object.values(analysis).some(value => value && value !== "No data found");
+  const hasContent = analysis && Object.values(analysis).some(value => value && value !== "No data found");
 
   return (
     <div className="mt-4">
@@ -73,18 +73,22 @@ export const ResumeAnalysis = () => {
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4 pt-2">
-              {ANALYSIS_SECTIONS.map(({ key, title }) => (
-                <AnalysisSection
-                  key={key}
-                  title={title}
-                  content={analysis[key] || ""}
-                  isEditing={editingSection === key}
-                  editedContent={editedContent}
-                  onEdit={() => handleEdit(key, analysis[key] || "")}
-                  onSave={() => handleSave(key)}
-                  onContentChange={setEditedContent}
-                />
-              ))}
+              {isLoading ? (
+                <p className="text-sm text-muted-foreground">Loading analysis...</p>
+              ) : (
+                ANALYSIS_SECTIONS.map(({ key, title }) => (
+                  <AnalysisSection
+                    key={key}
+                    title={title}
+                    content={analysis[key] || ""}
+                    isEditing={editingSection === key}
+                    editedContent={editedContent}
+                    onEdit={() => handleEdit(key, analysis[key] || "")}
+                    onSave={() => handleSave(key)}
+                    onContentChange={setEditedContent}
+                  />
+                ))
+              )}
             </div>
           </AccordionContent>
         </AccordionItem>

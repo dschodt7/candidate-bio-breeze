@@ -32,6 +32,8 @@ serve(async (req) => {
       throw new Error('No resume found for this candidate');
     }
 
+    console.log('Found resume path:', candidate.resume_path);
+
     // Get resume content from storage
     const { data: resumeFile, error: storageError } = await supabase
       .storage
@@ -95,10 +97,16 @@ serve(async (req) => {
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: analysis
+          brass_tax_criteria: analysis,
+          created_at: new Date().toISOString() // Add this line to ensure proper timestamp
+        }, {
+          onConflict: 'candidate_id' // Specify the conflict resolution
         });
 
-      if (updateError) throw updateError;
+      if (updateError) {
+        console.error('Error updating executive summary:', updateError);
+        throw updateError;
+      }
       console.log('Stored analysis results in database');
 
       return new Response(JSON.stringify({ 
