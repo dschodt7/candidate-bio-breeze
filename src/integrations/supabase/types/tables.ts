@@ -1,4 +1,5 @@
 import { Json } from './base';
+import { LinkedInSectionType } from './linkedin';
 
 export interface Tables {
   candidates: {
@@ -51,7 +52,7 @@ export interface Tables {
       created_at: string
       updated_at: string
       candidate_id: string
-      section_type: Database["public"]["Enums"]["linkedin_section_type"]
+      section_type: LinkedInSectionType
       content: string | null
       analysis: Json | null
     }
