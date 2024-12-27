@@ -45,7 +45,10 @@ serve(async (req) => {
     const resumeText = await resumeFile.text();
     console.log('Resume text length:', resumeText.length);
 
-    const systemPrompt = `You are an expert resume analyzer for executive positions. Analyze the provided resume and extract specific, detailed information for each category. Your analysis should be thorough and based solely on the content provided in the resume. Return a JSON object with these fields (no markdown, no additional text):
+    // IMPORTANT: DO NOT CHANGE THE MODEL OR SYSTEM PROMPT WITHOUT EXPLICIT PERMISSION
+    // This function requires gpt-4o for accurate resume analysis due to the need
+    // for a large context window and deep understanding of professional experience
+    const systemPrompt = `You are an expert resume analyzer for executive positions. You MUST return a valid JSON object with EXACTLY these fields and nothing else - no conversation, no explanations, just the JSON object:
 
 {
   "credibility_statements": "List specific achievements, metrics, and qualifications that demonstrate executive credibility",
@@ -56,6 +59,7 @@ serve(async (req) => {
   "additional_observations": "Note unique elements or patterns in their career history"
 }
 
+Your response must be a parseable JSON object. Do not include any other text or markdown formatting.
 Be specific and detailed in your analysis. Use actual examples and metrics from the resume.`;
 
     console.log('Sending request to OpenAI');
@@ -73,11 +77,16 @@ Be specific and detailed in your analysis. Use actual examples and metrics from 
       body: JSON.stringify({
         model: 'gpt-4o',  // DO NOT CHANGE: Required for resume analysis
         messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: resumeText }
+          { 
+            role: 'system', 
+            content: systemPrompt 
+          },
+          { 
+            role: 'user', 
+            content: `Analyze this resume and provide a JSON response exactly as specified in the system prompt:\n\n${resumeText}` 
+          }
         ],
-        temperature: 0.7,
-        max_tokens: 2000,
+        temperature: 0.3, // Lower temperature for more consistent, focused responses
       }),
     });
 
@@ -99,7 +108,30 @@ Be specific and detailed in your analysis. Use actual examples and metrics from 
       const cleanContent = content.trim();
       console.log('Cleaned content:', cleanContent);
       
-      analysis = JSON.parse(cleanContent);
+      // Attempt to parse the response
+      try {
+        analysis = JSON.parse(cleanContent);
+      } catch (parseError) {
+        console.error('Failed to parse OpenAI response:', parseError);
+        console.error('Raw content that failed to parse:', cleanContent);
+        throw new Error('OpenAI returned an invalid JSON response. Please try again.');
+      }
+
+      // Validate the required fields
+      const requiredFields = [
+        'credibility_statements',
+        'case_studies',
+        'job_assessment',
+        'motivations',
+        'business_problems',
+        'additional_observations'
+      ];
+
+      const missingFields = requiredFields.filter(field => !(field in analysis));
+      if (missingFields.length > 0) {
+        throw new Error(`OpenAI response is missing required fields: ${missingFields.join(', ')}`);
+      }
+
       console.log('Parsed analysis:', analysis);
 
       // Check if a resume analysis exists
