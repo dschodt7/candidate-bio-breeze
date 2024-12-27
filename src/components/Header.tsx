@@ -1,23 +1,9 @@
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { UserCircle } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
-import { useToast } from "@/components/ui/use-toast";
 import { useState, useEffect } from "react";
+import { ProfileMenu } from "./header/ProfileMenu";
+import { ResetPasswordDialog } from "./header/ResetPasswordDialog";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -117,74 +103,23 @@ const Header = () => {
   };
 
   return (
-    <>
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Executive Career Catalyst</h1>
-        <div className="flex flex-col items-center">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="h-9 w-9">
-                <UserCircle className="h-6 w-6" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-40 bg-white">
-              <DropdownMenuItem 
-                onClick={() => navigate("/profile")} 
-                className="cursor-pointer bg-white hover:bg-gray-100"
-              >
-                Profile Details
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={() => setIsResetDialogOpen(true)} 
-                className="cursor-pointer bg-white hover:bg-gray-100"
-              >
-                Reset Password
-              </DropdownMenuItem>
-              <DropdownMenuItem 
-                onClick={handleSignOut} 
-                className="cursor-pointer bg-white hover:bg-gray-100"
-              >
-                Sign out
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-          {firstName && <span className="text-sm text-gray-600 mt-1">{firstName}</span>}
-        </div>
-      </header>
-
-      <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Reset Password</DialogTitle>
-          </DialogHeader>
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="new-password">New Password</Label>
-              <Input
-                id="new-password"
-                type="password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-                placeholder="Enter new password"
-              />
-            </div>
-            <div className="grid gap-2">
-              <Label htmlFor="confirm-password">Confirm Password</Label>
-              <Input
-                id="confirm-password"
-                type="password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                placeholder="Confirm new password"
-              />
-            </div>
-            <Button onClick={handleResetPassword}>
-              Update Password
-            </Button>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </>
+    <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
+      <h1 className="text-2xl font-bold">Executive Career Catalyst</h1>
+      <ProfileMenu
+        firstName={firstName}
+        onSignOut={handleSignOut}
+        onResetPassword={() => setIsResetDialogOpen(true)}
+      />
+      <ResetPasswordDialog
+        isOpen={isResetDialogOpen}
+        onOpenChange={setIsResetDialogOpen}
+        newPassword={newPassword}
+        confirmPassword={confirmPassword}
+        onNewPasswordChange={setNewPassword}
+        onConfirmPasswordChange={setConfirmPassword}
+        onSubmit={handleResetPassword}
+      />
+    </header>
   );
 };
 
