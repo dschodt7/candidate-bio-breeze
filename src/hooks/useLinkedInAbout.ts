@@ -110,6 +110,7 @@ export const useLinkedInAbout = () => {
     activeTab,
     setActiveTab,
     saveToDatabase,
-    handleReset
+    handleReset,
+    candidateId // Added this to the return object
   };
 };
