@@ -33,13 +33,14 @@ export const LinkedInAboutSection = ({
           .select('content')
           .eq('candidate_id', candidateId)
           .eq('section_type', 'about')
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
         setSavedContent(data?.content || null);
         console.log("LinkedIn About content fetched:", data?.content ? "Content found" : "No content");
       } catch (error) {
         console.error("Error fetching LinkedIn About content:", error);
+        setSavedContent(null);
       }
     };
 
@@ -101,8 +102,8 @@ export const LinkedInAboutSection = ({
       if (error) throw error;
 
       setSavedContent(null);
-      onContentReset(); // Call the new prop to update parent state
-      setActiveTab("text"); // Reset to default tab
+      onContentReset();
+      setActiveTab("text");
       console.log("About section reset successfully");
       toast({
         title: "Success",
