@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Check, Pencil, RotateCw } from "lucide-react";
+import { EditableTextarea } from "@/components/common/EditableTextarea";
+import { TextareaActions } from "@/components/common/TextareaActions";
 
 interface LinkedInTextInputProps {
   onSubmit: (text: string) => void;
@@ -56,56 +55,24 @@ export const LinkedInTextInput = ({
 
   return (
     <div className="space-y-4">
-      <div className="space-y-2">
-        <Textarea
-          value={text}
-          onChange={(e) => {
-            const newText = e.target.value;
-            if (newText.length <= maxLength) {
-              setText(newText);
-              if (!isEditing) setIsEditing(true);
-            }
-          }}
-          placeholder="Paste your LinkedIn section text here"
-          className="min-h-[200px] font-mono"
-          disabled={isSubmitted && !isEditing}
-          maxLength={maxLength}
-        />
-        <div className="text-sm text-muted-foreground text-right">
-          {text.length}/{maxLength} characters
-        </div>
-      </div>
-      <div className="flex gap-2">
-        {isSubmitted && !isEditing ? (
-          <Button
-            variant="outline"
-            onClick={handleEdit}
-            className="gap-2"
-          >
-            <Pencil className="h-4 w-4" />
-            Edit
-          </Button>
-        ) : (
-          <Button
-            onClick={handleSubmit}
-            disabled={!text.trim()}
-            className="gap-2"
-          >
-            {isSubmitted && <Check className="h-4 w-4 text-green-500" />}
-            {isSubmitted ? "Submitted" : "Submit"}
-          </Button>
-        )}
-        {(isSubmitted || text) && (
-          <Button
-            variant="outline"
-            onClick={handleReset}
-            className="gap-2"
-          >
-            <RotateCw className="h-4 w-4" />
-            Reset
-          </Button>
-        )}
-      </div>
+      <EditableTextarea
+        value={text}
+        onChange={(newText) => {
+          setText(newText);
+          if (!isEditing) setIsEditing(true);
+        }}
+        placeholder="Paste your LinkedIn section text here"
+        maxLength={maxLength}
+        disabled={isSubmitted && !isEditing}
+      />
+      <TextareaActions
+        isSubmitted={isSubmitted}
+        isEditing={isEditing}
+        hasContent={!!text.trim()}
+        onSubmit={handleSubmit}
+        onEdit={handleEdit}
+        onReset={handleReset}
+      />
     </div>
   );
 };
