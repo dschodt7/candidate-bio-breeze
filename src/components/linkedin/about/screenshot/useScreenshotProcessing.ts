@@ -8,7 +8,6 @@ export const useScreenshotProcessing = (
 ) => {
   const { toast } = useToast();
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
 
   const processScreenshot = async (screenshotData: string) => {
     if (!candidateId) {
@@ -38,7 +37,6 @@ export const useScreenshotProcessing = (
       if (data?.text) {
         console.log("Text extracted successfully:", data.text.substring(0, 100) + "...");
         onSuccess(data.text);
-        setIsSubmitted(true);
       } else {
         console.error("No text found in response:", data);
         throw new Error("No text found in response");
@@ -57,8 +55,6 @@ export const useScreenshotProcessing = (
 
   return {
     isProcessing,
-    isSubmitted,
-    setIsSubmitted,
     processScreenshot
   };
 };

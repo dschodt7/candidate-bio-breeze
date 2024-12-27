@@ -3,6 +3,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { ScreenshotPreview } from "./screenshot/ScreenshotPreview";
 import { useScreenshotProcessing } from "./screenshot/useScreenshotProcessing";
+import { Button } from "@/components/ui/button";
 
 interface LinkedInScreenshotUploadProps {
   candidateId: string | null;
@@ -15,17 +16,16 @@ export const LinkedInScreenshotUpload = ({
 }: LinkedInScreenshotUploadProps) => {
   const { toast } = useToast();
   const [screenshotData, setScreenshotData] = useState<string | null>(null);
+  const [extractedText, setExtractedText] = useState<string>("");
   const { 
-    isProcessing, 
-    isSubmitted, 
-    setIsSubmitted, 
+    isProcessing,
     processScreenshot 
   } = useScreenshotProcessing(candidateId, (text) => {
     console.log("Screenshot processing success callback with text:", text);
-    onSuccess(text);
+    setExtractedText(text);
     toast({
       title: "Success",
-      description: "Screenshot processed and text extracted successfully",
+      description: "Text extracted successfully. Please review and submit.",
     });
   });
 
@@ -52,10 +52,9 @@ export const LinkedInScreenshotUpload = ({
 
         console.log("Screenshot converted to base64, ready for processing");
         setScreenshotData(base64Image);
-        setIsSubmitted(false);
         toast({
           title: "Screenshot Ready",
-          description: "Click submit to process the screenshot",
+          description: "Click process to extract text from the screenshot",
         });
       } catch (error) {
         console.error("Error handling screenshot:", error);
@@ -68,16 +67,29 @@ export const LinkedInScreenshotUpload = ({
     }
   };
 
-  const handleSubmit = () => {
+  const handleProcess = () => {
     if (screenshotData) {
-      console.log("Submitting screenshot for processing");
+      console.log("Processing screenshot for text extraction");
       processScreenshot(screenshotData);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (extractedText.trim()) {
+      console.log("Submitting extracted text:", extractedText);
+      onSuccess(extractedText);
+    } else {
+      toast({
+        title: "Error",
+        description: "Please extract text from the screenshot first",
+        variant: "destructive",
+      });
     }
   };
 
   const handleReset = () => {
     setScreenshotData(null);
-    setIsSubmitted(false);
+    setExtractedText("");
     console.log("Screenshot upload reset");
     toast({
       title: "Reset",
@@ -93,13 +105,32 @@ export const LinkedInScreenshotUpload = ({
         onPaste={handlePaste}
         disabled={isProcessing}
       />
-      <ScreenshotPreview
-        isProcessing={isProcessing}
-        isSubmitted={isSubmitted}
-        onSubmit={handleSubmit}
-        onReset={handleReset}
-        screenshotData={screenshotData}
-      />
+      {screenshotData && !extractedText && (
+        <ScreenshotPreview
+          isProcessing={isProcessing}
+          onProcess={handleProcess}
+          onReset={handleReset}
+          screenshotData={screenshotData}
+        />
+      )}
+      {extractedText && (
+        <div className="space-y-4">
+          <Textarea
+            value={extractedText}
+            onChange={(e) => setExtractedText(e.target.value)}
+            className="min-h-[200px] font-mono"
+            placeholder="Review the extracted text"
+          />
+          <div className="flex gap-2">
+            <Button onClick={handleSubmit} className="gap-2">
+              Submit
+            </Button>
+            <Button variant="outline" onClick={handleReset} className="gap-2">
+              Reset
+            </Button>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
