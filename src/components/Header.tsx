@@ -44,8 +44,8 @@ const Header = () => {
             <UserCircle className="h-6 w-6" />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuItem onClick={handleSignOut}>
+        <DropdownMenuContent align="end" className="w-40 bg-white">
+          <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer bg-white hover:bg-gray-100">
             Sign out
           </DropdownMenuItem>
         </DropdownMenuContent>
