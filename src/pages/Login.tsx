@@ -53,9 +53,9 @@ const Login = () => {
           </p>
         </div>
         {showResetAlert && (
-          <Alert variant="info" className="mb-4">
-            <AlertCircle className="h-4 w-4" />
-            <AlertDescription>
+          <Alert variant="default" className="mb-4 border-blue-200 bg-blue-50">
+            <AlertCircle className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-700">
               Check your email for the password reset link. The email will come from noreply@olwrgthvydukavmpfeiw.supabase.co. 
               If you don't see it, please check your spam folder.
             </AlertDescription>
