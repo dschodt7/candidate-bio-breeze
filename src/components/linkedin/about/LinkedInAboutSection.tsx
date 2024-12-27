@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LinkedInScreenshotUpload } from "./screenshot/LinkedInScreenshotUpload";
+import { LinkedInScreenshotUpload } from "../about/screenshot/LinkedInScreenshotUpload";
 import { LinkedInTextInput } from "./LinkedInTextInput";
 import { LinkedInAboutHeader } from "./LinkedInAboutHeader";
 import { LinkedInAboutTip } from "./LinkedInAboutTip";
