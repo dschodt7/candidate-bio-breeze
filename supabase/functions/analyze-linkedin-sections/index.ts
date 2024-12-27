@@ -42,7 +42,7 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `Analyze the LinkedIn profile sections and return a JSON object with exactly these fields:
+            content: `You are an AI that analyzes LinkedIn profile sections and returns a JSON object. Return ONLY raw JSON without any markdown formatting or additional text. The JSON must contain exactly these fields:
             {
               "credibilityStatements": "endorsements and recognitions that enhance credibility",
               "caseStudies": "examples of professional achievements",
@@ -76,7 +76,11 @@ serve(async (req) => {
 
     let analysis;
     try {
-      analysis = JSON.parse(content.trim());
+      // Clean the response of any markdown formatting
+      const cleanedContent = content.replace(/```json\n?|\n?```/g, '').trim();
+      console.log('Cleaned content:', cleanedContent);
+      
+      analysis = JSON.parse(cleanedContent);
       console.log('Parsed analysis:', analysis);
 
       // Update the analysis in the database
