@@ -5,10 +5,12 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle } from "lucide-react";
+import { useToast } from "@/components/ui/use-toast";
 
 const Login = () => {
   const navigate = useNavigate();
   const [showResetAlert, setShowResetAlert] = useState(false);
+  const { toast } = useToast();
 
   useEffect(() => {
     // Check if user is already logged in
@@ -21,14 +23,26 @@ const Login = () => {
     
     checkUser();
 
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    // Listen for auth changes and errors
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
+      console.log("Auth state change event:", event);
+      
       if (session) {
         navigate("/");
       }
+      
       // Show reset alert if we detect a password reset attempt
-      if (_event === 'PASSWORD_RECOVERY') {
+      if (event === 'PASSWORD_RECOVERY') {
         setShowResetAlert(true);
+      }
+
+      // Handle specific error cases
+      if (event === 'USER_NOT_FOUND') {
+        toast({
+          variant: "destructive",
+          title: "Error",
+          description: "User not found. Please check your email address.",
+        });
       }
     });
 
@@ -38,8 +52,20 @@ const Login = () => {
       setShowResetAlert(true);
     }
 
+    // Check for error parameter
+    const error = params.get('error');
+    const errorDescription = params.get('error_description');
+    if (error) {
+      console.error("Auth error:", error, errorDescription);
+      toast({
+        variant: "destructive",
+        title: "Authentication Error",
+        description: errorDescription || "There was a problem with authentication. Please try again.",
+      });
+    }
+
     return () => subscription.unsubscribe();
-  }, [navigate]);
+  }, [navigate, toast]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
