@@ -47,12 +47,12 @@ serve(async (req) => {
 
     const systemPrompt = `You are an AI assistant that analyzes resumes. Return a JSON object with exactly these fields (no markdown, no additional text):
 {
-  "credibilityStatements": "detailed achievements and qualifications",
-  "caseStudies": "specific projects and their outcomes",
-  "jobAssessment": "career progression analysis",
+  "credibility_statements": "detailed achievements and qualifications",
+  "case_studies": "specific projects and their outcomes",
+  "job_assessment": "career progression analysis",
   "motivations": "career goals and drivers",
-  "businessProblems": "key challenges solved",
-  "additionalObservations": "unique elements worth noting"
+  "business_problems": "key challenges solved",
+  "additional_observations": "unique elements worth noting"
 }`;
 
     console.log('Sending request to OpenAI');
@@ -106,15 +106,7 @@ serve(async (req) => {
         console.log('Updating existing resume analysis');
         result = await supabase
           .from('resume_analyses')
-          .update({
-            credibility_statements: analysis.credibilityStatements,
-            case_studies: analysis.caseStudies,
-            job_assessment: analysis.jobAssessment,
-            motivations: analysis.motivations,
-            business_problems: analysis.businessProblems,
-            additional_observations: analysis.additionalObservations,
-            updated_at: new Date().toISOString()
-          })
+          .update(analysis)
           .eq('id', existingAnalysis.id)
           .select()
           .single();
@@ -125,12 +117,7 @@ serve(async (req) => {
           .from('resume_analyses')
           .insert({
             candidate_id: candidateId,
-            credibility_statements: analysis.credibilityStatements,
-            case_studies: analysis.caseStudies,
-            job_assessment: analysis.jobAssessment,
-            motivations: analysis.motivations,
-            business_problems: analysis.businessProblems,
-            additional_observations: analysis.additionalObservations
+            ...analysis
           })
           .select()
           .single();

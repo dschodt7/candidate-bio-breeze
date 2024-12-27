@@ -12,43 +12,42 @@ import { AnalysisSection } from "./analysis/AnalysisSection";
 import { useAnalysisState } from "./analysis/useAnalysisState";
 
 const ANALYSIS_SECTIONS = [
-  { key: 'credibilityStatements', title: 'Credibility Statements' },
-  { key: 'caseStudies', title: 'Case Studies' },
-  { key: 'jobAssessment', title: 'Complete Assessment of Job' },
+  { key: 'credibility_statements', title: 'Credibility Statements' },
+  { key: 'case_studies', title: 'Case Studies' },
+  { key: 'job_assessment', title: 'Complete Assessment of Job' },
   { key: 'motivations', title: 'Motivations' },
-  { key: 'businessProblems', title: 'Business Problems They Solve Better Than Most' },
-  { key: 'additionalObservations', title: 'Additional Observations' },
+  { key: 'business_problems', title: 'Business Problems They Solve Better Than Most' },
+  { key: 'additional_observations', title: 'Additional Observations' },
 ];
 
 export const ResumeAnalysis = () => {
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
 
-  const { data: executiveSummary, isLoading } = useQuery({
-    queryKey: ['executiveSummary', candidateId],
+  const { data: analysis, isLoading } = useQuery({
+    queryKey: ['resumeAnalysis', candidateId],
     queryFn: async () => {
       if (!candidateId) return null;
-      console.log("Fetching executive summary for resume analysis:", candidateId);
+      console.log("Fetching resume analysis for candidate:", candidateId);
       const { data, error } = await supabase
-        .from('executive_summaries')
-        .select('brass_tax_criteria')
+        .from('resume_analyses')
+        .select('*')
         .eq('candidate_id', candidateId)
         .order('created_at', { ascending: false })
         .limit(1)
         .maybeSingle();
 
       if (error) {
-        console.error("Error fetching executive summary:", error);
+        console.error("Error fetching resume analysis:", error);
         throw error;
       }
 
-      console.log("Fetched executive summary:", data);
+      console.log("Fetched resume analysis:", data);
       return data;
     },
     enabled: !!candidateId,
   });
 
-  const analysis = executiveSummary?.brass_tax_criteria;
   const {
     editingSection,
     editedContent,
@@ -80,10 +79,10 @@ export const ResumeAnalysis = () => {
                   <AnalysisSection
                     key={key}
                     title={title}
-                    content={analysis[key] || ""}
+                    content={analysis?.[key] || ""}
                     isEditing={editingSection === key}
                     editedContent={editedContent}
-                    onEdit={() => handleEdit(key, analysis[key] || "")}
+                    onEdit={() => handleEdit(key, analysis?.[key] || "")}
                     onSave={() => handleSave(key)}
                     onContentChange={setEditedContent}
                   />
