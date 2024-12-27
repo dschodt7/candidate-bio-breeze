@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Check, RotateCw, ExternalLink } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -24,13 +24,13 @@ export const LinkedInUrlInput = () => {
           .from('candidates')
           .select('linkedin_url')
           .eq('id', candidateId)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
 
-        console.log("Fetched LinkedIn URL:", data.linkedin_url);
-        setUrl(data.linkedin_url || "");
-        setIsSubmitted(!!data.linkedin_url);
+        console.log("Fetched LinkedIn URL:", data?.linkedin_url);
+        setUrl(data?.linkedin_url || "");
+        setIsSubmitted(!!data?.linkedin_url);
       } catch (error) {
         console.error("Error fetching LinkedIn URL:", error);
         toast({

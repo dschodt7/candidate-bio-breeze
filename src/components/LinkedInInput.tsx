@@ -28,18 +28,11 @@ export const LinkedInInput = () => {
           .select('content')
           .eq('candidate_id', candidateId)
           .eq('section_type', 'about')
-          .single();
+          .maybeSingle();
 
-        if (error) {
-          if (error.code === 'PGRST116') {
-            // No content found
-            setHasAboutContent(false);
-          } else {
-            throw error;
-          }
-        } else {
-          setHasAboutContent(!!data?.content);
-        }
+        if (error) throw error;
+        
+        setHasAboutContent(!!data?.content);
         console.log("LinkedIn About section fetch result:", !!data?.content);
       } catch (error) {
         console.error("Error fetching LinkedIn About section:", error);
