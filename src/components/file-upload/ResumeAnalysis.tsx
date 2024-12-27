@@ -42,7 +42,7 @@ export const ResumeAnalysis = () => {
         throw error;
       }
 
-      console.log("Fetched resume analysis:", data);
+      console.log("Fetched resume analysis data:", data);
       return data;
     },
     enabled: !!candidateId,
@@ -55,6 +55,13 @@ export const ResumeAnalysis = () => {
     handleSave,
     setEditedContent
   } = useAnalysisState(candidateId, analysis);
+
+  console.log("Resume analysis component state:", {
+    analysis,
+    isLoading,
+    candidateId,
+    hasContent: analysis && Object.values(analysis).some(value => value && value !== "No data found")
+  });
 
   if (!analysis && !isLoading) return null;
 
