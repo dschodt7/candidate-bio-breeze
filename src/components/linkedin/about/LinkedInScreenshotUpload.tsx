@@ -1,20 +1,26 @@
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
-import { Check, RotateCw } from "lucide-react";
+import { ScreenshotPreview } from "./screenshot/ScreenshotPreview";
+import { useScreenshotProcessing } from "./screenshot/useScreenshotProcessing";
 
 interface LinkedInScreenshotUploadProps {
   candidateId: string | null;
   onSuccess: (text: string) => void;
 }
 
-export const LinkedInScreenshotUpload = ({ candidateId, onSuccess }: LinkedInScreenshotUploadProps) => {
+export const LinkedInScreenshotUpload = ({ 
+  candidateId, 
+  onSuccess 
+}: LinkedInScreenshotUploadProps) => {
   const { toast } = useToast();
   const [screenshotData, setScreenshotData] = useState<string | null>(null);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
+  const { 
+    isProcessing, 
+    isSubmitted, 
+    setIsSubmitted, 
+    processScreenshot 
+  } = useScreenshotProcessing(candidateId, onSuccess);
 
   const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const items = e.clipboardData.items;
@@ -53,46 +59,9 @@ export const LinkedInScreenshotUpload = ({ candidateId, onSuccess }: LinkedInScr
     }
   };
 
-  const handleSubmit = async () => {
-    if (!candidateId || !screenshotData) {
-      toast({
-        title: "Error",
-        description: !candidateId ? "No candidate selected" : "Please paste a screenshot first",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsProcessing(true);
-
-    try {
-      console.log("Processing screenshot for candidate:", candidateId);
-      const { data, error } = await supabase.functions.invoke('analyze-linkedin-about', {
-        body: { 
-          candidateId,
-          screenshot: screenshotData
-        }
-      });
-
-      if (error) throw error;
-
-      if (data?.text) {
-        onSuccess(data.text);
-        setIsSubmitted(true);
-        toast({
-          title: "Success",
-          description: "Screenshot processed successfully",
-        });
-      }
-    } catch (error) {
-      console.error("Error processing screenshot:", error);
-      toast({
-        title: "Error",
-        description: "Failed to process screenshot",
-        variant: "destructive",
-      });
-    } finally {
-      setIsProcessing(false);
+  const handleSubmit = () => {
+    if (screenshotData) {
+      processScreenshot(screenshotData);
     }
   };
 
@@ -113,32 +82,13 @@ export const LinkedInScreenshotUpload = ({ candidateId, onSuccess }: LinkedInScr
         onPaste={handlePaste}
         disabled={isProcessing}
       />
-      {screenshotData && (
-        <p className="text-sm text-blue-500">
-          Screenshot ready for processing. Click submit to extract text.
-        </p>
-      )}
-      <div className="flex gap-2">
-        <Button
-          onClick={handleSubmit}
-          disabled={isProcessing || !screenshotData}
-          className="gap-2"
-        >
-          {isProcessing && <span className="animate-spin">⚡</span>}
-          {isSubmitted && <Check className="h-4 w-4 text-green-500" />}
-          {isSubmitted ? "Submitted" : "Submit"}
-        </Button>
-        {isSubmitted && (
-          <Button
-            variant="outline"
-            onClick={handleReset}
-            className="gap-2"
-          >
-            <RotateCw className="h-4 w-4" />
-            Reset
-          </Button>
-        )}
-      </div>
+      <ScreenshotPreview
+        isProcessing={isProcessing}
+        isSubmitted={isSubmitted}
+        onSubmit={handleSubmit}
+        onReset={handleReset}
+        screenshotData={screenshotData}
+      />
     </div>
   );
 };
