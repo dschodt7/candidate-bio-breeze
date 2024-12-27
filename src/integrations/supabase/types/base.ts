@@ -76,6 +76,8 @@ export interface ProfilesTable extends BaseTable<{
   id: string;
   created_at: string;
   updated_at: string;
+  first_name: string | null;
+  last_name: string | null;
 }> {}
 
 export interface ResumeAnalysesTable extends BaseTable<{

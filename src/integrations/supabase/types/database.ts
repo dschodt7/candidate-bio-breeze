@@ -55,6 +55,8 @@ export interface Tables {
       id: string
       created_at: string
       updated_at: string
+      first_name: string | null
+      last_name: string | null
     }
     Insert: Partial<Tables['profiles']['Row']> & Pick<Tables['profiles']['Row'], 'id'>
     Update: Partial<Tables['profiles']['Row']>
