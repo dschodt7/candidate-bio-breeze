@@ -30,10 +30,25 @@ export const useScreenshotProcessing = (
         }
       });
 
-      if (error) throw error;
-
-      if (data.error) {
-        throw new Error(data.error);
+      if (error) {
+        // Check if this is a validation error from the edge function
+        let errorMessage = error.message;
+        try {
+          const errorBody = JSON.parse(error.message);
+          if (errorBody?.error) {
+            errorMessage = errorBody.error;
+          }
+        } catch {
+          // If parsing fails, use the original error message
+        }
+        
+        console.error("Error processing screenshot:", error);
+        toast({
+          title: "Screenshot Processing Failed",
+          description: errorMessage,
+          variant: "destructive",
+        });
+        return;
       }
 
       console.log("Edge function response:", data);
@@ -48,7 +63,7 @@ export const useScreenshotProcessing = (
       console.error("Error processing screenshot:", error);
       toast({
         title: "Error",
-        description: error.message || "Failed to process screenshot",
+        description: error instanceof Error ? error.message : "Failed to process screenshot",
         variant: "destructive",
       });
     } finally {
