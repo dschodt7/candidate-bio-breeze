@@ -57,7 +57,10 @@ export const LinkedInInput = () => {
           <AccordionContent className="pt-4">
             <LinkedInAboutSection 
               onContentSaved={() => setHasAboutContent(true)} 
-              onContentReset={() => setHasAboutContent(false)}
+              onContentReset={() => {
+                console.log("Resetting About section content state");
+                setHasAboutContent(false);
+              }}
             />
           </AccordionContent>
         </AccordionItem>

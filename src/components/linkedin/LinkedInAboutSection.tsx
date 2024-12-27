@@ -30,6 +30,7 @@ export const LinkedInAboutSection = ({
 
   const handleResetContent = async () => {
     await handleReset();
+    setActiveTab("text");
     onContentReset();
   };
 
@@ -45,13 +46,13 @@ export const LinkedInAboutSection = ({
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger 
             value="text" 
-            disabled={savedContent !== null}
+            disabled={!!savedContent}
           >
             Paste Text
           </TabsTrigger>
           <TabsTrigger 
             value="screenshot" 
-            disabled={savedContent !== null}
+            disabled={!!savedContent}
           >
             Upload Screenshot
           </TabsTrigger>
