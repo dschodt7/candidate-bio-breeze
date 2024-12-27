@@ -43,6 +43,11 @@ export const LinkedInInput = () => {
     fetchAboutContent();
   }, [candidateId]);
 
+  const handleContentReset = () => {
+    console.log("Handling content reset in LinkedInInput");
+    setHasAboutContent(false);
+  };
+
   return (
     <Card className="p-6 animate-fadeIn">
       <LinkedInUrlInput />
@@ -57,10 +62,7 @@ export const LinkedInInput = () => {
           <AccordionContent className="pt-4">
             <LinkedInAboutSection 
               onContentSaved={() => setHasAboutContent(true)} 
-              onContentReset={() => {
-                console.log("Resetting About section content state");
-                setHasAboutContent(false);
-              }}
+              onContentReset={handleContentReset}
             />
           </AccordionContent>
         </AccordionItem>

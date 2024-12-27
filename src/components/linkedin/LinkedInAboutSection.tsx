@@ -29,6 +29,7 @@ export const LinkedInAboutSection = ({
   };
 
   const handleResetContent = async () => {
+    console.log("Handling reset in LinkedInAboutSection");
     await handleReset();
     setActiveTab("text");
     onContentReset();

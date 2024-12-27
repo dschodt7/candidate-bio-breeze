@@ -111,6 +111,6 @@ export const useLinkedInAbout = () => {
     setActiveTab,
     saveToDatabase,
     handleReset,
-    candidateId // Added this to the return object
+    candidateId
   };
 };
