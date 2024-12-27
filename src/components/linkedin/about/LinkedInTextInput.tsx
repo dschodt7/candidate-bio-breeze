@@ -8,12 +8,14 @@ interface LinkedInTextInputProps {
   onSubmit: (text: string) => void;
   initialContent: string | null;
   onContentSaved: () => void;
+  onReset: () => void;
 }
 
 export const LinkedInTextInput = ({ 
   onSubmit, 
   initialContent,
-  onContentSaved
+  onContentSaved,
+  onReset
 }: LinkedInTextInputProps) => {
   const { toast } = useToast();
   const [text, setText] = useState("");
@@ -24,6 +26,11 @@ export const LinkedInTextInput = ({
     if (initialContent) {
       setText(initialContent);
       setIsSubmitted(true);
+      setIsEditing(false);
+    } else {
+      setText("");
+      setIsSubmitted(false);
+      setIsEditing(false);
     }
   }, [initialContent]);
 
@@ -44,13 +51,10 @@ export const LinkedInTextInput = ({
   };
 
   const handleReset = () => {
+    onReset();
     setText("");
     setIsSubmitted(false);
     setIsEditing(false);
-    toast({
-      title: "Reset",
-      description: "Text has been cleared",
-    });
   };
 
   const handleEdit = () => {

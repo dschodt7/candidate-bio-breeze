@@ -83,6 +83,37 @@ export const LinkedInAboutSection = ({ onContentSaved }: LinkedInAboutSectionPro
     }
   };
 
+  const handleReset = async () => {
+    if (!candidateId) return;
+
+    try {
+      console.log("Resetting About section for candidate:", candidateId);
+      const { error } = await supabase
+        .from('linkedin_sections')
+        .delete()
+        .eq('candidate_id', candidateId)
+        .eq('section_type', 'about');
+
+      if (error) throw error;
+
+      setSavedContent(null);
+      onContentSaved(); // This will trigger the parent to update the checkmark
+      setActiveTab("text"); // Reset to default tab
+      console.log("About section reset successfully");
+      toast({
+        title: "Success",
+        description: "LinkedIn About section has been reset",
+      });
+    } catch (error) {
+      console.error("Error resetting About section:", error);
+      toast({
+        title: "Error",
+        description: "Failed to reset About section",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
@@ -112,12 +143,13 @@ export const LinkedInAboutSection = ({ onContentSaved }: LinkedInAboutSectionPro
         
         <TabsContent value="text">
           <LinkedInTextInput 
-            onSubmit={saveToDatabase} 
+            onSubmit={saveToDatabase}
             initialContent={savedContent}
             onContentSaved={() => {
               onContentSaved();
               setActiveTab("text");
             }}
+            onReset={handleReset}
           />
         </TabsContent>
         
