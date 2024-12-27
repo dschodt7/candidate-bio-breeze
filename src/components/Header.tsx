@@ -129,6 +129,12 @@ const Header = () => {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-40 bg-white">
               <DropdownMenuItem 
+                onClick={() => navigate("/profile")} 
+                className="cursor-pointer bg-white hover:bg-gray-100"
+              >
+                Profile Details
+              </DropdownMenuItem>
+              <DropdownMenuItem 
                 onClick={() => setIsResetDialogOpen(true)} 
                 className="cursor-pointer bg-white hover:bg-gray-100"
               >
