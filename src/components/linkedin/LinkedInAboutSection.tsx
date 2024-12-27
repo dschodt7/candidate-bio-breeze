@@ -133,13 +133,13 @@ export const LinkedInAboutSection = ({
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger 
             value="text" 
-            disabled={savedContent && activeTab === "screenshot"}
+            disabled={savedContent !== null}
           >
             Paste Text
           </TabsTrigger>
           <TabsTrigger 
             value="screenshot" 
-            disabled={savedContent && activeTab === "text"}
+            disabled={savedContent !== null}
           >
             Upload Screenshot
           </TabsTrigger>
