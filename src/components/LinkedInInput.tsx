@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { LinkedInUrlInput } from "./linkedin/LinkedInUrlInput";
 import { LinkedInAboutSection } from "./linkedin/LinkedInAboutSection";
-import { Check } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
@@ -46,9 +46,11 @@ export const LinkedInInput = () => {
       <LinkedInUrlInput />
       <Accordion type="single" collapsible className="mt-6">
         <AccordionItem value="about">
-          <AccordionTrigger className="flex gap-2">
-            About Section
-            {hasAboutContent && <Check className="h-4 w-4 text-green-500" />}
+          <AccordionTrigger className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
+              {hasAboutContent && <CheckCircle className="h-4 w-4 text-green-500" />}
+              About Section
+            </div>
           </AccordionTrigger>
           <AccordionContent className="pt-4">
             <LinkedInAboutSection onContentSaved={() => setHasAboutContent(true)} />
