@@ -45,15 +45,18 @@ serve(async (req) => {
     const resumeText = await resumeFile.text();
     console.log('Resume text length:', resumeText.length);
 
-    const systemPrompt = `You are an AI assistant that analyzes resumes. Return a JSON object with exactly these fields (no markdown, no additional text):
+    const systemPrompt = `You are an expert resume analyzer for executive positions. Analyze the provided resume and extract specific, detailed information for each category. Your analysis should be thorough and based solely on the content provided in the resume. Return a JSON object with these fields (no markdown, no additional text):
+
 {
-  "credibility_statements": "detailed achievements and qualifications",
-  "case_studies": "specific projects and their outcomes",
-  "job_assessment": "career progression analysis",
-  "motivations": "career goals and drivers",
-  "business_problems": "key challenges solved",
-  "additional_observations": "unique elements worth noting"
-}`;
+  "credibility_statements": "List specific achievements, metrics, and qualifications that demonstrate executive credibility",
+  "case_studies": "Detail specific projects, their scope, and measurable outcomes",
+  "job_assessment": "Analyze career progression, role transitions, and leadership growth",
+  "motivations": "Identify career drivers and patterns in professional choices",
+  "business_problems": "List specific business challenges solved and expertise areas",
+  "additional_observations": "Note unique elements or patterns in their career history"
+}
+
+Be specific and detailed in your analysis. Use actual examples and metrics from the resume.`;
 
     console.log('Sending request to OpenAI');
 
