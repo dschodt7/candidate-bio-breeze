@@ -9,6 +9,8 @@ export const useLinkedInContent = (candidateId: string | null, sectionType: Link
   const { toast } = useToast();
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchContent = async () => {
       if (!candidateId) return;
 
@@ -22,18 +24,34 @@ export const useLinkedInContent = (candidateId: string | null, sectionType: Link
           .maybeSingle();
 
         if (error) throw error;
-        setSavedContent(data?.content || null);
-        setHasContent(!!data?.content);
-        console.log(`LinkedIn ${sectionType} content fetched:`, data?.content ? "Content found" : "No content");
+
+        // Only update state if component is still mounted
+        if (isMounted) {
+          setSavedContent(data?.content || null);
+          setHasContent(!!data?.content);
+          console.log(`LinkedIn ${sectionType} content fetched:`, data?.content ? "Content found" : "No content");
+        }
       } catch (error) {
         console.error(`Error fetching LinkedIn ${sectionType} content:`, error);
-        setSavedContent(null);
-        setHasContent(false);
+        if (isMounted) {
+          setSavedContent(null);
+          setHasContent(false);
+          toast({
+            title: "Error",
+            description: `Failed to fetch ${sectionType} content`,
+            variant: "destructive",
+          });
+        }
       }
     };
 
     fetchContent();
-  }, [candidateId, sectionType]);
+
+    // Cleanup function
+    return () => {
+      isMounted = false;
+    };
+  }, [candidateId, sectionType, toast]);
 
   return {
     savedContent,
