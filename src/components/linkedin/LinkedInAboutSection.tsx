@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
-import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LinkedInScreenshotUpload } from "./about/LinkedInScreenshotUpload";
 import { LinkedInTextInput } from "./about/LinkedInTextInput";
+import { LinkedInAboutHeader } from "./about/LinkedInAboutHeader";
+import { LinkedInAboutTip } from "./about/LinkedInAboutTip";
 
 interface LinkedInAboutSectionProps {
   onContentSaved: () => void;
@@ -121,9 +122,7 @@ export const LinkedInAboutSection = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Label>About Section Details</Label>
-      </div>
+      <LinkedInAboutHeader />
       
       <Tabs 
         defaultValue="text" 
@@ -174,9 +173,7 @@ export const LinkedInAboutSection = ({
         </TabsContent>
       </Tabs>
 
-      <p className="text-sm text-muted-foreground">
-        Tip: You can either paste a screenshot of the About section or directly paste the text
-      </p>
+      <LinkedInAboutTip />
     </div>
   );
 };

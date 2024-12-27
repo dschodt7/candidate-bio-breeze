@@ -2,10 +2,10 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Check, RotateCw, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { LinkedInUrlDisplay } from "./url/LinkedInUrlDisplay";
 
 export const LinkedInUrlInput = () => {
   const [url, setUrl] = useState("");
@@ -105,46 +105,29 @@ export const LinkedInUrlInput = () => {
       <Label htmlFor="linkedin-url">LinkedIn Profile URL (For Reference)</Label>
       <div className="flex gap-4">
         {isSubmitted ? (
-          <a
-            href={url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex-1 flex items-center gap-2 text-blue-600 hover:text-blue-800 transition-colors"
-          >
-            {url}
-            <ExternalLink className="h-4 w-4" />
-          </a>
-        ) : (
-          <Input
-            id="linkedin-url"
-            type="url"
-            placeholder="https://linkedin.com/in/username"
-            value={url}
-            onChange={(e) => {
-              setUrl(e.target.value);
-              setIsSubmitted(false);
-            }}
-            className="flex-1"
+          <LinkedInUrlDisplay 
+            url={url} 
+            onEdit={() => setIsSubmitted(false)}
+            onReset={handleReset}
           />
-        )}
-        <div className="flex gap-2">
-          {!isSubmitted && (
+        ) : (
+          <>
+            <Input
+              id="linkedin-url"
+              type="url"
+              placeholder="https://linkedin.com/in/username"
+              value={url}
+              onChange={(e) => {
+                setUrl(e.target.value);
+                setIsSubmitted(false);
+              }}
+              className="flex-1"
+            />
             <Button onClick={handleSubmit} className="gap-2">
               Submit
             </Button>
-          )}
-          {isSubmitted && (
-            <>
-              <Button variant="outline" onClick={() => setIsSubmitted(false)} className="gap-2">
-                Edit
-              </Button>
-              <Button variant="outline" onClick={handleReset} className="gap-2">
-                <RotateCw className="h-4 w-4" />
-                Reset
-              </Button>
-            </>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </div>
   );
