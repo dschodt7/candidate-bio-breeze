@@ -1,5 +1,5 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LinkedInScreenshotUpload } from "./screenshot/LinkedInScreenshotUpload";
+import { LinkedInScreenshotUpload } from "../LinkedInScreenshotUpload";
 import { LinkedInTextInput } from "./LinkedInTextInput";
 import { LinkedInAboutHeader } from "./LinkedInAboutHeader";
 import { LinkedInAboutTip } from "./LinkedInAboutTip";
@@ -81,6 +81,7 @@ export const LinkedInAboutSection = ({
               handleSave(text);
               setActiveTab("screenshot");
             }}
+            onReset={handleResetContent}
           />
         </TabsContent>
       </Tabs>
