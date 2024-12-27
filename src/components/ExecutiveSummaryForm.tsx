@@ -9,12 +9,22 @@ import { BrassTaxCriteria } from "./BrassTaxCriteria";
 import { SensoryCriteria } from "./SensoryCriteria";
 import { LinkedInAnalysis } from "./LinkedInAnalysis";
 import { LinkedInJobMatchingCriteria } from "./linkedin/LinkedInJobMatchingCriteria";
+import { LinkedInAboutSection } from "./linkedin/LinkedInAboutSection";
 
 export const ExecutiveSummaryForm = () => {
   return (
     <Card className="p-6 animate-fadeIn">
       <h3 className="text-lg font-medium mb-6">Executive Summary Components</h3>
       <Accordion type="single" collapsible className="space-y-4">
+        <AccordionItem value="linkedin-about">
+          <AccordionTrigger>
+            LinkedIn About Section
+          </AccordionTrigger>
+          <AccordionContent className="pt-4">
+            <LinkedInAboutSection />
+          </AccordionContent>
+        </AccordionItem>
+
         <AccordionItem value="brass-tax">
           <AccordionTrigger>
             Executive Lens, Brass Tax Job Matching Criteria
