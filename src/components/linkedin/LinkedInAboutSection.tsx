@@ -25,17 +25,22 @@ export const LinkedInAboutSection = () => {
     try {
       console.log("Saving About section for candidate:", candidateId);
       const { error } = await supabase
-        .from('executive_summaries')
+        .from('linkedin_sections')
         .upsert({
           candidate_id: candidateId,
-          linked_in_analysis: { about: aboutContent }
+          section_type: 'about',
+          content: aboutContent
         }, {
-          onConflict: 'candidate_id'
+          onConflict: 'candidate_id,section_type'
         });
 
       if (error) throw error;
 
       console.log("About section saved successfully");
+      toast({
+        title: "Success",
+        description: "LinkedIn About section saved successfully",
+      });
     } catch (error) {
       console.error("Error saving About section:", error);
       toast({

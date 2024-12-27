@@ -85,6 +85,44 @@ export type Database = {
           },
         ]
       }
+      linkedin_sections: {
+        Row: {
+          analysis: Json | null
+          candidate_id: string
+          content: string | null
+          created_at: string
+          id: string
+          section_type: Database["public"]["Enums"]["linkedin_section_type"]
+          updated_at: string
+        }
+        Insert: {
+          analysis?: Json | null
+          candidate_id: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          section_type: Database["public"]["Enums"]["linkedin_section_type"]
+          updated_at?: string
+        }
+        Update: {
+          analysis?: Json | null
+          candidate_id?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          section_type?: Database["public"]["Enums"]["linkedin_section_type"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "linkedin_sections_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -111,7 +149,12 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      linkedin_section_type:
+        | "about"
+        | "experience"
+        | "education"
+        | "skills"
+        | "certifications"
     }
     CompositeTypes: {
       [_ in never]: never

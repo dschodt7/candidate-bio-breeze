@@ -8,7 +8,6 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
-  // Enhanced logging for request tracking
   console.log('New request received:', new Date().toISOString());
 
   if (req.method === 'OPTIONS') {
@@ -19,7 +18,6 @@ serve(async (req) => {
     const { candidateId, screenshot } = await req.json();
     console.log('Processing request for candidate:', candidateId);
 
-    // Validate required parameters
     if (!candidateId) {
       throw new Error('Missing candidateId parameter');
     }
@@ -27,7 +25,6 @@ serve(async (req) => {
       throw new Error('Missing screenshot parameter');
     }
 
-    // Validate OpenAI API key
     const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
     if (!openAIApiKey) {
       console.error('OpenAI API key not configured');
@@ -85,7 +82,6 @@ serve(async (req) => {
     const extractedText = openAIData.choices[0].message.content;
     console.log('Text extracted successfully, length:', extractedText.length);
 
-    // Initialize Supabase client
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -93,12 +89,13 @@ serve(async (req) => {
 
     console.log('Updating database with extracted text...');
     const { error: updateError } = await supabaseClient
-      .from('executive_summaries')
+      .from('linkedin_sections')
       .upsert({
         candidate_id: candidateId,
-        linked_in_analysis: { about: extractedText }
+        section_type: 'about',
+        content: extractedText
       }, {
-        onConflict: 'candidate_id'
+        onConflict: 'candidate_id,section_type'
       });
 
     if (updateError) {
@@ -119,7 +116,6 @@ serve(async (req) => {
       timestamp: new Date().toISOString()
     });
 
-    // Determine appropriate status code based on error type
     let statusCode = 500;
     if (error.message.includes('Missing')) {
       statusCode = 400;
