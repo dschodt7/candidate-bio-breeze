@@ -42,14 +42,14 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are an AI assistant that extracts text from LinkedIn About section screenshots. If you can't identify a LinkedIn About section in the image, respond with an error message. Otherwise, return only the extracted text."
+            content: "You are an AI assistant that extracts text from LinkedIn profile section screenshots. Return only the extracted text, without any commentary or formatting."
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Extract the text from this LinkedIn About section screenshot. If you can't identify a LinkedIn About section, let me know."
+                text: "Extract the text from this LinkedIn profile section screenshot."
               },
               {
                 type: "image_url",
@@ -81,12 +81,11 @@ serve(async (req) => {
     const extractedText = openAIData.choices[0].message.content;
     console.log('Text extracted successfully, length:', extractedText.length);
 
-    // Check if the response indicates an error in identifying the LinkedIn section
-    if (extractedText.toLowerCase().includes("unable to extract") || 
-        extractedText.toLowerCase().includes("can't identify")) {
+    // Check if the response indicates an error in identifying the section
+    if (extractedText.toLowerCase().includes("unable to extract")) {
       return new Response(
         JSON.stringify({ 
-          error: "No LinkedIn About section detected in the screenshot. Please ensure you're uploading a screenshot of a LinkedIn About section."
+          error: "Unable to extract text from the screenshot. Please ensure you're uploading a clear screenshot of a LinkedIn section."
         }),
         { 
           status: 400,
