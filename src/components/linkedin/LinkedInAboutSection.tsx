@@ -42,6 +42,47 @@ export const LinkedInAboutSection = ({ onContentSaved }: LinkedInAboutSectionPro
     fetchContent();
   }, [candidateId]);
 
+  const saveToDatabase = async (aboutContent: string) => {
+    if (!candidateId) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      console.log("Saving About section for candidate:", candidateId);
+      const { error } = await supabase
+        .from('linkedin_sections')
+        .upsert({
+          candidate_id: candidateId,
+          section_type: 'about',
+          content: aboutContent
+        }, {
+          onConflict: 'candidate_id,section_type'
+        });
+
+      if (error) throw error;
+
+      setSavedContent(aboutContent);
+      onContentSaved();
+      console.log("About section saved successfully");
+      toast({
+        title: "Success",
+        description: "LinkedIn About section saved successfully",
+      });
+    } catch (error) {
+      console.error("Error saving About section:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save About section",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
