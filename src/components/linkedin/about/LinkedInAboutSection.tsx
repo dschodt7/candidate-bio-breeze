@@ -1,8 +1,8 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { LinkedInScreenshotUpload } from "./about/LinkedInScreenshotUpload";
-import { LinkedInTextInput } from "./about/LinkedInTextInput";
-import { LinkedInAboutHeader } from "./about/LinkedInAboutHeader";
-import { LinkedInAboutTip } from "./about/LinkedInAboutTip";
+import { LinkedInScreenshotUpload } from "./screenshot/LinkedInScreenshotUpload";
+import { LinkedInTextInput } from "./LinkedInTextInput";
+import { LinkedInAboutHeader } from "./LinkedInAboutHeader";
+import { LinkedInAboutTip } from "./LinkedInAboutTip";
 import { useLinkedInAbout } from "@/hooks/useLinkedInAbout";
 
 interface LinkedInAboutSectionProps {
