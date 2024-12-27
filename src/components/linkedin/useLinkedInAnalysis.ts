@@ -28,11 +28,9 @@ export const useLinkedInAnalysis = () => {
 
       if (error) throw error;
       
-      // Type assertion with runtime check
       const linkedInAnalysis = data?.linked_in_analysis as Record<string, unknown>;
       if (!linkedInAnalysis) return null;
 
-      // Validate the shape of the data
       const analysis: LinkedInAnalysis = {
         credibilityStatements: String(linkedInAnalysis.credibilityStatements || ''),
         caseStudies: String(linkedInAnalysis.caseStudies || ''),
@@ -48,6 +46,53 @@ export const useLinkedInAnalysis = () => {
     },
     enabled: !!searchParams.get('candidate'),
   });
+
+  const handleAnalyze = async () => {
+    const candidateId = searchParams.get('candidate');
+    if (!candidateId) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsAnalyzing(true);
+      console.log("Analyzing LinkedIn for candidate:", candidateId);
+
+      const { data, error } = await supabase.functions.invoke('analyze-linkedin', {
+        body: { 
+          candidateId,
+          content: manualContent
+        }
+      });
+
+      if (error) throw error;
+
+      console.log("Analysis completed successfully:", data);
+      await refetch();
+      
+      toast({
+        title: "Success",
+        description: "LinkedIn analysis completed successfully",
+      });
+
+      setManualContent("");
+      setShowManualInput(false);
+      
+    } catch (error) {
+      console.error("Error analyzing LinkedIn:", error);
+      toast({
+        title: "Analysis Failed",
+        description: error instanceof Error ? error.message : "Failed to analyze LinkedIn content",
+        variant: "destructive",
+      });
+    } finally {
+      setIsAnalyzing(false);
+    }
+  };
 
   const handleSaveSection = async (key: keyof LinkedInAnalysis, content: string) => {
     const candidateId = searchParams.get('candidate');
@@ -86,6 +131,7 @@ export const useLinkedInAnalysis = () => {
     isAnalyzing,
     manualContent,
     showManualInput,
+    handleAnalyze,
     handleSaveSection,
     setManualContent,
     setShowManualInput,

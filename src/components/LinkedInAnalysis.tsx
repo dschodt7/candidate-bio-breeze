@@ -8,6 +8,7 @@ import { LinkedInAnalysisHeader } from "./linkedin/LinkedInAnalysisHeader";
 import { LinkedInManualInput } from "./linkedin/LinkedInManualInput";
 import { LinkedInAnalysisSection } from "./linkedin/LinkedInAnalysisSection";
 import { useLinkedInAnalysis } from "./linkedin/useLinkedInAnalysis";
+import { sections } from "./linkedin/types";
 
 export const LinkedInAnalysis = () => {
   const {
@@ -20,17 +21,6 @@ export const LinkedInAnalysis = () => {
     setShowManualInput,
     handleSaveSection,
   } = useLinkedInAnalysis();
-
-  const sections = [
-    { key: 'credibilityStatements', title: 'Credibility Statements' },
-    { key: 'caseStudies', title: 'Case Studies' },
-    { key: 'jobAssessment', title: 'Complete Assessment of Job' },
-    { key: 'motivations', title: 'Motivations' },
-    { key: 'businessProblems', title: 'Business Problems They Solve Better Than Most' },
-    { key: 'interests', title: 'Interests' },
-    { key: 'activitiesAndHobbies', title: 'Activities and Hobbies' },
-    { key: 'foundationalUnderstanding', title: 'Foundational Understanding' },
-  ];
 
   return (
     <div className="mt-4">
