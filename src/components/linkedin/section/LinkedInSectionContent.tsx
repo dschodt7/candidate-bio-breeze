@@ -19,13 +19,14 @@ export const LinkedInSectionContent = ({
         onChange={(value) => onSave(value)}
         placeholder="Your content here"
         maxLength={2000}
+        disabled={true} // Lock the textarea
       />
       <TextareaActions
         isSubmitted={true}
         isEditing={false}
         hasContent={!!currentContent.trim()}
-        onSubmit={() => onSave(currentContent)}
-        onEdit={() => {}}
+        onSubmit={() => {}} // No-op since editing is disabled
+        onEdit={() => {}} // No-op since editing is disabled
         onReset={onReset}
       />
     </div>
