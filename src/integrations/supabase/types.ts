@@ -155,6 +155,10 @@ export type Database = {
         | "education"
         | "skills"
         | "certifications"
+        | "experience_1"
+        | "experience_2"
+        | "experience_3"
+        | "recommendations"
     }
     CompositeTypes: {
       [_ in never]: never

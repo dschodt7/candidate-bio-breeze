@@ -1,4 +1,10 @@
-export type LinkedInSectionType = 'about' | 'experience' | 'education' | 'skills' | 'certifications';
+export type LinkedInSectionType = 
+  | 'about'
+  | 'experience_1'
+  | 'experience_2'
+  | 'experience_3'
+  | 'skills'
+  | 'recommendations';
 
 export interface LinkedInSection {
   id: string;
