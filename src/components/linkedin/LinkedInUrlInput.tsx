@@ -44,6 +44,14 @@ export const LinkedInUrlInput = () => {
     fetchLinkedInUrl();
   }, [candidateId, toast]);
 
+  const formatUrl = (inputUrl: string) => {
+    let formattedUrl = inputUrl.trim();
+    if (!formattedUrl.startsWith('http://') && !formattedUrl.startsWith('https://')) {
+      formattedUrl = `https://${formattedUrl}`;
+    }
+    return formattedUrl;
+  };
+
   const handleSubmit = async () => {
     if (!candidateId || !url) {
       toast({
@@ -54,15 +62,18 @@ export const LinkedInUrlInput = () => {
       return;
     }
 
+    const formattedUrl = formatUrl(url);
+
     try {
       console.log("Submitting LinkedIn URL for candidate:", candidateId);
       const { error } = await supabase
         .from('candidates')
-        .update({ linkedin_url: url })
+        .update({ linkedin_url: formattedUrl })
         .eq('id', candidateId);
 
       if (error) throw error;
 
+      setUrl(formattedUrl);
       console.log("LinkedIn URL submitted successfully");
       setIsSubmitted(true);
       toast({
