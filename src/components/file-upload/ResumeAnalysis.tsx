@@ -1,35 +1,30 @@
-import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { supabase } from "@/integrations/supabase/client";
 import { useSearchParams } from "react-router-dom";
-import { CheckCircle, Pencil } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { CheckCircle } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { Textarea } from "@/components/ui/textarea";
+import { AnalysisSection } from "./analysis/AnalysisSection";
+import { useAnalysisState } from "./analysis/useAnalysisState";
 
-type ResumeAnalysis = {
-  credibilityStatements: string;
-  caseStudies: string;
-  jobAssessment: string;
-  motivations: string;
-  businessProblems: string;
-  additionalObservations: string;
-};
+const ANALYSIS_SECTIONS = [
+  { key: 'credibilityStatements', title: 'Credibility Statements' },
+  { key: 'caseStudies', title: 'Case Studies' },
+  { key: 'jobAssessment', title: 'Complete Assessment of Job' },
+  { key: 'motivations', title: 'Motivations' },
+  { key: 'businessProblems', title: 'Business Problems They Solve Better Than Most' },
+  { key: 'additionalObservations', title: 'Additional Observations' },
+];
 
 export const ResumeAnalysis = () => {
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
-  const { toast } = useToast();
-  const [editingSection, setEditingSection] = useState<string | null>(null);
-  const [editedContent, setEditedContent] = useState("");
 
-  const { data: executiveSummary, refetch } = useQuery({
+  const { data: executiveSummary } = useQuery({
     queryKey: ['executiveSummary', candidateId],
     queryFn: async () => {
       if (!candidateId) return null;
@@ -53,56 +48,16 @@ export const ResumeAnalysis = () => {
     enabled: !!candidateId,
   });
 
-  const analysis: ResumeAnalysis | undefined = executiveSummary?.brass_tax_criteria as ResumeAnalysis;
-  console.log("Current analysis data:", analysis);
-
-  const handleEdit = (key: keyof ResumeAnalysis, content: string) => {
-    setEditingSection(key);
-    setEditedContent(content);
-  };
-
-  const handleSave = async (key: keyof ResumeAnalysis) => {
-    if (!candidateId || !analysis) return;
-
-    try {
-      const updatedAnalysis = {
-        ...analysis,
-        [key]: editedContent
-      };
-
-      const { error } = await supabase
-        .from('executive_summaries')
-        .update({ brass_tax_criteria: updatedAnalysis })
-        .eq('candidate_id', candidateId);
-
-      if (error) throw error;
-
-      await refetch();
-      setEditingSection(null);
-      toast({
-        title: "Success",
-        description: "Analysis content updated successfully",
-      });
-    } catch (error) {
-      console.error("Error updating analysis:", error);
-      toast({
-        title: "Error",
-        description: "Failed to update analysis content",
-        variant: "destructive",
-      });
-    }
-  };
+  const analysis = executiveSummary?.brass_tax_criteria;
+  const {
+    editingSection,
+    editedContent,
+    handleEdit,
+    handleSave,
+    setEditedContent
+  } = useAnalysisState(candidateId, analysis);
 
   if (!analysis) return null;
-
-  const sections = [
-    { key: 'credibilityStatements', title: 'Credibility Statements' },
-    { key: 'caseStudies', title: 'Case Studies' },
-    { key: 'jobAssessment', title: 'Complete Assessment of Job' },
-    { key: 'motivations', title: 'Motivations' },
-    { key: 'businessProblems', title: 'Business Problems They Solve Better Than Most' },
-    { key: 'additionalObservations', title: 'Additional Observations' },
-  ] as const;
 
   const hasContent = Object.values(analysis).some(value => value && value !== "No data found");
 
@@ -118,42 +73,17 @@ export const ResumeAnalysis = () => {
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4 pt-2">
-              {sections.map(({ key, title }) => (
-                <div key={key} className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-sm font-medium text-muted-foreground">{title}</h4>
-                    {editingSection !== key ? (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleEdit(key, analysis[key] || "")}
-                        className="h-8 px-2"
-                      >
-                        <Pencil className="h-4 w-4" />
-                      </Button>
-                    ) : (
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => handleSave(key)}
-                        className="h-8"
-                      >
-                        Save
-                      </Button>
-                    )}
-                  </div>
-                  {editingSection === key ? (
-                    <Textarea
-                      value={editedContent}
-                      onChange={(e) => setEditedContent(e.target.value)}
-                      className="min-h-[100px]"
-                    />
-                  ) : (
-                    <p className="text-sm whitespace-pre-wrap">
-                      {analysis[key] || "No data found"}
-                    </p>
-                  )}
-                </div>
+              {ANALYSIS_SECTIONS.map(({ key, title }) => (
+                <AnalysisSection
+                  key={key}
+                  title={title}
+                  content={analysis[key] || ""}
+                  isEditing={editingSection === key}
+                  editedContent={editedContent}
+                  onEdit={() => handleEdit(key, analysis[key] || "")}
+                  onSave={() => handleSave(key)}
+                  onContentChange={setEditedContent}
+                />
               ))}
             </div>
           </AccordionContent>
