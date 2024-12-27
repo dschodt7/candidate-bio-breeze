@@ -4,6 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ScreenshotPreview } from "./screenshot/ScreenshotPreview";
 import { useScreenshotProcessing } from "./screenshot/useScreenshotProcessing";
 import { Button } from "@/components/ui/button";
+import { Check } from "lucide-react";
 
 interface LinkedInScreenshotUploadProps {
   candidateId: string | null;
@@ -18,6 +19,7 @@ export const LinkedInScreenshotUpload = ({
   const [screenshotData, setScreenshotData] = useState<string | null>(null);
   const [extractedText, setExtractedText] = useState<string>("");
   const [isTextExtracted, setIsTextExtracted] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
   const { 
     isProcessing,
     processScreenshot 
@@ -81,6 +83,7 @@ export const LinkedInScreenshotUpload = ({
     if (extractedText.trim()) {
       console.log("Submitting extracted text:", extractedText);
       onSuccess(extractedText);
+      setIsSubmitted(true);
     } else {
       toast({
         title: "Error",
@@ -94,6 +97,7 @@ export const LinkedInScreenshotUpload = ({
     setScreenshotData(null);
     setExtractedText("");
     setIsTextExtracted(false);
+    setIsSubmitted(false);
     console.log("Screenshot upload reset");
     toast({
       title: "Reset",
@@ -103,12 +107,14 @@ export const LinkedInScreenshotUpload = ({
 
   return (
     <div className="space-y-4">
-      <Textarea
-        placeholder="Paste your LinkedIn About section screenshot here"
-        className="min-h-[200px] font-mono"
-        onPaste={handlePaste}
-        disabled={isProcessing}
-      />
+      {!isTextExtracted && (
+        <Textarea
+          placeholder="Paste your LinkedIn About section screenshot here"
+          className="min-h-[200px] font-mono"
+          onPaste={handlePaste}
+          disabled={isProcessing}
+        />
+      )}
       {screenshotData && !isTextExtracted && (
         <ScreenshotPreview
           isProcessing={isProcessing}
@@ -126,8 +132,13 @@ export const LinkedInScreenshotUpload = ({
             placeholder="Review the extracted text"
           />
           <div className="flex gap-2">
-            <Button onClick={handleSubmit} className="gap-2">
-              Submit
+            <Button 
+              onClick={handleSubmit} 
+              className="gap-2"
+              disabled={isSubmitted}
+            >
+              {isSubmitted && <Check className="h-4 w-4 text-green-500" />}
+              {isSubmitted ? "Submitted" : "Submit"}
             </Button>
             <Button variant="outline" onClick={handleReset} className="gap-2">
               Reset
