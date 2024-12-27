@@ -7,9 +7,14 @@ import { Check, RotateCw, Pencil } from "lucide-react";
 interface LinkedInTextInputProps {
   onSubmit: (text: string) => void;
   initialContent: string | null;
+  onContentSaved: () => void;
 }
 
-export const LinkedInTextInput = ({ onSubmit, initialContent }: LinkedInTextInputProps) => {
+export const LinkedInTextInput = ({ 
+  onSubmit, 
+  initialContent,
+  onContentSaved
+}: LinkedInTextInputProps) => {
   const { toast } = useToast();
   const [text, setText] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -35,10 +40,7 @@ export const LinkedInTextInput = ({ onSubmit, initialContent }: LinkedInTextInpu
     onSubmit(text);
     setIsSubmitted(true);
     setIsEditing(false);
-    toast({
-      title: "Success",
-      description: "Text submitted successfully",
-    });
+    onContentSaved();
   };
 
   const handleReset = () => {

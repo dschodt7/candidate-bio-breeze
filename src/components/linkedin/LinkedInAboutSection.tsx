@@ -16,6 +16,7 @@ export const LinkedInAboutSection = ({ onContentSaved }: LinkedInAboutSectionPro
   const { toast } = useToast();
   const candidateId = searchParams.get('candidate');
   const [savedContent, setSavedContent] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<"text" | "screenshot">("text");
 
   useEffect(() => {
     const fetchContent = async () => {
@@ -41,70 +42,56 @@ export const LinkedInAboutSection = ({ onContentSaved }: LinkedInAboutSectionPro
     fetchContent();
   }, [candidateId]);
 
-  const saveToDatabase = async (aboutContent: string) => {
-    if (!candidateId) {
-      toast({
-        title: "Error",
-        description: "No candidate selected",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      console.log("Saving About section for candidate:", candidateId);
-      const { error } = await supabase
-        .from('linkedin_sections')
-        .upsert({
-          candidate_id: candidateId,
-          section_type: 'about',
-          content: aboutContent
-        }, {
-          onConflict: 'candidate_id,section_type'
-        });
-
-      if (error) throw error;
-
-      setSavedContent(aboutContent);
-      onContentSaved();
-      console.log("About section saved successfully");
-      toast({
-        title: "Success",
-        description: "LinkedIn About section saved successfully",
-      });
-    } catch (error) {
-      console.error("Error saving About section:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save About section",
-        variant: "destructive",
-      });
-    }
-  };
-
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Label>About Section Details</Label>
       </div>
       
-      <Tabs defaultValue="text" className="space-y-4">
+      <Tabs 
+        defaultValue="text" 
+        value={activeTab}
+        onValueChange={(value) => setActiveTab(value as "text" | "screenshot")}
+        className="space-y-4"
+      >
         <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="text">Paste Text</TabsTrigger>
-          <TabsTrigger value="screenshot">Upload Screenshot</TabsTrigger>
+          <TabsTrigger 
+            value="text" 
+            disabled={savedContent && activeTab === "screenshot"}
+          >
+            Paste Text
+          </TabsTrigger>
+          <TabsTrigger 
+            value="screenshot" 
+            disabled={savedContent && activeTab === "text"}
+          >
+            Upload Screenshot
+          </TabsTrigger>
         </TabsList>
         
         <TabsContent value="text">
           <LinkedInTextInput 
             onSubmit={saveToDatabase} 
             initialContent={savedContent}
+            onContentSaved={() => {
+              onContentSaved();
+              setActiveTab("text");
+            }}
           />
         </TabsContent>
         
         <TabsContent value="screenshot">
           <LinkedInScreenshotUpload 
             candidateId={candidateId} 
-            onSuccess={saveToDatabase}
+            onSuccess={(text) => {
+              setSavedContent(text);
+              onContentSaved();
+              setActiveTab("screenshot");
+              toast({
+                title: "Success",
+                description: "Screenshot processed and text extracted successfully",
+              });
+            }}
           />
         </TabsContent>
       </Tabs>
