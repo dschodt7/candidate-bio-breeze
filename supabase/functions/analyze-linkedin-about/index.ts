@@ -1,6 +1,6 @@
+import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -14,12 +14,10 @@ serve(async (req) => {
 
   try {
     const { candidateId, screenshot } = await req.json();
+    console.log('Processing request for candidate:', candidateId);
 
     if (!candidateId || !screenshot) {
-      return new Response(
-        JSON.stringify({ error: 'Missing required parameters' }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 400 }
-      );
+      throw new Error('Missing required parameters');
     }
 
     // Call OpenAI API to analyze the screenshot
@@ -30,7 +28,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: "gpt-4-vision-preview",
+        model: "gpt-4o-mini",
         messages: [
           {
             role: "system",
@@ -56,8 +54,21 @@ serve(async (req) => {
       })
     });
 
+    if (!openAIResponse.ok) {
+      const errorData = await openAIResponse.json();
+      console.error('OpenAI API error:', errorData);
+      throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
+    }
+
     const openAIData = await openAIResponse.json();
+    console.log('Received OpenAI response');
+
+    if (!openAIData.choices || !openAIData.choices[0]?.message?.content) {
+      throw new Error('Invalid response format from OpenAI');
+    }
+
     const extractedText = openAIData.choices[0].message.content;
+    console.log('Extracted text:', extractedText);
 
     // Update the candidate's LinkedIn analysis in the database
     const supabaseClient = createClient(
@@ -74,7 +85,10 @@ serve(async (req) => {
         onConflict: 'candidate_id'
       });
 
-    if (updateError) throw updateError;
+    if (updateError) {
+      console.error('Database update error:', updateError);
+      throw updateError;
+    }
 
     return new Response(
       JSON.stringify({ text: extractedText }),
@@ -85,7 +99,10 @@ serve(async (req) => {
     console.error('Error in analyze-linkedin-about function:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
-      { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 500 }
+      { 
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
+        status: 500 
+      }
     );
   }
 });
