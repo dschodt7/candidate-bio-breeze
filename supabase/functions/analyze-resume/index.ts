@@ -45,25 +45,20 @@ serve(async (req) => {
     const resumeText = await resumeFile.text();
     console.log('Resume text length:', resumeText.length);
 
-    // IMPORTANT: DO NOT CHANGE THE MODEL OR SYSTEM PROMPT WITHOUT EXPLICIT PERMISSION
-    // This function requires gpt-4o for accurate resume analysis due to the need
-    // for a large context window and deep understanding of professional experience
-    const systemPrompt = `You are an expert resume analyzer. You must ONLY return a JSON object with the exact structure shown below. Do not include any explanations, markdown, or additional text.
-
-The response must be a valid, parseable JSON object with these exact fields:
+    const systemPrompt = `You are an expert resume analyzer. Analyze the provided resume and return a JSON object with detailed analysis in the following format:
 
 {
-  "credibility_statements": "string with specific achievements and metrics",
-  "case_studies": "string with detailed project examples",
-  "job_assessment": "string analyzing career progression",
-  "motivations": "string identifying career drivers",
-  "business_problems": "string listing specific challenges solved",
-  "additional_observations": "string noting unique patterns"
+  "credibility_statements": "Detailed list of specific achievements and metrics from the resume",
+  "case_studies": "Detailed examples of significant projects and their outcomes",
+  "job_assessment": "Comprehensive analysis of career progression and role transitions",
+  "motivations": "Analysis of career drivers and professional aspirations",
+  "business_problems": "Specific challenges and problems the candidate has demonstrated ability to solve",
+  "additional_observations": "Unique patterns, skills, or noteworthy aspects from the resume"
 }
 
-Any deviation from this exact format will result in an error. Do not include any conversation or explanations.`;
+Ensure each field contains detailed, specific information from the resume. Do not use placeholder text.`;
 
-    const userPrompt = `Analyze this resume and return ONLY a JSON object exactly as specified. No other text or explanations:\n\n${resumeText}`;
+    const userPrompt = `Analyze this resume text and provide detailed insights:\n\n${resumeText}`;
 
     console.log('Sending request to OpenAI');
 
@@ -74,13 +69,13 @@ Any deviation from this exact format will result in an error. Do not include any
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',  // DO NOT CHANGE: Required for resume analysis
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.1, // Very low temperature to ensure consistent, focused responses
-        response_format: { type: "json_object" } // Force JSON response
+        temperature: 0.1,
+        response_format: { type: "json_object" }
       }),
     });
 
@@ -98,11 +93,7 @@ Any deviation from this exact format will result in an error. Do not include any
 
     let analysis;
     try {
-      // Remove any potential whitespace or newlines
-      const cleanContent = content.trim();
-      console.log('Cleaned content:', cleanContent);
-      
-      analysis = JSON.parse(cleanContent);
+      analysis = JSON.parse(content);
 
       // Validate all required fields are present and are strings
       const requiredFields = [
@@ -118,46 +109,29 @@ Any deviation from this exact format will result in an error. Do not include any
         if (!(field in analysis)) {
           throw new Error(`Missing required field: ${field}`);
         }
-        if (typeof analysis[field] !== 'string') {
-          throw new Error(`Field ${field} must be a string`);
+        if (typeof analysis[field] !== 'string' || !analysis[field].trim()) {
+          throw new Error(`Field ${field} must be a non-empty string`);
         }
       }
 
-      console.log('Validated analysis object:', analysis);
-
-      // Check if a resume analysis exists
-      const { data: existingAnalysis, error: fetchError } = await supabase
+      // Delete any existing analysis for this candidate
+      const { error: deleteError } = await supabase
         .from('resume_analyses')
-        .select('id')
-        .eq('candidate_id', candidateId)
-        .maybeSingle();
+        .delete()
+        .eq('candidate_id', candidateId);
 
-      if (fetchError) throw fetchError;
+      if (deleteError) throw deleteError;
 
-      let result;
-      if (existingAnalysis) {
-        // Update existing analysis
-        console.log('Updating existing resume analysis');
-        result = await supabase
-          .from('resume_analyses')
-          .update(analysis)
-          .eq('id', existingAnalysis.id)
-          .select()
-          .single();
-      } else {
-        // Insert new analysis
-        console.log('Creating new resume analysis');
-        result = await supabase
-          .from('resume_analyses')
-          .insert({
-            candidate_id: candidateId,
-            ...analysis
-          })
-          .select()
-          .single();
-      }
+      // Insert new analysis
+      const { error: insertError } = await supabase
+        .from('resume_analyses')
+        .insert({
+          candidate_id: candidateId,
+          ...analysis
+        });
 
-      if (result.error) throw result.error;
+      if (insertError) throw insertError;
+
       console.log('Stored analysis results in database');
 
       return new Response(JSON.stringify({ 
@@ -169,7 +143,7 @@ Any deviation from this exact format will result in an error. Do not include any
     } catch (error) {
       console.error('Error processing OpenAI response:', error);
       console.error('Raw response:', content);
-      throw new Error(`Failed to process analysis results: ${error.message}`);
+      throw new Error('OpenAI returned an invalid or incomplete response. Please try again.');
     }
   } catch (error) {
     console.error('Error in analyze-resume function:', error);
