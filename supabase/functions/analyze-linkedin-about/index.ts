@@ -8,6 +8,9 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Enhanced logging for request tracking
+  console.log('New request received:', new Date().toISOString());
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -16,15 +19,26 @@ serve(async (req) => {
     const { candidateId, screenshot } = await req.json();
     console.log('Processing request for candidate:', candidateId);
 
-    if (!candidateId || !screenshot) {
-      throw new Error('Missing required parameters');
+    // Validate required parameters
+    if (!candidateId) {
+      throw new Error('Missing candidateId parameter');
+    }
+    if (!screenshot) {
+      throw new Error('Missing screenshot parameter');
     }
 
-    // Call OpenAI API to analyze the screenshot
+    // Validate OpenAI API key
+    const openAIApiKey = Deno.env.get('OPENAI_API_KEY');
+    if (!openAIApiKey) {
+      console.error('OpenAI API key not configured');
+      throw new Error('OpenAI API key not configured');
+    }
+
+    console.log('Calling OpenAI API for text extraction...');
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+        'Authorization': `Bearer ${openAIApiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
@@ -56,26 +70,28 @@ serve(async (req) => {
 
     if (!openAIResponse.ok) {
       const errorData = await openAIResponse.json();
-      console.error('OpenAI API error:', errorData);
+      console.error('OpenAI API error details:', errorData);
       throw new Error(`OpenAI API error: ${errorData.error?.message || 'Unknown error'}`);
     }
 
     const openAIData = await openAIResponse.json();
-    console.log('Received OpenAI response');
+    console.log('Received OpenAI response successfully');
 
     if (!openAIData.choices || !openAIData.choices[0]?.message?.content) {
+      console.error('Invalid OpenAI response format:', openAIData);
       throw new Error('Invalid response format from OpenAI');
     }
 
     const extractedText = openAIData.choices[0].message.content;
-    console.log('Extracted text:', extractedText);
+    console.log('Text extracted successfully, length:', extractedText.length);
 
-    // Update the candidate's LinkedIn analysis in the database
+    // Initialize Supabase client
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
+    console.log('Updating database with extracted text...');
     const { error: updateError } = await supabaseClient
       .from('executive_summaries')
       .upsert({
@@ -90,18 +106,35 @@ serve(async (req) => {
       throw updateError;
     }
 
+    console.log('Database updated successfully');
     return new Response(
       JSON.stringify({ text: extractedText }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
   } catch (error) {
-    console.error('Error in analyze-linkedin-about function:', error);
+    console.error('Error in analyze-linkedin-about function:', {
+      message: error.message,
+      stack: error.stack,
+      timestamp: new Date().toISOString()
+    });
+
+    // Determine appropriate status code based on error type
+    let statusCode = 500;
+    if (error.message.includes('Missing')) {
+      statusCode = 400;
+    } else if (error.message.includes('not configured')) {
+      statusCode = 503;
+    }
+
     return new Response(
-      JSON.stringify({ error: error.message }),
+      JSON.stringify({ 
+        error: error.message,
+        timestamp: new Date().toISOString()
+      }),
       { 
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' }, 
-        status: 500 
+        status: statusCode,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
     );
   }
