@@ -36,14 +36,7 @@ const Login = () => {
         setShowResetAlert(true);
       }
 
-      // Handle specific error cases
-      if (event === 'USER_NOT_FOUND') {
-        toast({
-          variant: "destructive",
-          title: "Error",
-          description: "User not found. Please check your email address.",
-        });
-      }
+      // Handle authentication errors through URL parameters instead of events
     });
 
     // Check URL parameters for password reset
