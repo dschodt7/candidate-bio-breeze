@@ -63,7 +63,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: resumeText }
@@ -92,21 +92,42 @@ serve(async (req) => {
       analysis = JSON.parse(cleanContent);
       console.log('Parsed analysis:', analysis);
 
-      // Store analysis results
-      const { error: updateError } = await supabase
+      // First, check if an executive summary exists
+      const { data: existingSummary, error: fetchError } = await supabase
         .from('executive_summaries')
-        .upsert({
-          candidate_id: candidateId,
-          brass_tax_criteria: analysis,
-          created_at: new Date().toISOString() // Add this line to ensure proper timestamp
-        }, {
-          onConflict: 'candidate_id' // Specify the conflict resolution
-        });
+        .select('id')
+        .eq('candidate_id', candidateId)
+        .maybeSingle();
 
-      if (updateError) {
-        console.error('Error updating executive summary:', updateError);
-        throw updateError;
+      if (fetchError) throw fetchError;
+
+      let result;
+      if (existingSummary) {
+        // Update existing summary
+        console.log('Updating existing executive summary');
+        result = await supabase
+          .from('executive_summaries')
+          .update({
+            brass_tax_criteria: analysis,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', existingSummary.id)
+          .select()
+          .single();
+      } else {
+        // Insert new summary
+        console.log('Creating new executive summary');
+        result = await supabase
+          .from('executive_summaries')
+          .insert({
+            candidate_id: candidateId,
+            brass_tax_criteria: analysis,
+          })
+          .select()
+          .single();
       }
+
+      if (result.error) throw result.error;
       console.log('Stored analysis results in database');
 
       return new Response(JSON.stringify({ 
