@@ -45,20 +45,26 @@ serve(async (req) => {
     const resumeText = await resumeFile.text();
     console.log('Resume text length:', resumeText.length);
 
-    const systemPrompt = `You are an expert resume analyzer. Analyze the provided resume and return a JSON object with detailed analysis in the following format:
+    const systemPrompt = `You are an expert executive recruiter with decades of experience analyzing resumes. Your task is to provide a detailed, insightful analysis of the resume focusing on concrete examples and specific details. For each section, you must extract and analyze actual content from the resume, not make generic statements.
+
+Analyze the resume and return a JSON object with the following sections:
 
 {
-  "credibility_statements": "Detailed list of specific achievements and metrics from the resume",
-  "case_studies": "Detailed examples of significant projects and their outcomes",
-  "job_assessment": "Comprehensive analysis of career progression and role transitions",
-  "motivations": "Analysis of career drivers and professional aspirations",
-  "business_problems": "Specific challenges and problems the candidate has demonstrated ability to solve",
-  "additional_observations": "Unique patterns, skills, or noteworthy aspects from the resume"
+  "credibility_statements": "List specific achievements, metrics, and recognition that establish the candidate's credibility. Include numbers, percentages, and concrete results.",
+  "case_studies": "Describe 2-3 significant projects or initiatives from the resume, including the challenge, action, and quantifiable results.",
+  "job_assessment": "Analyze their career progression, including role transitions, promotions, and skill development. Note any interesting patterns or rapid advancement.",
+  "motivations": "Based on their career choices and achievements, infer their key professional motivations and career drivers.",
+  "business_problems": "From their experience, identify specific types of business challenges they excel at solving. Include examples from their work history.",
+  "additional_observations": "Share unique insights about their career path, leadership style, or distinctive patterns in their experience."
 }
 
-Ensure each field contains detailed, specific information from the resume. Do not use placeholder text.`;
+Important guidelines:
+1. Always reference specific details from the resume
+2. Use concrete examples and metrics whenever possible
+3. If certain information isn't available, explain what would make the analysis stronger rather than stating it's missing
+4. Focus on insights that would be valuable for executive recruitment`;
 
-    const userPrompt = `Analyze this resume text and provide detailed insights:\n\n${resumeText}`;
+    const userPrompt = `Analyze this executive resume and provide detailed insights based on the actual content:\n\n${resumeText}`;
 
     console.log('Sending request to OpenAI');
 
@@ -74,7 +80,7 @@ Ensure each field contains detailed, specific information from the resume. Do no
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
         ],
-        temperature: 0.1,
+        temperature: 0.7,
         response_format: { type: "json_object" }
       }),
     });
