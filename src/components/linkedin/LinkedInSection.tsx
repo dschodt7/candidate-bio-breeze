@@ -45,7 +45,7 @@ export const LinkedInSection = ({
         {hasContent ? (
           <LinkedInSectionContent
             currentContent={savedContent || ""}
-            onSave={saveToDatabase}
+            onSave={(content: string) => saveToDatabase(content)}
             onReset={handleReset}
           />
         ) : (
