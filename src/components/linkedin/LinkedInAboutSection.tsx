@@ -9,9 +9,13 @@ import { LinkedInTextInput } from "./about/LinkedInTextInput";
 
 interface LinkedInAboutSectionProps {
   onContentSaved: () => void;
+  onContentReset: () => void;
 }
 
-export const LinkedInAboutSection = ({ onContentSaved }: LinkedInAboutSectionProps) => {
+export const LinkedInAboutSection = ({ 
+  onContentSaved,
+  onContentReset 
+}: LinkedInAboutSectionProps) => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const candidateId = searchParams.get('candidate');
@@ -97,7 +101,7 @@ export const LinkedInAboutSection = ({ onContentSaved }: LinkedInAboutSectionPro
       if (error) throw error;
 
       setSavedContent(null);
-      onContentSaved(); // This will trigger the parent to update the checkmark
+      onContentReset(); // Call the new prop to update parent state
       setActiveTab("text"); // Reset to default tab
       console.log("About section reset successfully");
       toast({

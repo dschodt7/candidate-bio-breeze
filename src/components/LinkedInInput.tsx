@@ -30,11 +30,20 @@ export const LinkedInInput = () => {
           .eq('section_type', 'about')
           .single();
 
-        if (error) throw error;
-        setHasAboutContent(!!data?.content);
+        if (error) {
+          if (error.code === 'PGRST116') {
+            // No content found
+            setHasAboutContent(false);
+          } else {
+            throw error;
+          }
+        } else {
+          setHasAboutContent(!!data?.content);
+        }
         console.log("LinkedIn About section fetch result:", !!data?.content);
       } catch (error) {
         console.error("Error fetching LinkedIn About section:", error);
+        setHasAboutContent(false);
       }
     };
 
@@ -53,7 +62,10 @@ export const LinkedInInput = () => {
             </div>
           </AccordionTrigger>
           <AccordionContent className="pt-4">
-            <LinkedInAboutSection onContentSaved={() => setHasAboutContent(true)} />
+            <LinkedInAboutSection 
+              onContentSaved={() => setHasAboutContent(true)} 
+              onContentReset={() => setHasAboutContent(false)}
+            />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
