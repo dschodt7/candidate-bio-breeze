@@ -4,7 +4,7 @@ import { useToast } from "@/hooks/use-toast";
 import { ScreenshotPreview } from "./screenshot/ScreenshotPreview";
 import { useScreenshotProcessing } from "./screenshot/useScreenshotProcessing";
 import { Button } from "@/components/ui/button";
-import { Check } from "lucide-react";
+import { Check, Pencil, RotateCw } from "lucide-react";
 
 interface LinkedInScreenshotUploadProps {
   candidateId: string | null;
@@ -20,6 +20,7 @@ export const LinkedInScreenshotUpload = ({
   const [extractedText, setExtractedText] = useState<string>("");
   const [isTextExtracted, setIsTextExtracted] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const { 
     isProcessing,
     processScreenshot 
@@ -84,6 +85,7 @@ export const LinkedInScreenshotUpload = ({
       console.log("Submitting extracted text:", extractedText);
       onSuccess(extractedText);
       setIsSubmitted(true);
+      setIsEditing(false);
     } else {
       toast({
         title: "Error",
@@ -93,11 +95,17 @@ export const LinkedInScreenshotUpload = ({
     }
   };
 
+  const handleEdit = () => {
+    setIsEditing(true);
+    setIsSubmitted(false);
+  };
+
   const handleReset = () => {
     setScreenshotData(null);
     setExtractedText("");
     setIsTextExtracted(false);
     setIsSubmitted(false);
+    setIsEditing(false);
     console.log("Screenshot upload reset");
     toast({
       title: "Reset",
@@ -127,20 +135,40 @@ export const LinkedInScreenshotUpload = ({
         <div className="space-y-4">
           <Textarea
             value={extractedText}
-            onChange={(e) => setExtractedText(e.target.value)}
+            onChange={(e) => {
+              setExtractedText(e.target.value);
+              if (!isEditing) setIsEditing(true);
+            }}
             className="min-h-[200px] font-mono"
             placeholder="Review the extracted text"
+            disabled={isSubmitted && !isEditing}
           />
           <div className="flex gap-2">
-            <Button 
-              onClick={handleSubmit} 
+            {isSubmitted && !isEditing ? (
+              <Button
+                variant="outline"
+                onClick={handleEdit}
+                className="gap-2"
+              >
+                <Pencil className="h-4 w-4" />
+                Edit
+              </Button>
+            ) : (
+              <Button
+                onClick={handleSubmit}
+                disabled={!extractedText.trim()}
+                className="gap-2"
+              >
+                {isSubmitted && <Check className="h-4 w-4 text-green-500" />}
+                {isSubmitted ? "Submitted" : "Submit"}
+              </Button>
+            )}
+            <Button
+              variant="outline"
+              onClick={handleReset}
               className="gap-2"
-              disabled={isSubmitted}
             >
-              {isSubmitted && <Check className="h-4 w-4 text-green-500" />}
-              {isSubmitted ? "Submitted" : "Submit"}
-            </Button>
-            <Button variant="outline" onClick={handleReset} className="gap-2">
+              <RotateCw className="h-4 w-4" />
               Reset
             </Button>
           </div>

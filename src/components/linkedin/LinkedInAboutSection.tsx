@@ -161,13 +161,8 @@ export const LinkedInAboutSection = ({
           <LinkedInScreenshotUpload 
             candidateId={candidateId} 
             onSuccess={(text) => {
-              setSavedContent(text);
-              onContentSaved();
+              saveToDatabase(text);
               setActiveTab("screenshot");
-              toast({
-                title: "Success",
-                description: "Screenshot processed and text extracted successfully",
-              });
             }}
           />
         </TabsContent>
