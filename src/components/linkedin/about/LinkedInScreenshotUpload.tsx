@@ -20,7 +20,14 @@ export const LinkedInScreenshotUpload = ({
     isSubmitted, 
     setIsSubmitted, 
     processScreenshot 
-  } = useScreenshotProcessing(candidateId, onSuccess);
+  } = useScreenshotProcessing(candidateId, (text) => {
+    console.log("Screenshot processing success callback with text:", text);
+    onSuccess(text);
+    toast({
+      title: "Success",
+      description: "Screenshot processed and text extracted successfully",
+    });
+  });
 
   const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
     const items = e.clipboardData.items;
@@ -28,6 +35,7 @@ export const LinkedInScreenshotUpload = ({
     
     if (imageItems.length > 0) {
       e.preventDefault();
+      console.log("Image found in clipboard, processing...");
       
       try {
         const imageBlob = await new Promise<Blob>((resolve) => {
@@ -42,6 +50,7 @@ export const LinkedInScreenshotUpload = ({
           reader.readAsDataURL(imageBlob);
         });
 
+        console.log("Screenshot converted to base64, ready for processing");
         setScreenshotData(base64Image);
         setIsSubmitted(false);
         toast({
@@ -61,6 +70,7 @@ export const LinkedInScreenshotUpload = ({
 
   const handleSubmit = () => {
     if (screenshotData) {
+      console.log("Submitting screenshot for processing");
       processScreenshot(screenshotData);
     }
   };
@@ -68,6 +78,7 @@ export const LinkedInScreenshotUpload = ({
   const handleReset = () => {
     setScreenshotData(null);
     setIsSubmitted(false);
+    console.log("Screenshot upload reset");
     toast({
       title: "Reset",
       description: "Screenshot has been cleared",

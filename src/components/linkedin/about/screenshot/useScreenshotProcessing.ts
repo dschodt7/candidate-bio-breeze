@@ -33,13 +33,15 @@ export const useScreenshotProcessing = (
 
       if (error) throw error;
 
+      console.log("Edge function response:", data);
+
       if (data?.text) {
+        console.log("Text extracted successfully:", data.text.substring(0, 100) + "...");
         onSuccess(data.text);
         setIsSubmitted(true);
-        toast({
-          title: "Success",
-          description: "Screenshot processed successfully",
-        });
+      } else {
+        console.error("No text found in response:", data);
+        throw new Error("No text found in response");
       }
     } catch (error) {
       console.error("Error processing screenshot:", error);
