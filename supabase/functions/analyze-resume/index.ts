@@ -48,26 +48,25 @@ serve(async (req) => {
     // IMPORTANT: DO NOT CHANGE THE MODEL OR SYSTEM PROMPT WITHOUT EXPLICIT PERMISSION
     // This function requires gpt-4o for accurate resume analysis due to the need
     // for a large context window and deep understanding of professional experience
-    const systemPrompt = `You are an expert resume analyzer for executive positions. You MUST return a valid JSON object with EXACTLY these fields and nothing else - no conversation, no explanations, just the JSON object:
+    const systemPrompt = `You are an expert resume analyzer. You must ONLY return a JSON object with the exact structure shown below. Do not include any explanations, markdown, or additional text.
+
+The response must be a valid, parseable JSON object with these exact fields:
 
 {
-  "credibility_statements": "List specific achievements, metrics, and qualifications that demonstrate executive credibility",
-  "case_studies": "Detail specific projects, their scope, and measurable outcomes",
-  "job_assessment": "Analyze career progression, role transitions, and leadership growth",
-  "motivations": "Identify career drivers and patterns in professional choices",
-  "business_problems": "List specific business challenges solved and expertise areas",
-  "additional_observations": "Note unique elements or patterns in their career history"
+  "credibility_statements": "string with specific achievements and metrics",
+  "case_studies": "string with detailed project examples",
+  "job_assessment": "string analyzing career progression",
+  "motivations": "string identifying career drivers",
+  "business_problems": "string listing specific challenges solved",
+  "additional_observations": "string noting unique patterns"
 }
 
-Your response must be a parseable JSON object. Do not include any other text or markdown formatting.
-Be specific and detailed in your analysis. Use actual examples and metrics from the resume.`;
+Any deviation from this exact format will result in an error. Do not include any conversation or explanations.`;
+
+    const userPrompt = `Analyze this resume and return ONLY a JSON object exactly as specified. No other text or explanations:\n\n${resumeText}`;
 
     console.log('Sending request to OpenAI');
 
-    // IMPORTANT: DO NOT CHANGE THE MODEL WITHOUT EXPLICIT PERMISSION
-    // This function requires gpt-4o due to the need for a large context window
-    // to properly analyze resume content. Using a smaller model will result
-    // in incomplete or inaccurate analysis.
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -77,16 +76,11 @@ Be specific and detailed in your analysis. Use actual examples and metrics from 
       body: JSON.stringify({
         model: 'gpt-4o',  // DO NOT CHANGE: Required for resume analysis
         messages: [
-          { 
-            role: 'system', 
-            content: systemPrompt 
-          },
-          { 
-            role: 'user', 
-            content: `Analyze this resume and provide a JSON response exactly as specified in the system prompt:\n\n${resumeText}` 
-          }
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userPrompt }
         ],
-        temperature: 0.3, // Lower temperature for more consistent, focused responses
+        temperature: 0.1, // Very low temperature to ensure consistent, focused responses
+        response_format: { type: "json_object" } // Force JSON response
       }),
     });
 
@@ -108,16 +102,9 @@ Be specific and detailed in your analysis. Use actual examples and metrics from 
       const cleanContent = content.trim();
       console.log('Cleaned content:', cleanContent);
       
-      // Attempt to parse the response
-      try {
-        analysis = JSON.parse(cleanContent);
-      } catch (parseError) {
-        console.error('Failed to parse OpenAI response:', parseError);
-        console.error('Raw content that failed to parse:', cleanContent);
-        throw new Error('OpenAI returned an invalid JSON response. Please try again.');
-      }
+      analysis = JSON.parse(cleanContent);
 
-      // Validate the required fields
+      // Validate all required fields are present and are strings
       const requiredFields = [
         'credibility_statements',
         'case_studies',
@@ -127,12 +114,16 @@ Be specific and detailed in your analysis. Use actual examples and metrics from 
         'additional_observations'
       ];
 
-      const missingFields = requiredFields.filter(field => !(field in analysis));
-      if (missingFields.length > 0) {
-        throw new Error(`OpenAI response is missing required fields: ${missingFields.join(', ')}`);
+      for (const field of requiredFields) {
+        if (!(field in analysis)) {
+          throw new Error(`Missing required field: ${field}`);
+        }
+        if (typeof analysis[field] !== 'string') {
+          throw new Error(`Field ${field} must be a string`);
+        }
       }
 
-      console.log('Parsed analysis:', analysis);
+      console.log('Validated analysis object:', analysis);
 
       // Check if a resume analysis exists
       const { data: existingAnalysis, error: fetchError } = await supabase
