@@ -141,6 +141,53 @@ export type Database = {
         }
         Relationships: []
       }
+      resume_analyses: {
+        Row: {
+          additional_observations: string | null
+          business_problems: string | null
+          candidate_id: string
+          case_studies: string | null
+          created_at: string
+          credibility_statements: string | null
+          id: string
+          job_assessment: string | null
+          motivations: string | null
+          updated_at: string
+        }
+        Insert: {
+          additional_observations?: string | null
+          business_problems?: string | null
+          candidate_id: string
+          case_studies?: string | null
+          created_at?: string
+          credibility_statements?: string | null
+          id?: string
+          job_assessment?: string | null
+          motivations?: string | null
+          updated_at?: string
+        }
+        Update: {
+          additional_observations?: string | null
+          business_problems?: string | null
+          candidate_id?: string
+          case_studies?: string | null
+          created_at?: string
+          credibility_statements?: string | null
+          id?: string
+          job_assessment?: string | null
+          motivations?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "resume_analyses_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: false
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

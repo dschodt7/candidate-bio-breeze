@@ -63,7 +63,7 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: resumeText }
@@ -85,16 +85,15 @@ serve(async (req) => {
 
     let analysis;
     try {
-      // Clean any potential formatting
       const cleanContent = content.trim();
       console.log('Cleaned content:', cleanContent);
       
       analysis = JSON.parse(cleanContent);
       console.log('Parsed analysis:', analysis);
 
-      // First, check if an executive summary exists
-      const { data: existingSummary, error: fetchError } = await supabase
-        .from('executive_summaries')
+      // Check if a resume analysis exists
+      const { data: existingAnalysis, error: fetchError } = await supabase
+        .from('resume_analyses')
         .select('id')
         .eq('candidate_id', candidateId)
         .maybeSingle();
@@ -102,26 +101,36 @@ serve(async (req) => {
       if (fetchError) throw fetchError;
 
       let result;
-      if (existingSummary) {
-        // Update existing summary
-        console.log('Updating existing executive summary');
+      if (existingAnalysis) {
+        // Update existing analysis
+        console.log('Updating existing resume analysis');
         result = await supabase
-          .from('executive_summaries')
+          .from('resume_analyses')
           .update({
-            brass_tax_criteria: analysis,
+            credibility_statements: analysis.credibilityStatements,
+            case_studies: analysis.caseStudies,
+            job_assessment: analysis.jobAssessment,
+            motivations: analysis.motivations,
+            business_problems: analysis.businessProblems,
+            additional_observations: analysis.additionalObservations,
             updated_at: new Date().toISOString()
           })
-          .eq('id', existingSummary.id)
+          .eq('id', existingAnalysis.id)
           .select()
           .single();
       } else {
-        // Insert new summary
-        console.log('Creating new executive summary');
+        // Insert new analysis
+        console.log('Creating new resume analysis');
         result = await supabase
-          .from('executive_summaries')
+          .from('resume_analyses')
           .insert({
             candidate_id: candidateId,
-            brass_tax_criteria: analysis,
+            credibility_statements: analysis.credibilityStatements,
+            case_studies: analysis.caseStudies,
+            job_assessment: analysis.jobAssessment,
+            motivations: analysis.motivations,
+            business_problems: analysis.businessProblems,
+            additional_observations: analysis.additionalObservations
           })
           .select()
           .single();

@@ -1,37 +1,17 @@
 import type { Database } from './base';
-import type { Tables } from './tables';
 
-type PublicSchema = Database[Extract<keyof Database, "public">]
+type PublicSchema = Database['public'];
 
-export type TablesHelper<
-  PublicTableNameOrOptions extends
-    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
-    | { schema: keyof Database },
-  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
-    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-        Database[PublicTableNameOrOptions["schema"]]["Views"])
-    : never = never,
-> = PublicTableNameOrOptions extends { schema: keyof Database }
-  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
-      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
-      Row: infer R
-    }
-    ? R
-    : never
-  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
-        PublicSchema["Views"])
-    ? (PublicSchema["Tables"] &
-        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
-        Row: infer R
-      }
-      ? R
-      : never
-    : never
+export type Tables<
+  T extends keyof PublicSchema['Tables']
+> = PublicSchema['Tables'][T]['Row'];
 
 export type TablesInsert<
-  T extends keyof Tables
-> = Tables[T]['Insert']
+  T extends keyof PublicSchema['Tables']
+> = PublicSchema['Tables'][T]['Insert'];
 
 export type TablesUpdate<
-  T extends keyof Tables
-> = Tables[T]['Update']
+  T extends keyof PublicSchema['Tables']
+> = PublicSchema['Tables'][T]['Update'];
+
+export type LinkedInSectionType = PublicSchema['Enums']['linkedin_section_type'];
