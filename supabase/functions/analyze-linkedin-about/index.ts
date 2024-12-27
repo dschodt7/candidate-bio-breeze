@@ -43,14 +43,14 @@ serve(async (req) => {
         messages: [
           {
             role: "system",
-            content: "You are an AI assistant that extracts text from LinkedIn About section screenshots. Return only the extracted text, without any additional commentary or formatting."
+            content: "You are an AI assistant that extracts text from LinkedIn About section screenshots. If you can't identify a LinkedIn About section in the image, respond with an error message. Otherwise, return only the extracted text."
           },
           {
             role: "user",
             content: [
               {
                 type: "text",
-                text: "Extract the text from this LinkedIn About section screenshot:"
+                text: "Extract the text from this LinkedIn About section screenshot. If you can't identify a LinkedIn About section, let me know."
               },
               {
                 type: "image_url",
@@ -82,28 +82,20 @@ serve(async (req) => {
     const extractedText = openAIData.choices[0].message.content;
     console.log('Text extracted successfully, length:', extractedText.length);
 
-    const supabaseClient = createClient(
-      Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
-    );
-
-    console.log('Updating database with extracted text...');
-    const { error: updateError } = await supabaseClient
-      .from('linkedin_sections')
-      .upsert({
-        candidate_id: candidateId,
-        section_type: 'about',
-        content: extractedText
-      }, {
-        onConflict: 'candidate_id,section_type'
-      });
-
-    if (updateError) {
-      console.error('Database update error:', updateError);
-      throw updateError;
+    // Check if the response indicates an error in identifying the LinkedIn section
+    if (extractedText.toLowerCase().includes("unable to extract") || 
+        extractedText.toLowerCase().includes("can't identify")) {
+      return new Response(
+        JSON.stringify({ 
+          error: "No LinkedIn About section detected in the screenshot. Please ensure you're uploading a screenshot of a LinkedIn About section."
+        }),
+        { 
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      );
     }
 
-    console.log('Database updated successfully');
     return new Response(
       JSON.stringify({ text: extractedText }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

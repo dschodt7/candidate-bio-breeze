@@ -17,12 +17,14 @@ export const LinkedInScreenshotUpload = ({
   const { toast } = useToast();
   const [screenshotData, setScreenshotData] = useState<string | null>(null);
   const [extractedText, setExtractedText] = useState<string>("");
+  const [isTextExtracted, setIsTextExtracted] = useState(false);
   const { 
     isProcessing,
     processScreenshot 
   } = useScreenshotProcessing(candidateId, (text) => {
     console.log("Screenshot processing success callback with text:", text);
     setExtractedText(text);
+    setIsTextExtracted(true);
     toast({
       title: "Success",
       description: "Text extracted successfully. Please review and submit.",
@@ -70,6 +72,7 @@ export const LinkedInScreenshotUpload = ({
   const handleProcess = () => {
     if (screenshotData) {
       console.log("Processing screenshot for text extraction");
+      setIsTextExtracted(false);
       processScreenshot(screenshotData);
     }
   };
@@ -90,6 +93,7 @@ export const LinkedInScreenshotUpload = ({
   const handleReset = () => {
     setScreenshotData(null);
     setExtractedText("");
+    setIsTextExtracted(false);
     console.log("Screenshot upload reset");
     toast({
       title: "Reset",
@@ -105,7 +109,7 @@ export const LinkedInScreenshotUpload = ({
         onPaste={handlePaste}
         disabled={isProcessing}
       />
-      {screenshotData && !extractedText && (
+      {screenshotData && !isTextExtracted && (
         <ScreenshotPreview
           isProcessing={isProcessing}
           onProcess={handleProcess}
@@ -113,7 +117,7 @@ export const LinkedInScreenshotUpload = ({
           screenshotData={screenshotData}
         />
       )}
-      {extractedText && (
+      {isTextExtracted && (
         <div className="space-y-4">
           <Textarea
             value={extractedText}
