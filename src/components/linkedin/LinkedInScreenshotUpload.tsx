@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
-import { Check, RotateCw } from "lucide-react";
+import { Check, Pencil, RotateCw } from "lucide-react";
 import { useScreenshotProcessing } from "@/hooks/useScreenshotProcessing";
 
 interface LinkedInScreenshotUploadProps {
@@ -91,7 +91,7 @@ export const LinkedInScreenshotUpload = ({
     }
   };
 
-  const handleReset = () => {
+  const handleResetLocal = () => {
     console.log("Resetting screenshot upload state");
     setScreenshotData(null);
     setExtractedText("");
@@ -124,10 +124,19 @@ export const LinkedInScreenshotUpload = ({
               {isSubmitted && <Check className="h-4 w-4 text-green-500" />}
               Submit
             </Button>
-          ) : null}
+          ) : (
+            <Button
+              variant="outline"
+              onClick={() => setIsEditing(true)}
+              className="gap-2"
+            >
+              <Pencil className="h-4 w-4" />
+              Edit
+            </Button>
+          )}
           <Button
             variant="outline"
-            onClick={handleReset}
+            onClick={handleResetLocal}
             className="gap-2"
           >
             <RotateCw className="h-4 w-4" />
@@ -162,7 +171,7 @@ export const LinkedInScreenshotUpload = ({
             </Button>
             <Button
               variant="outline"
-              onClick={handleReset}
+              onClick={handleResetLocal}
               className="gap-2"
             >
               <RotateCw className="h-4 w-4" />
