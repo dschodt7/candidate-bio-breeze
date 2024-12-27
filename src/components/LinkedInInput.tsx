@@ -17,35 +17,37 @@ export const LinkedInInput = () => {
   const [hasAboutContent, setHasAboutContent] = useState(false);
   const candidateId = searchParams.get('candidate');
 
+  const fetchAboutContent = async () => {
+    if (!candidateId) return;
+
+    try {
+      console.log("Fetching LinkedIn About section for candidate:", candidateId);
+      const { data, error } = await supabase
+        .from('linkedin_sections')
+        .select('content')
+        .eq('candidate_id', candidateId)
+        .eq('section_type', 'about')
+        .maybeSingle();
+
+      if (error) throw error;
+      
+      setHasAboutContent(!!data?.content);
+      console.log("LinkedIn About section fetch result:", !!data?.content);
+    } catch (error) {
+      console.error("Error fetching LinkedIn About section:", error);
+      setHasAboutContent(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchAboutContent = async () => {
-      if (!candidateId) return;
-
-      try {
-        console.log("Fetching LinkedIn About section for candidate:", candidateId);
-        const { data, error } = await supabase
-          .from('linkedin_sections')
-          .select('content')
-          .eq('candidate_id', candidateId)
-          .eq('section_type', 'about')
-          .maybeSingle();
-
-        if (error) throw error;
-        
-        setHasAboutContent(!!data?.content);
-        console.log("LinkedIn About section fetch result:", !!data?.content);
-      } catch (error) {
-        console.error("Error fetching LinkedIn About section:", error);
-        setHasAboutContent(false);
-      }
-    };
-
     fetchAboutContent();
   }, [candidateId]);
 
   const handleContentReset = () => {
     console.log("Handling content reset in LinkedInInput");
     setHasAboutContent(false);
+    // Force a re-fetch of content after reset
+    fetchAboutContent();
   };
 
   return (
