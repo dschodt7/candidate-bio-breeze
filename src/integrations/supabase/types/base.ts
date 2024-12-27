@@ -8,7 +8,20 @@ export type Json =
 
 export interface Database {
   public: {
-    Tables: Tables
+    Tables: {
+      [_ in string]: {
+        Row: Record<string, unknown>
+        Insert: Record<string, unknown>
+        Update: Record<string, unknown>
+        Relationships: {
+          foreignKeyName: string
+          columns: string[]
+          isOneToOne: boolean
+          referencedRelation: string
+          referencedColumns: string[]
+        }[]
+      }
+    }
     Views: {
       [_ in never]: never
     }
