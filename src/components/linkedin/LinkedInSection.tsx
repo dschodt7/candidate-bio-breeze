@@ -7,6 +7,9 @@ import { useLinkedInSection } from "@/hooks/useLinkedInSection";
 import { LinkedInSectionType } from "@/integrations/supabase/types/linkedin";
 import { ErrorBoundary } from "react-error-boundary";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { EditableTextarea } from "@/components/common/EditableTextarea";
+import { TextareaActions } from "@/components/common/TextareaActions";
+import { useState, useEffect } from "react";
 
 interface LinkedInSectionProps {
   title: string;
@@ -37,8 +40,26 @@ export const LinkedInSection = ({
     hasContent
   } = useLinkedInSection(sectionType);
 
+  const [isEditing, setIsEditing] = useState(false);
+  const [currentContent, setCurrentContent] = useState(savedContent || "");
+
+  useEffect(() => {
+    setCurrentContent(savedContent || "");
+  }, [savedContent]);
+
   const handleSave = async (content: string) => {
     await saveToDatabase(content);
+    setIsEditing(false);
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleResetContent = async () => {
+    await handleReset();
+    setIsEditing(false);
+    setCurrentContent("");
   };
 
   return (
@@ -56,48 +77,62 @@ export const LinkedInSection = ({
               <h4 className="text-sm font-medium">{title} Details</h4>
             </div>
             
-            <Tabs 
-              value={activeTab}
-              onValueChange={(value) => setActiveTab(value as "text" | "screenshot")}
-              className="space-y-4"
-            >
-              <TabsList className="grid w-full grid-cols-2">
-                <TabsTrigger 
-                  value="text" 
-                  disabled={!!savedContent}
-                >
-                  Paste Text
-                </TabsTrigger>
-                <TabsTrigger 
-                  value="screenshot" 
-                  disabled={!!savedContent}
-                >
-                  Upload Screenshot
-                </TabsTrigger>
-              </TabsList>
-              
-              <TabsContent value="text">
-                <LinkedInTextInput 
-                  onSubmit={handleSave}
-                  initialContent={savedContent}
-                  onContentSaved={() => {
-                    setActiveTab("text");
-                  }}
-                  onReset={handleReset}
+            {hasContent ? (
+              <div className="space-y-4">
+                <EditableTextarea
+                  value={currentContent}
+                  onChange={(value) => setCurrentContent(value)}
+                  placeholder={`Your ${title} content`}
+                  maxLength={2000}
+                  disabled={!isEditing}
                 />
-              </TabsContent>
-              
-              <TabsContent value="screenshot">
-                <LinkedInScreenshotUpload 
-                  candidateId={candidateId} 
-                  onSuccess={(text) => {
-                    handleSave(text);
-                    setActiveTab("screenshot");
-                  }}
-                  onReset={handleReset}
+                <TextareaActions
+                  isSubmitted={hasContent && !isEditing}
+                  isEditing={isEditing}
+                  hasContent={!!currentContent.trim()}
+                  onSubmit={() => handleSave(currentContent)}
+                  onEdit={handleEdit}
+                  onReset={handleResetContent}
                 />
-              </TabsContent>
-            </Tabs>
+              </div>
+            ) : (
+              <Tabs 
+                value={activeTab}
+                onValueChange={(value) => setActiveTab(value as "text" | "screenshot")}
+                className="space-y-4"
+              >
+                <TabsList className="grid w-full grid-cols-2">
+                  <TabsTrigger value="text">
+                    Paste Text
+                  </TabsTrigger>
+                  <TabsTrigger value="screenshot">
+                    Upload Screenshot
+                  </TabsTrigger>
+                </TabsList>
+                
+                <TabsContent value="text">
+                  <LinkedInTextInput 
+                    onSubmit={handleSave}
+                    initialContent={savedContent}
+                    onContentSaved={() => {
+                      setActiveTab("text");
+                    }}
+                    onReset={handleResetContent}
+                  />
+                </TabsContent>
+                
+                <TabsContent value="screenshot">
+                  <LinkedInScreenshotUpload 
+                    candidateId={candidateId} 
+                    onSuccess={(text) => {
+                      handleSave(text);
+                      setActiveTab("screenshot");
+                    }}
+                    onReset={handleResetContent}
+                  />
+                </TabsContent>
+              </Tabs>
+            )}
 
             <p className="text-sm text-muted-foreground">
               Tip: You can either paste a screenshot of the {title} section or directly paste the text
