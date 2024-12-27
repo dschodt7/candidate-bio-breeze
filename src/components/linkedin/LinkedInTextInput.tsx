@@ -19,6 +19,7 @@ export const LinkedInTextInput = ({
   const [text, setText] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
+  const maxLength = 2000;
 
   useEffect(() => {
     if (initialContent) {
@@ -42,29 +43,43 @@ export const LinkedInTextInput = ({
   };
 
   const handleReset = () => {
+    onReset();
     setText("");
     setIsSubmitted(false);
     setIsEditing(false);
-    onReset();
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+    setIsSubmitted(false);
   };
 
   return (
     <div className="space-y-4">
-      <Textarea
-        value={text}
-        onChange={(e) => {
-          setText(e.target.value);
-          if (!isEditing) setIsEditing(true);
-        }}
-        placeholder="Paste your LinkedIn About section text here"
-        className="min-h-[200px] font-mono"
-        disabled={isSubmitted && !isEditing}
-      />
+      <div className="space-y-2">
+        <Textarea
+          value={text}
+          onChange={(e) => {
+            const newText = e.target.value;
+            if (newText.length <= maxLength) {
+              setText(newText);
+              if (!isEditing) setIsEditing(true);
+            }
+          }}
+          placeholder="Paste your LinkedIn section text here"
+          className="min-h-[200px] font-mono"
+          disabled={isSubmitted && !isEditing}
+          maxLength={maxLength}
+        />
+        <div className="text-sm text-muted-foreground text-right">
+          {text.length}/{maxLength} characters
+        </div>
+      </div>
       <div className="flex gap-2">
         {isSubmitted && !isEditing ? (
           <Button
             variant="outline"
-            onClick={() => setIsEditing(true)}
+            onClick={handleEdit}
             className="gap-2"
           >
             <Pencil className="h-4 w-4" />
@@ -80,14 +95,16 @@ export const LinkedInTextInput = ({
             {isSubmitted ? "Submitted" : "Submit"}
           </Button>
         )}
-        <Button
-          variant="outline"
-          onClick={handleReset}
-          className="gap-2"
-        >
-          <RotateCw className="h-4 w-4" />
-          Reset
-        </Button>
+        {(isSubmitted || text) && (
+          <Button
+            variant="outline"
+            onClick={handleReset}
+            className="gap-2"
+          >
+            <RotateCw className="h-4 w-4" />
+            Reset
+          </Button>
+        )}
       </div>
     </div>
   );
