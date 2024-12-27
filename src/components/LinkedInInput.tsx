@@ -165,6 +165,7 @@ export const LinkedInInput = () => {
                     onSubmit={handleSave}
                     initialContent={savedContent}
                     onReset={handleReset}
+                    onContentSaved={() => setHasAboutContent(true)}
                   />
                 </TabsContent>
                 

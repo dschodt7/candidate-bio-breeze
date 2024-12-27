@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
 import { Button } from "@/components/ui/button";
 import { Check, Pencil, RotateCw } from "lucide-react";
 import { useScreenshotProcessing } from "@/hooks/useScreenshotProcessing";
@@ -16,7 +15,6 @@ export const LinkedInScreenshotUpload = ({
   onSuccess,
   onReset
 }: LinkedInScreenshotUploadProps) => {
-  const { toast } = useToast();
   const [screenshotData, setScreenshotData] = useState<string | null>(null);
   const [extractedText, setExtractedText] = useState<string>("");
   const [isTextExtracted, setIsTextExtracted] = useState(false);
@@ -30,10 +28,6 @@ export const LinkedInScreenshotUpload = ({
     console.log("Screenshot processing success callback with text:", text);
     setExtractedText(text);
     setIsTextExtracted(true);
-    toast({
-      title: "Success",
-      description: "Text extracted successfully. Please review and submit.",
-    });
   });
 
   const handlePaste = async (e: React.ClipboardEvent<HTMLTextAreaElement>) => {
@@ -59,17 +53,8 @@ export const LinkedInScreenshotUpload = ({
 
         console.log("Screenshot converted to base64, ready for processing");
         setScreenshotData(base64Image);
-        toast({
-          title: "Screenshot Ready",
-          description: "Click process to extract text from the screenshot",
-        });
       } catch (error) {
         console.error("Error handling screenshot:", error);
-        toast({
-          title: "Error",
-          description: "Failed to process screenshot",
-          variant: "destructive",
-        });
       }
     }
   };
