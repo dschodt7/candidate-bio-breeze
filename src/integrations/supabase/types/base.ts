@@ -8,20 +8,7 @@ export type Json =
 
 export interface Database {
   public: {
-    Tables: {
-      [_ in string]: {
-        Row: Record<string, unknown>
-        Insert: Record<string, unknown>
-        Update: Record<string, unknown>
-        Relationships: {
-          foreignKeyName: string
-          columns: string[]
-          isOneToOne: boolean
-          referencedRelation: string
-          referencedColumns: string[]
-        }[]
-      }
-    }
+    Tables: Tables
     Views: {
       [_ in never]: never
     }
@@ -29,7 +16,13 @@ export interface Database {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      linkedin_section_type:
+        | "about"
+        | "experience_1"
+        | "experience_2"
+        | "experience_3"
+        | "skills"
+        | "recommendations"
     }
     CompositeTypes: {
       [_ in never]: never

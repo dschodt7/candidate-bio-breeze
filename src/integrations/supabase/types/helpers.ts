@@ -1,5 +1,37 @@
-import { Tables } from './tables';
+import type { Database } from './base';
+import type { Tables } from './tables';
 
-export type TablesHelper<T extends keyof Tables> = Tables[T]['Row'];
-export type TablesInsert<T extends keyof Tables> = Tables[T]['Insert'];
-export type TablesUpdate<T extends keyof Tables> = Tables[T]['Update'];
+type PublicSchema = Database[Extract<keyof Database, "public">]
+
+export type TablesHelper<
+  PublicTableNameOrOptions extends
+    | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never,
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (PublicSchema["Tables"] &
+        PublicSchema["Views"])
+    ? (PublicSchema["Tables"] &
+        PublicSchema["Views"])[PublicTableNameOrOptions] extends {
+        Row: infer R
+      }
+      ? R
+      : never
+    : never
+
+export type TablesInsert<
+  T extends keyof Tables
+> = Tables[T]['Insert']
+
+export type TablesUpdate<
+  T extends keyof Tables
+> = Tables[T]['Update']
