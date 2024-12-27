@@ -1,8 +1,9 @@
-import { Database } from './database';
+import { Database } from './base';
+import { Tables } from './tables';
 
 type PublicSchema = Database[Extract<keyof Database, "public">]
 
-export type Tables<
+export type TablesHelper<
   PublicTableNameOrOptions extends
     | keyof (PublicSchema["Tables"] & PublicSchema["Views"])
     | { schema: keyof Database },

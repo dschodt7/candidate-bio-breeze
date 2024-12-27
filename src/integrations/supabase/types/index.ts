@@ -1,3 +1,6 @@
-export type { Database, Json, Tables } from './database';
-export type { Tables as TablesHelper, TablesInsert, TablesUpdate } from './helpers';
-export type { CandidatesTable, ExecutiveSummariesTable, ProfilesTable } from './tables';
+export type { Database, Json } from './base';
+export type { Tables } from './tables';
+export type { TablesHelper, TablesInsert, TablesUpdate } from './helpers';
+
+// Re-export specific table types for convenience
+export type { CandidatesTable, ExecutiveSummariesTable, ProfilesTable } from './models';
