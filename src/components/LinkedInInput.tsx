@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { LinkedInUrlInput } from "./linkedin/LinkedInUrlInput";
 import { Accordion } from "@/components/ui/accordion";
 import { LinkedInSection } from "./linkedin/LinkedInSection";
+import { LinkedInAnalysis } from "./linkedin/LinkedInAnalysis";
 
 export const LinkedInInput = () => {
   return (
@@ -33,6 +34,7 @@ export const LinkedInInput = () => {
           sectionType="recommendations"
         />
       </Accordion>
+      <LinkedInAnalysis />
     </Card>
   );
 };
