@@ -35,8 +35,6 @@ const Login = () => {
       if (event === 'PASSWORD_RECOVERY') {
         setShowResetAlert(true);
       }
-
-      // Handle authentication errors through URL parameters instead of events
     });
 
     // Check URL parameters for password reset
