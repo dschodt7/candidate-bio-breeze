@@ -19,7 +19,8 @@ export const LinkedInAboutSection = ({
     activeTab,
     setActiveTab,
     saveToDatabase,
-    handleReset
+    handleReset,
+    candidateId
   } = useLinkedInAbout();
 
   const handleSave = async (content: string) => {
@@ -70,7 +71,7 @@ export const LinkedInAboutSection = ({
         
         <TabsContent value="screenshot">
           <LinkedInScreenshotUpload 
-            candidateId={searchParams.get('candidate')} 
+            candidateId={candidateId} 
             onSuccess={(text) => {
               handleSave(text);
               setActiveTab("screenshot");
