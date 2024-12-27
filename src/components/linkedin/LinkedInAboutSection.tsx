@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
@@ -7,10 +7,39 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { LinkedInScreenshotUpload } from "./about/LinkedInScreenshotUpload";
 import { LinkedInTextInput } from "./about/LinkedInTextInput";
 
-export const LinkedInAboutSection = () => {
+interface LinkedInAboutSectionProps {
+  onContentSaved: () => void;
+}
+
+export const LinkedInAboutSection = ({ onContentSaved }: LinkedInAboutSectionProps) => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const candidateId = searchParams.get('candidate');
+  const [savedContent, setSavedContent] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchContent = async () => {
+      if (!candidateId) return;
+
+      try {
+        console.log("Fetching LinkedIn About content for candidate:", candidateId);
+        const { data, error } = await supabase
+          .from('linkedin_sections')
+          .select('content')
+          .eq('candidate_id', candidateId)
+          .eq('section_type', 'about')
+          .single();
+
+        if (error) throw error;
+        setSavedContent(data?.content || null);
+        console.log("LinkedIn About content fetched:", data?.content ? "Content found" : "No content");
+      } catch (error) {
+        console.error("Error fetching LinkedIn About content:", error);
+      }
+    };
+
+    fetchContent();
+  }, [candidateId]);
 
   const saveToDatabase = async (aboutContent: string) => {
     if (!candidateId) {
@@ -36,6 +65,8 @@ export const LinkedInAboutSection = () => {
 
       if (error) throw error;
 
+      setSavedContent(aboutContent);
+      onContentSaved();
       console.log("About section saved successfully");
       toast({
         title: "Success",
@@ -64,7 +95,10 @@ export const LinkedInAboutSection = () => {
         </TabsList>
         
         <TabsContent value="text">
-          <LinkedInTextInput onSubmit={saveToDatabase} />
+          <LinkedInTextInput 
+            onSubmit={saveToDatabase} 
+            initialContent={savedContent}
+          />
         </TabsContent>
         
         <TabsContent value="screenshot">

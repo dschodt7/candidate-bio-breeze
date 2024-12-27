@@ -1,22 +1,57 @@
+import { useState, useEffect } from "react";
 import { Card } from "@/components/ui/card";
 import { LinkedInUrlInput } from "./linkedin/LinkedInUrlInput";
 import { LinkedInAboutSection } from "./linkedin/LinkedInAboutSection";
+import { Check } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { useSearchParams } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
 
 export const LinkedInInput = () => {
+  const [searchParams] = useSearchParams();
+  const [hasAboutContent, setHasAboutContent] = useState(false);
+  const candidateId = searchParams.get('candidate');
+
+  useEffect(() => {
+    const fetchAboutContent = async () => {
+      if (!candidateId) return;
+
+      try {
+        console.log("Fetching LinkedIn About section for candidate:", candidateId);
+        const { data, error } = await supabase
+          .from('linkedin_sections')
+          .select('content')
+          .eq('candidate_id', candidateId)
+          .eq('section_type', 'about')
+          .single();
+
+        if (error) throw error;
+        setHasAboutContent(!!data?.content);
+        console.log("LinkedIn About section fetch result:", !!data?.content);
+      } catch (error) {
+        console.error("Error fetching LinkedIn About section:", error);
+      }
+    };
+
+    fetchAboutContent();
+  }, [candidateId]);
+
   return (
     <Card className="p-6 animate-fadeIn">
       <LinkedInUrlInput />
       <Accordion type="single" collapsible className="mt-6">
         <AccordionItem value="about">
-          <AccordionTrigger>About Section</AccordionTrigger>
+          <AccordionTrigger className="flex gap-2">
+            About Section
+            {hasAboutContent && <Check className="h-4 w-4 text-green-500" />}
+          </AccordionTrigger>
           <AccordionContent className="pt-4">
-            <LinkedInAboutSection />
+            <LinkedInAboutSection onContentSaved={() => setHasAboutContent(true)} />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
