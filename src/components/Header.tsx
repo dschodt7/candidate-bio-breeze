@@ -35,6 +35,32 @@ const Header = () => {
     }
   };
 
+  const handleResetPassword = async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user?.email) throw new Error("No user email found");
+
+      const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+        redirectTo: `${window.location.origin}/login?type=recovery`,
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: "Password reset email sent",
+        description: "Please check your email for the reset link",
+        duration: 5000,
+      });
+    } catch (error) {
+      console.error("Error requesting password reset:", error);
+      toast({
+        variant: "destructive",
+        title: "Error requesting password reset",
+        description: "Please try again",
+      });
+    }
+  };
+
   return (
     <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
       <h1 className="text-2xl font-bold">Executive Career Catalyst</h1>
@@ -45,6 +71,9 @@ const Header = () => {
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-40 bg-white">
+          <DropdownMenuItem onClick={handleResetPassword} className="cursor-pointer bg-white hover:bg-gray-100">
+            Reset Password
+          </DropdownMenuItem>
           <DropdownMenuItem onClick={handleSignOut} className="cursor-pointer bg-white hover:bg-gray-100">
             Sign out
           </DropdownMenuItem>
