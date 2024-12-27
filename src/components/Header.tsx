@@ -17,7 +17,7 @@ import { UserCircle } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/components/ui/use-toast";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -25,6 +25,30 @@ const Header = () => {
   const [isResetDialogOpen, setIsResetDialogOpen] = useState(false);
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [firstName, setFirstName] = useState("");
+
+  useEffect(() => {
+    const fetchUserProfile = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (user) {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('first_name')
+            .eq('id', user.id)
+            .single();
+          
+          if (profile?.first_name) {
+            setFirstName(profile.first_name);
+          }
+        }
+      } catch (error) {
+        console.error("Error fetching user profile:", error);
+      }
+    };
+
+    fetchUserProfile();
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -96,27 +120,30 @@ const Header = () => {
     <>
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold">Executive Career Catalyst</h1>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
-              <UserCircle className="h-6 w-6" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-40 bg-white">
-            <DropdownMenuItem 
-              onClick={() => setIsResetDialogOpen(true)} 
-              className="cursor-pointer bg-white hover:bg-gray-100"
-            >
-              Reset Password
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={handleSignOut} 
-              className="cursor-pointer bg-white hover:bg-gray-100"
-            >
-              Sign out
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex flex-col items-center">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-9 w-9">
+                <UserCircle className="h-6 w-6" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-40 bg-white">
+              <DropdownMenuItem 
+                onClick={() => setIsResetDialogOpen(true)} 
+                className="cursor-pointer bg-white hover:bg-gray-100"
+              >
+                Reset Password
+              </DropdownMenuItem>
+              <DropdownMenuItem 
+                onClick={handleSignOut} 
+                className="cursor-pointer bg-white hover:bg-gray-100"
+              >
+                Sign out
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+          {firstName && <span className="text-sm text-gray-600 mt-1">{firstName}</span>}
+        </div>
       </header>
 
       <Dialog open={isResetDialogOpen} onOpenChange={setIsResetDialogOpen}>
