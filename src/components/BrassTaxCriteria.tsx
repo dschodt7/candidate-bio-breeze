@@ -60,7 +60,9 @@ export const BrassTaxCriteria = () => {
                 {section.title}
                 <Tooltip>
                   <TooltipTrigger asChild>
-                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                    <div className="bg-muted rounded-full p-1">
+                      <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                    </div>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-xs">{section.helpText}</TooltipContent>
                 </Tooltip>
@@ -72,7 +74,7 @@ export const BrassTaxCriteria = () => {
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
             <CriteriaSection
-              title={section.title}
+              title=""
               helpText={section.helpText}
               value={section.value}
               isSubmitted={savedSections[key]}
