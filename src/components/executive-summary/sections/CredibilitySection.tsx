@@ -1,35 +1,9 @@
 import { useState, useEffect } from "react";
-import { Wand2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { SourceIndicators } from "../common/SourceIndicators";
-
-interface SourceAnalysis {
-  strength?: string;
-  uniqueContributions?: string;
-  patterns?: string;
-  specificity?: string;
-}
-
-interface MergeResult {
-  mergedStatements: string[];
-  sourceBreakdown: {
-    resume: string | SourceAnalysis;
-    linkedin: string | SourceAnalysis;
-  };
-}
-
-const formatSourceAnalysis = (analysis: string | SourceAnalysis): string => {
-  if (typeof analysis === 'string') {
-    return analysis || "No analysis available";
-  }
-  
-  return Object.entries(analysis)
-    .map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`)
-    .join('\n');
-};
+import { CredibilityHeader } from "./credibility/CredibilityHeader";
+import { CredibilityInput } from "./credibility/CredibilityInput";
+import { SourceAnalysis } from "./credibility/SourceAnalysis";
 
 interface CredibilitySectionProps {
   candidateId: string | null;
@@ -139,41 +113,20 @@ export const CredibilitySection = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <Button
-          onClick={handleMergeCredibility}
-          variant="outline"
-          className="gap-2"
-          disabled={isMerging}
-        >
-          <Wand2 className="h-4 w-4" />
-          {isMerging ? "AI Compiling..." : "AI Compile"}
-        </Button>
-        <SourceIndicators 
-          hasResume={hasResume}
-          hasLinkedIn={hasLinkedIn}
-          hasScreening={hasScreening}
-        />
-      </div>
+      <CredibilityHeader
+        onMerge={handleMergeCredibility}
+        isMerging={isMerging}
+        hasResume={hasResume}
+        hasLinkedIn={hasLinkedIn}
+        hasScreening={hasScreening}
+      />
 
       <div className="space-y-4">
-        <Textarea
+        <CredibilityInput
           value={value}
-          onChange={(e) => onChange(e.target.value)}
-          className="min-h-[200px]"
-          placeholder="Enter or compile credibility statements..."
+          onChange={onChange}
         />
-
-        {mergeResult && (
-          <div className="space-y-4">
-            <div>
-              <div className="mt-2 space-y-2 text-sm">
-                <p><strong>Resume:</strong> {formatSourceAnalysis(mergeResult.sourceBreakdown.resume)}</p>
-                <p><strong>LinkedIn:</strong> {formatSourceAnalysis(mergeResult.sourceBreakdown.linkedin)}</p>
-              </div>
-            </div>
-          </div>
-        )}
+        <SourceAnalysis mergeResult={mergeResult} />
       </div>
     </div>
   );
