@@ -1,7 +1,12 @@
 import { CriteriaSection } from "@/components/criteria/CriteriaSection";
 import { useCriteriaSection } from "@/hooks/useCriteriaSection";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Check } from "lucide-react";
+import { Check, HelpCircle } from "lucide-react";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 const initialSections = {
   compensation: {
@@ -50,11 +55,19 @@ export const BrassTaxCriteria = () => {
       {Object.entries(sections).map(([key, section]) => (
         <AccordionItem key={key} value={key} className="border rounded-lg">
           <AccordionTrigger className="px-4 hover:no-underline">
-            <div className="flex items-center gap-2">
-              {section.title}
-              {savedSections[key] && (
-                <Check className="h-4 w-4 text-green-500" />
-              )}
+            <div className="flex items-center gap-2 flex-1">
+              <div className="flex items-center gap-2">
+                {section.title}
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+                  </TooltipTrigger>
+                  <TooltipContent className="max-w-xs">{section.helpText}</TooltipContent>
+                </Tooltip>
+                {savedSections[key] && (
+                  <Check className="h-4 w-4 text-green-500" />
+                )}
+              </div>
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
@@ -66,6 +79,7 @@ export const BrassTaxCriteria = () => {
               onChange={(value) => handleChange(key, value)}
               onSubmit={() => handleSubmit(key)}
               onReset={() => handleReset(key)}
+              hideHelp={true}
             />
           </AccordionContent>
         </AccordionItem>

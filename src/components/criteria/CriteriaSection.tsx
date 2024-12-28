@@ -16,6 +16,7 @@ interface CriteriaSectionProps {
   onChange: (value: string) => void;
   onSubmit: () => void;
   onReset: () => void;
+  hideHelp?: boolean;
 }
 
 export const CriteriaSection = ({
@@ -26,18 +27,21 @@ export const CriteriaSection = ({
   onChange,
   onSubmit,
   onReset,
+  hideHelp = false,
 }: CriteriaSectionProps) => {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Label>{title}</Label>
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
-            </TooltipTrigger>
-            <TooltipContent className="max-w-xs">{helpText}</TooltipContent>
-          </Tooltip>
+          {!hideHelp && (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+              </TooltipTrigger>
+              <TooltipContent className="max-w-xs">{helpText}</TooltipContent>
+            </Tooltip>
+          )}
         </div>
         <div className="flex gap-2">
           <Button
