@@ -93,7 +93,10 @@ export const ExecutiveSummaryCompiler = () => {
       if (error) throw error;
 
       console.log("Credibility merge completed:", data);
-      setMergeResult(data.data);
+      if (data?.data) {
+        console.log("Merge result:", data.data);
+        setMergeResult(data.data);
+      }
       setCompileState({ ...compileState, isMergingCredibility: false });
       
       toast({
@@ -149,8 +152,8 @@ export const ExecutiveSummaryCompiler = () => {
             <div>
               <Label className="text-base font-medium">Source Analysis</Label>
               <div className="mt-2 space-y-2 text-sm">
-                <p><strong>Resume:</strong> {mergeResult.sourceBreakdown.resume}</p>
-                <p><strong>LinkedIn:</strong> {mergeResult.sourceBreakdown.linkedin}</p>
+                <p><strong>Resume:</strong> {mergeResult.sourceBreakdown.resume || "No analysis available"}</p>
+                <p><strong>LinkedIn:</strong> {mergeResult.sourceBreakdown.linkedin || "No analysis available"}</p>
               </div>
             </div>
           </div>
