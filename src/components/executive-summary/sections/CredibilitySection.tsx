@@ -56,13 +56,18 @@ export const CredibilitySection = ({
       if (!candidateId) return;
 
       try {
+        console.log("Checking sources for candidate:", candidateId);
+        
         // Check for resume
         const { data: candidate } = await supabase
           .from('candidates')
           .select('resume_path')
           .eq('id', candidateId)
           .single();
-        setHasResume(!!candidate?.resume_path);
+        
+        const resumeAvailable = !!candidate?.resume_path;
+        console.log("Resume available:", resumeAvailable);
+        setHasResume(resumeAvailable);
 
         // Check for LinkedIn content
         const { data: linkedInSection } = await supabase
@@ -71,15 +76,13 @@ export const CredibilitySection = ({
           .eq('candidate_id', candidateId)
           .eq('section_type', 'about')
           .single();
-        setHasLinkedIn(!!linkedInSection?.content);
+        
+        const linkedInAvailable = !!linkedInSection?.content;
+        console.log("LinkedIn available:", linkedInAvailable);
+        setHasLinkedIn(linkedInAvailable);
 
-        // Check for screening notes
-        const { data: screeningData } = await supabase
-          .from('candidates')
-          .select('screening_notes')
-          .eq('id', candidateId)
-          .single();
-        setHasScreening(!!screeningData?.screening_notes);
+        // For now, screening is always false since we haven't implemented it
+        setHasScreening(false);
 
       } catch (error) {
         console.error("Error checking sources:", error);
@@ -137,11 +140,13 @@ export const CredibilitySection = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <SourceIndicators 
-          hasResume={hasResume}
-          hasLinkedIn={hasLinkedIn}
-          hasScreening={hasScreening}
-        />
+        <div className="flex items-center gap-2">
+          <SourceIndicators 
+            hasResume={hasResume}
+            hasLinkedIn={hasLinkedIn}
+            hasScreening={hasScreening}
+          />
+        </div>
         <Button
           onClick={handleMergeCredibility}
           variant="outline"

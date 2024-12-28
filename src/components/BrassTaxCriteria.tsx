@@ -1,7 +1,7 @@
 import { CriteriaSection } from "@/components/criteria/CriteriaSection";
 import { useCriteriaSection } from "@/hooks/useCriteriaSection";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { Check, HelpCircle } from "lucide-react";
+import { HelpCircle } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import {
   Tooltip,
@@ -58,7 +58,7 @@ export const BrassTaxCriteria = () => {
       {Object.entries(sections).map(([key, section]) => (
         <AccordionItem key={key} value={key} className="border rounded-lg">
           <AccordionTrigger className="px-4 hover:no-underline">
-            <div className="flex items-center gap-2 flex-1">
+            <div className="flex items-center justify-between flex-1">
               <div className="flex items-center gap-2">
                 {section.title}
                 <Tooltip>
@@ -71,9 +71,6 @@ export const BrassTaxCriteria = () => {
                     {section.helpText}
                   </TooltipContent>
                 </Tooltip>
-                {savedSections[key] && (
-                  <Check className="h-4 w-4 text-green-500" />
-                )}
               </div>
             </div>
           </AccordionTrigger>
