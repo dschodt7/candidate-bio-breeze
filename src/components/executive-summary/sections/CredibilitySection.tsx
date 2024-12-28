@@ -140,14 +140,6 @@ export const CredibilitySection = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <h3 className="text-sm font-medium">Credibility Statements</h3>
-          <SourceIndicators 
-            hasResume={hasResume}
-            hasLinkedIn={hasLinkedIn}
-            hasScreening={hasScreening}
-          />
-        </div>
         <Button
           onClick={handleMergeCredibility}
           variant="outline"
@@ -157,6 +149,11 @@ export const CredibilitySection = ({
           <Wand2 className="h-4 w-4" />
           {isMerging ? "AI Compiling..." : "AI Compile"}
         </Button>
+        <SourceIndicators 
+          hasResume={hasResume}
+          hasLinkedIn={hasLinkedIn}
+          hasScreening={hasScreening}
+        />
       </div>
 
       <div className="space-y-4">
