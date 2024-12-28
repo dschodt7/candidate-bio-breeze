@@ -36,9 +36,11 @@ export const SensorySection = ({
           {title}
           <Tooltip>
             <TooltipTrigger asChild>
-              <HelpCircle className="h-4 w-4 ml-2 inline-block text-muted-foreground" />
+              <div className="bg-muted rounded-full p-1 ml-2">
+                <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
+              </div>
             </TooltipTrigger>
-            <TooltipContent className="max-w-xs">{helpText}</TooltipContent>
+            <TooltipContent className="max-w-xs bg-popover p-2 shadow-md border">{helpText}</TooltipContent>
           </Tooltip>
         </Label>
         <div className="flex gap-2">
