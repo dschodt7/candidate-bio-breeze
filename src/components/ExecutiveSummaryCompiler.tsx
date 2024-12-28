@@ -3,6 +3,9 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/components/ui/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { Card } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 
 interface CompileState {
   isCompiling: boolean;
@@ -10,9 +13,18 @@ interface CompileState {
   isMergingCredibility: boolean;
 }
 
+interface MergeResult {
+  mergedStatements: string[];
+  sourceBreakdown: {
+    resume: string;
+    linkedin: string;
+  };
+}
+
 export const ExecutiveSummaryCompiler = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
+  const [mergeResult, setMergeResult] = useState<MergeResult | null>(null);
   const [compileState, setCompileState] = useState<CompileState>({
     isCompiling: false,
     isCompiled: false,
@@ -71,6 +83,7 @@ export const ExecutiveSummaryCompiler = () => {
 
     try {
       setCompileState({ ...compileState, isMergingCredibility: true });
+      setMergeResult(null);
       console.log("Starting credibility merge for candidate:", candidateId);
 
       const { data, error } = await supabase.functions.invoke('merge-credibility-statements', {
@@ -80,6 +93,7 @@ export const ExecutiveSummaryCompiler = () => {
       if (error) throw error;
 
       console.log("Credibility merge completed:", data);
+      setMergeResult(data.data);
       setCompileState({ ...compileState, isMergingCredibility: false });
       
       toast({
@@ -119,6 +133,29 @@ export const ExecutiveSummaryCompiler = () => {
           ? "Merging Credibility Statements..."
           : "Test Merge: Credibility Statements"}
       </Button>
+
+      {mergeResult && (
+        <Card className="p-6 mt-4">
+          <div className="space-y-4">
+            <div>
+              <Label className="text-base font-medium">Merged Credibility Statements</Label>
+              <Textarea
+                value={mergeResult.mergedStatements.join("\n\n")}
+                className="mt-2 min-h-[200px] font-mono"
+                readOnly
+              />
+            </div>
+            
+            <div>
+              <Label className="text-base font-medium">Source Analysis</Label>
+              <div className="mt-2 space-y-2 text-sm">
+                <p><strong>Resume:</strong> {mergeResult.sourceBreakdown.resume}</p>
+                <p><strong>LinkedIn:</strong> {mergeResult.sourceBreakdown.linkedin}</p>
+              </div>
+            </div>
+          </div>
+        </Card>
+      )}
     </div>
   );
 };
