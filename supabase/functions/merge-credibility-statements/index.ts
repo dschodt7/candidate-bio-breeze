@@ -59,9 +59,15 @@ serve(async (req) => {
 4. Structure the output in a clear, impactful format
 5. Focus on information that validates the candidate's expertise
 
+For the sourceBreakdown analysis:
+- Evaluate the strength and quality of credibility statements from each source
+- Highlight the unique contributions from each source
+- Note any patterns or complementary information between sources
+- Assess the specificity and measurability of statements from each source
+
 Return a JSON object with two properties:
-- mergedStatements: The final, merged credibility statements
-- sourceBreakdown: Analysis of which source provided stronger credibility statements and why`;
+- mergedStatements: An array of the final, merged credibility statements
+- sourceBreakdown: An object containing detailed analysis of both sources' contributions, with 'resume' and 'linkedin' properties`;
 
     const userPrompt = `Please analyze and merge these credibility statements:
 
@@ -71,7 +77,7 @@ ${resumeCredibility}
 LinkedIn Statements:
 ${linkedinCredibility}
 
-Provide a merged version that emphasizes concrete achievements and metrics while eliminating duplicates.`;
+Provide a merged version that emphasizes concrete achievements and metrics while eliminating duplicates, and include a detailed analysis of each source's contribution.`;
 
     console.log('Sending request to OpenAI');
 
