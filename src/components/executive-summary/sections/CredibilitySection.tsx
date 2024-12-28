@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { CredibilityHeader } from "./credibility/CredibilityHeader";
 import { CredibilityInput } from "./credibility/CredibilityInput";
 import { SourceAnalysis } from "./credibility/SourceAnalysis";
+import { MergeResult } from "@/types/executive-summary";
 
 interface CredibilitySectionProps {
   candidateId: string | null;

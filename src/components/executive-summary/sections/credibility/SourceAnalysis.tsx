@@ -1,23 +1,10 @@
-interface SourceAnalysis {
-  strength?: string;
-  uniqueContributions?: string;
-  patterns?: string;
-  specificity?: string;
-}
-
-interface MergeResult {
-  mergedStatements: string[];
-  sourceBreakdown: {
-    resume: string | SourceAnalysis;
-    linkedin: string | SourceAnalysis;
-  };
-}
+import { MergeResult, SourceAnalysis as SourceAnalysisType } from "@/types/executive-summary";
 
 interface SourceAnalysisProps {
   mergeResult: MergeResult | null;
 }
 
-const formatSourceAnalysis = (analysis: string | SourceAnalysis): string => {
+const formatSourceAnalysis = (analysis: string | SourceAnalysisType): string => {
   if (typeof analysis === 'string') {
     return analysis || "No analysis available";
   }
