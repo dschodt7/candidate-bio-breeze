@@ -91,10 +91,10 @@ export const LinkedInAnalysis = () => {
 
   return (
     <div className="mt-4">
-      {!hasContent && (
+      {hasSections && (
         <Button 
           onClick={handleAnalyze} 
-          disabled={!hasSections || isAnalysisLoading}
+          disabled={isAnalysisLoading}
           className="w-full mb-4"
         >
           Analyze LinkedIn Sections
