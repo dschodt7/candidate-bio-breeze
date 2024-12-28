@@ -64,7 +64,7 @@ export const BrassTaxCriteria = () => {
                       <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
                     </div>
                   </TooltipTrigger>
-                  <TooltipContent className="max-w-xs">{section.helpText}</TooltipContent>
+                  <TooltipContent className="max-w-xs bg-popover shadow-md">{section.helpText}</TooltipContent>
                 </Tooltip>
                 {savedSections[key] && (
                   <Check className="h-4 w-4 text-green-500" />
