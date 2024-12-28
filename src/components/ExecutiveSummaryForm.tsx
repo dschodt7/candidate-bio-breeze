@@ -7,30 +7,29 @@ import {
 } from "@/components/ui/accordion";
 import { BrassTaxCriteria } from "./BrassTaxCriteria";
 import { SensoryCriteria } from "./SensoryCriteria";
+import { Separator } from "@/components/ui/separator";
 
 export const ExecutiveSummaryForm = () => {
   return (
     <Card className="p-6 animate-fadeIn">
       <h3 className="text-lg font-medium mb-6">Executive Summary Components</h3>
-      <Accordion type="single" collapsible className="space-y-4">
-        <AccordionItem value="brass-tax">
-          <AccordionTrigger>
-            Executive Lens, Brass Tax Job Matching Criteria
-          </AccordionTrigger>
-          <AccordionContent className="pt-4">
+      <div className="space-y-8">
+        <div>
+          <h4 className="text-base font-medium mb-4">Executive Lens, Brass Tax Job Matching Criteria</h4>
+          <div className="pl-4">
             <BrassTaxCriteria />
-          </AccordionContent>
-        </AccordionItem>
-
-        <AccordionItem value="sensory">
-          <AccordionTrigger>
-            Executive Lens, Sensory Job Matching Criteria
-          </AccordionTrigger>
-          <AccordionContent className="pt-4">
+          </div>
+        </div>
+        
+        <Separator className="my-6" />
+        
+        <div>
+          <h4 className="text-base font-medium mb-4">Executive Lens, Sensory Job Matching Criteria</h4>
+          <div className="pl-4">
             <SensoryCriteria />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+          </div>
+        </div>
+      </div>
     </Card>
   );
 };
