@@ -58,27 +58,27 @@ export const CredibilitySection = ({
       try {
         console.log("Checking sources for candidate:", candidateId);
         
-        // Check for resume
-        const { data: candidate } = await supabase
-          .from('candidates')
-          .select('resume_path')
-          .eq('id', candidateId)
+        // Check for resume analysis
+        const { data: resumeAnalysis } = await supabase
+          .from('resume_analyses')
+          .select('credibility_statements')
+          .eq('candidate_id', candidateId)
           .single();
         
-        const resumeAvailable = !!candidate?.resume_path;
-        console.log("Resume available:", resumeAvailable);
+        const resumeAvailable = !!resumeAnalysis?.credibility_statements;
+        console.log("Resume analysis available:", resumeAvailable);
         setHasResume(resumeAvailable);
 
-        // Check for LinkedIn content
+        // Check for LinkedIn analysis
         const { data: linkedInSection } = await supabase
           .from('linkedin_sections')
-          .select('content')
+          .select('analysis')
           .eq('candidate_id', candidateId)
           .eq('section_type', 'about')
           .single();
         
-        const linkedInAvailable = !!linkedInSection?.content;
-        console.log("LinkedIn available:", linkedInAvailable);
+        const linkedInAvailable = !!linkedInSection?.analysis;
+        console.log("LinkedIn analysis available:", linkedInAvailable);
         setHasLinkedIn(linkedInAvailable);
 
         // For now, screening is always false since we haven't implemented it
@@ -141,6 +141,7 @@ export const CredibilitySection = ({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
+          <h3 className="text-sm font-medium">Credibility Statements</h3>
           <SourceIndicators 
             hasResume={hasResume}
             hasLinkedIn={hasLinkedIn}
