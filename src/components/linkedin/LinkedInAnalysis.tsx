@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { CheckCircle } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Accordion,
@@ -9,19 +8,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { AnalysisSection } from "../file-upload/analysis/AnalysisSection";
-import { useAnalysisState } from "../file-upload/analysis/useAnalysisState";
-
-const ANALYSIS_SECTIONS = [
-  { key: 'credibilityStatements', title: 'Credibility Statements' },
-  { key: 'caseStudies', title: 'Case Studies' },
-  { key: 'jobAssessment', title: 'Complete Assessment of Job' },
-  { key: 'motivations', title: 'Motivations' },
-  { key: 'businessProblems', title: 'Business Problems They Solve Better Than Most' },
-  { key: 'interests', title: 'Interests' },
-  { key: 'activities', title: 'Activities and Hobbies' },
-  { key: 'foundationalUnderstanding', title: 'Foundational Understanding on a Personal Level' },
-];
+import { AnalyzeButton } from "./analysis/AnalyzeButton";
+import { AnalysisSectionsList } from "./analysis/AnalysisSectionsList";
 
 export const LinkedInAnalysis = () => {
   const [searchParams] = useSearchParams();
@@ -59,47 +47,15 @@ export const LinkedInAnalysis = () => {
     enabled: !!candidateId,
   });
 
-  const {
-    editingSection,
-    editedContent,
-    handleEdit,
-    handleSave,
-    setEditedContent
-  } = useAnalysisState(candidateId, analysis);
-
-  const handleAnalyze = async () => {
-    if (!candidateId || !linkedInSections?.length) return;
-
-    try {
-      console.log("Starting LinkedIn sections analysis");
-      const { data, error } = await supabase.functions.invoke('analyze-linkedin-sections', {
-        body: { 
-          candidateId,
-          sections: linkedInSections
-        }
-      });
-
-      if (error) throw error;
-      console.log("LinkedIn analysis completed:", data);
-    } catch (error) {
-      console.error("Error analyzing LinkedIn sections:", error);
-    }
-  };
-
   const hasContent = analysis && Object.values(analysis).some(value => value && value !== "No data found");
-  const hasSections = linkedInSections && linkedInSections.length > 0;
 
   return (
     <div className="mt-4">
-      {hasSections && (
-        <Button 
-          onClick={handleAnalyze} 
-          disabled={isAnalysisLoading}
-          className="w-full mb-4"
-        >
-          Analyze LinkedIn Sections
-        </Button>
-      )}
+      <AnalyzeButton
+        candidateId={candidateId}
+        linkedInSections={linkedInSections}
+        isLoading={isAnalysisLoading}
+      />
 
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="analysis">
@@ -110,24 +66,11 @@ export const LinkedInAnalysis = () => {
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            <div className="space-y-4 pt-2">
-              {isSectionsLoading || isAnalysisLoading ? (
-                <p className="text-sm text-muted-foreground">Loading analysis...</p>
-              ) : (
-                ANALYSIS_SECTIONS.map(({ key, title }) => (
-                  <AnalysisSection
-                    key={key}
-                    title={title}
-                    content={analysis?.[key] || ""}
-                    isEditing={editingSection === key}
-                    editedContent={editedContent}
-                    onEdit={() => handleEdit(key, analysis?.[key] || "")}
-                    onSave={() => handleSave(key)}
-                    onContentChange={setEditedContent}
-                  />
-                ))
-              )}
-            </div>
+            <AnalysisSectionsList
+              candidateId={candidateId}
+              analysis={analysis}
+              isLoading={isSectionsLoading || isAnalysisLoading}
+            />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
