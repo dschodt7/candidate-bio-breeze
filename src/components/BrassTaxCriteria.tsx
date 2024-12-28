@@ -1,5 +1,7 @@
 import { CriteriaSection } from "@/components/criteria/CriteriaSection";
 import { useCriteriaSection } from "@/hooks/useCriteriaSection";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+import { Check } from "lucide-react";
 
 const initialSections = {
   compensation: {
@@ -44,19 +46,30 @@ export const BrassTaxCriteria = () => {
     useCriteriaSection(initialSections);
 
   return (
-    <div className="space-y-6">
+    <Accordion type="multiple" className="space-y-2">
       {Object.entries(sections).map(([key, section]) => (
-        <CriteriaSection
-          key={key}
-          title={section.title}
-          helpText={section.helpText}
-          value={section.value}
-          isSubmitted={savedSections[key]}
-          onChange={(value) => handleChange(key, value)}
-          onSubmit={() => handleSubmit(key)}
-          onReset={() => handleReset(key)}
-        />
+        <AccordionItem key={key} value={key} className="border rounded-lg">
+          <AccordionTrigger className="px-4 hover:no-underline">
+            <div className="flex items-center gap-2">
+              {section.title}
+              {savedSections[key] && (
+                <Check className="h-4 w-4 text-green-500" />
+              )}
+            </div>
+          </AccordionTrigger>
+          <AccordionContent className="px-4 pb-4">
+            <CriteriaSection
+              title={section.title}
+              helpText={section.helpText}
+              value={section.value}
+              isSubmitted={savedSections[key]}
+              onChange={(value) => handleChange(key, value)}
+              onSubmit={() => handleSubmit(key)}
+              onReset={() => handleReset(key)}
+            />
+          </AccordionContent>
+        </AccordionItem>
       ))}
-    </div>
+    </Accordion>
   );
 };

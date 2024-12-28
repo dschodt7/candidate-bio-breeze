@@ -31,13 +31,13 @@ export const CriteriaSection = ({
     <div className="space-y-4">
       <div className="flex items-center justify-between">
         <Label className="flex items-center">
-          {title}
           <Tooltip>
             <TooltipTrigger asChild>
-              <HelpCircle className="h-4 w-4 ml-2 inline-block text-muted-foreground" />
+              <HelpCircle className="h-4 w-4 mr-2 inline-block text-muted-foreground" />
             </TooltipTrigger>
             <TooltipContent className="max-w-xs">{helpText}</TooltipContent>
           </Tooltip>
+          Instructions
         </Label>
         <div className="flex gap-2">
           <Button
