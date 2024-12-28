@@ -7,19 +7,36 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 
+interface SourceAnalysis {
+  strength?: string;
+  uniqueContributions?: string;
+  patterns?: string;
+  specificity?: string;
+}
+
+interface MergeResult {
+  mergedStatements: string[];
+  sourceBreakdown: {
+    resume: string | SourceAnalysis;
+    linkedin: string | SourceAnalysis;
+  };
+}
+
 interface CompileState {
   isCompiling: boolean;
   isCompiled: boolean;
   isMergingCredibility: boolean;
 }
 
-interface MergeResult {
-  mergedStatements: string[];
-  sourceBreakdown: {
-    resume: string;
-    linkedin: string;
-  };
-}
+const formatSourceAnalysis = (analysis: string | SourceAnalysis): string => {
+  if (typeof analysis === 'string') {
+    return analysis || "No analysis available";
+  }
+  
+  return Object.entries(analysis)
+    .map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`)
+    .join('\n');
+};
 
 export const ExecutiveSummaryCompiler = () => {
   const { toast } = useToast();
@@ -152,8 +169,8 @@ export const ExecutiveSummaryCompiler = () => {
             <div>
               <Label className="text-base font-medium">Source Analysis</Label>
               <div className="mt-2 space-y-2 text-sm">
-                <p><strong>Resume:</strong> {mergeResult.sourceBreakdown.resume || "No analysis available"}</p>
-                <p><strong>LinkedIn:</strong> {mergeResult.sourceBreakdown.linkedin || "No analysis available"}</p>
+                <p><strong>Resume:</strong> {formatSourceAnalysis(mergeResult.sourceBreakdown.resume)}</p>
+                <p><strong>LinkedIn:</strong> {formatSourceAnalysis(mergeResult.sourceBreakdown.linkedin)}</p>
               </div>
             </div>
           </div>
