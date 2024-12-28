@@ -38,20 +38,20 @@ serve(async (req) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
           {
             role: 'system',
-            content: `You are an AI that analyzes LinkedIn profile sections and returns a JSON object. Return ONLY raw JSON without any markdown formatting or additional text. The JSON must contain exactly these fields:
+            content: `You are an expert AI that analyzes LinkedIn profiles to extract meaningful insights about candidates. Focus on concrete examples, specific achievements, and quantifiable metrics. Your analysis should be detailed and based on the actual content provided. Return ONLY raw JSON without any markdown formatting or additional text. The JSON must contain exactly these fields:
             {
-              "credibilityStatements": "endorsements and recognitions that enhance credibility",
-              "caseStudies": "examples of professional achievements",
-              "jobAssessment": "insights into responsibilities and leadership",
-              "motivations": "personal and professional aspirations",
-              "businessProblems": "areas of expertise and excellence",
-              "interests": "professional interests and passions",
-              "activities": "volunteer work and personal initiatives",
-              "foundationalUnderstanding": "personality traits and interpersonal skills"
+              "credibilityStatements": "detailed endorsements and recognitions that enhance credibility, focusing on specific achievements and metrics",
+              "caseStudies": "concrete examples of professional achievements with measurable outcomes",
+              "jobAssessment": "comprehensive insights into responsibilities and leadership roles, including scope and impact",
+              "motivations": "clear personal and professional aspirations backed by examples from their career history",
+              "businessProblems": "specific areas of expertise and demonstrated excellence with examples",
+              "interests": "professional interests and passions that align with their career trajectory",
+              "activities": "meaningful volunteer work and personal initiatives with impact",
+              "foundationalUnderstanding": "key personality traits and interpersonal skills evidenced in their profile"
             }`
           },
           {
