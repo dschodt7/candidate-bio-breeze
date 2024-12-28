@@ -30,15 +30,15 @@ export const CriteriaSection = ({
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <Label className="flex items-center">
+        <div className="flex items-center gap-2">
+          <Label>{title}</Label>
           <Tooltip>
             <TooltipTrigger asChild>
-              <HelpCircle className="h-4 w-4 mr-2 inline-block text-muted-foreground" />
+              <HelpCircle className="h-4 w-4 text-muted-foreground cursor-help" />
             </TooltipTrigger>
             <TooltipContent className="max-w-xs">{helpText}</TooltipContent>
           </Tooltip>
-          Instructions
-        </Label>
+        </div>
         <div className="flex gap-2">
           <Button
             variant="outline"
