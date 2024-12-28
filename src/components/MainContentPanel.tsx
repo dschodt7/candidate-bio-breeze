@@ -3,7 +3,6 @@ import { FileUpload } from "@/components/file-upload/FileUpload";
 import { LinkedInInput } from "@/components/LinkedInInput";
 import { NotesInput } from "@/components/NotesInput";
 import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
-import { ExecutiveSummaryCompiler } from "@/components/ExecutiveSummaryCompiler";
 import { CandidateStatusChecklist } from "@/components/CandidateStatusChecklist";
 import { useCandidate } from "@/hooks/useCandidate";
 
@@ -30,7 +29,6 @@ const MainContentPanel = () => {
                 <FileUpload />
                 <LinkedInInput />
                 <NotesInput />
-                <ExecutiveSummaryCompiler />
                 <ExecutiveSummaryForm />
               </div>
             )}
