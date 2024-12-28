@@ -1,7 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Wand2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -51,6 +50,44 @@ export const CredibilitySection = ({
   const [hasResume, setHasResume] = useState(false);
   const [hasLinkedIn, setHasLinkedIn] = useState(false);
   const [hasScreening, setHasScreening] = useState(false);
+
+  useEffect(() => {
+    const checkSources = async () => {
+      if (!candidateId) return;
+
+      try {
+        // Check for resume
+        const { data: candidate } = await supabase
+          .from('candidates')
+          .select('resume_path')
+          .eq('id', candidateId)
+          .single();
+        setHasResume(!!candidate?.resume_path);
+
+        // Check for LinkedIn content
+        const { data: linkedInSection } = await supabase
+          .from('linkedin_sections')
+          .select('content')
+          .eq('candidate_id', candidateId)
+          .eq('section_type', 'about')
+          .single();
+        setHasLinkedIn(!!linkedInSection?.content);
+
+        // Check for screening notes
+        const { data: screeningData } = await supabase
+          .from('candidates')
+          .select('screening_notes')
+          .eq('id', candidateId)
+          .single();
+        setHasScreening(!!screeningData?.screening_notes);
+
+      } catch (error) {
+        console.error("Error checking sources:", error);
+      }
+    };
+
+    checkSources();
+  }, [candidateId]);
 
   const handleMergeCredibility = async () => {
     if (!candidateId) {
@@ -127,7 +164,6 @@ export const CredibilitySection = ({
         {mergeResult && (
           <div className="space-y-4">
             <div>
-              <Label className="text-sm font-medium">Source Analysis</Label>
               <div className="mt-2 space-y-2 text-sm">
                 <p><strong>Resume:</strong> {formatSourceAnalysis(mergeResult.sourceBreakdown.resume)}</p>
                 <p><strong>LinkedIn:</strong> {formatSourceAnalysis(mergeResult.sourceBreakdown.linkedin)}</p>
