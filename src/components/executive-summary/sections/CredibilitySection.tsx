@@ -80,6 +80,8 @@ export const CredibilitySection = ({
     if (!candidateId || !value.trim()) return;
 
     try {
+      console.log("Submitting credibility statements for candidate:", candidateId);
+      
       const { error } = await supabase
         .from('executive_summaries')
         .update({ 
@@ -93,6 +95,7 @@ export const CredibilitySection = ({
       setIsSubmitted(true);
       onSubmit();
       
+      console.log("Credibility statements submitted successfully");
       toast({
         title: "Success",
         description: "Credibility statements saved and locked.",
@@ -111,6 +114,8 @@ export const CredibilitySection = ({
     if (!candidateId) return;
 
     try {
+      console.log("Resetting credibility statements for candidate:", candidateId);
+      
       const { error } = await supabase
         .from('executive_summaries')
         .update({ 
@@ -124,6 +129,7 @@ export const CredibilitySection = ({
       setIsSubmitted(false);
       onChange("");
       
+      console.log("Credibility statements reset successfully");
       toast({
         title: "Reset",
         description: "Credibility statements have been reset.",
