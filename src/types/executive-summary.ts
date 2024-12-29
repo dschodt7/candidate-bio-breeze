@@ -12,8 +12,13 @@ export interface ExecutiveSummary {
 }
 
 export interface BrassTaxCriteria {
+  compensation?: string;
+  workPreference?: string;
   credibility?: string;
-  [key: string]: string | undefined;
+  caseStudies?: string;
+  jobAssessment?: string;
+  motivations?: string;
+  timeframe?: string;
 }
 
 export interface MergeResult {

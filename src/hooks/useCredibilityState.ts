@@ -31,7 +31,8 @@ export const useCredibilityState = (candidateId: string | null) => {
         if (data) {
           const summary = data as ExecutiveSummary;
           console.log("Fetched credibility state:", summary);
-          setValue(summary.brass_tax_criteria?.credibility || "");
+          const brassTaxCriteria = summary.brass_tax_criteria as BrassTaxCriteria;
+          setValue(brassTaxCriteria.credibility || "");
           setIsSubmitted(summary.credibility_submitted || false);
         }
       } catch (error) {
@@ -111,7 +112,7 @@ export const useCredibilityState = (candidateId: string | null) => {
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: { credibility: newValue },
+          brass_tax_criteria: { credibility: newValue } as BrassTaxCriteria,
           credibility_submitted: true
         });
 
@@ -146,7 +147,7 @@ export const useCredibilityState = (candidateId: string | null) => {
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: { credibility: "" },
+          brass_tax_criteria: { credibility: "" } as BrassTaxCriteria,
           credibility_submitted: false
         });
 
