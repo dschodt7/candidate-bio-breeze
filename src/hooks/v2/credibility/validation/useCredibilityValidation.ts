@@ -7,14 +7,18 @@ export const useCredibilityValidation = (candidateId: string | null) => {
 
   console.log("Initializing credibility validation hook for candidate:", candidateId);
 
+  const showError = (title: string, description: string) => {
+    toast({
+      title,
+      description,
+      variant: "destructive",
+    });
+  };
+
   const validateCandidate = () => {
     if (!candidateId) {
       console.error("Operation attempted without candidate ID");
-      toast({
-        title: "Error",
-        description: "No candidate selected. Please select a candidate first.",
-        variant: "destructive",
-      });
+      showError("Error", "No candidate selected. Please select a candidate first.");
       return false;
     }
     return true;
@@ -46,22 +50,20 @@ export const useCredibilityValidation = (candidateId: string | null) => {
       console.log("Source validation results:", { hasResume, hasLinkedIn });
 
       if (!hasResume && !hasLinkedIn) {
-        toast({
-          title: "Missing Data",
-          description: "Please upload either a resume or LinkedIn data before merging.",
-          variant: "destructive",
-        });
+        showError(
+          "Missing Data",
+          "Please upload either a resume or LinkedIn data before merging."
+        );
         return false;
       }
 
       return true;
     } catch (error) {
       console.error("Error validating sources:", error);
-      toast({
-        title: "Validation Error",
-        description: "Failed to validate data sources. Please try again.",
-        variant: "destructive",
-      });
+      showError(
+        "Validation Error",
+        "Failed to validate data sources. Please try again."
+      );
       return false;
     }
   };
