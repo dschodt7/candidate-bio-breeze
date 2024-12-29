@@ -69,12 +69,17 @@ export const useCredibilitySection = (candidateId: string | null) => {
 
     try {
       console.log("Submitting credibility with value:", value);
+      
+      // Using upsert operation with candidate_id as the conflict target
       const { error } = await supabase
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
           brass_tax_criteria: { credibility: value },
           credibility_submitted: true
+        }, {
+          onConflict: 'candidate_id',
+          ignoreDuplicates: false
         });
 
       if (error) throw error;
@@ -91,7 +96,7 @@ export const useCredibilitySection = (candidateId: string | null) => {
       console.error("Error submitting credibility:", error);
       toast({
         title: "Error",
-        description: "Failed to save credibility statements",
+        description: "Failed to save credibility statements. Please try again.",
         variant: "destructive",
       });
     }
@@ -108,6 +113,9 @@ export const useCredibilitySection = (candidateId: string | null) => {
           candidate_id: candidateId,
           brass_tax_criteria: { credibility: "" },
           credibility_submitted: false
+        }, {
+          onConflict: 'candidate_id',
+          ignoreDuplicates: false
         });
 
       if (error) throw error;
