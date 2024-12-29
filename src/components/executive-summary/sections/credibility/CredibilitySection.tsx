@@ -21,7 +21,6 @@ export const CredibilitySection = ({
   const {
     isSubmitted,
     mergeResult,
-    isMerging,
     value,
     setValue,
     handleSubmit,
