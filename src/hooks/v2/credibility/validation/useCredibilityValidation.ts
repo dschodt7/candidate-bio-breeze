@@ -2,7 +2,10 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
 export const useCredibilityValidation = (candidateId: string | null) => {
+  // Always initialize toast hook at the top level
   const { toast } = useToast();
+
+  console.log("Initializing credibility validation hook for candidate:", candidateId);
 
   const validateCandidate = () => {
     if (!candidateId) {
@@ -18,9 +21,11 @@ export const useCredibilityValidation = (candidateId: string | null) => {
   };
 
   const validateSourcesForMerge = async (): Promise<boolean> => {
-    if (!candidateId) return false;
+    if (!validateCandidate()) return false;
 
     try {
+      console.log("Validating sources for merge operation");
+      
       const [resumeResponse, linkedInResponse] = await Promise.all([
         supabase
           .from('resume_analyses')
@@ -37,6 +42,8 @@ export const useCredibilityValidation = (candidateId: string | null) => {
 
       const hasResume = !!resumeResponse.data?.credibility_statements;
       const hasLinkedIn = !!linkedInResponse.data?.analysis;
+
+      console.log("Source validation results:", { hasResume, hasLinkedIn });
 
       if (!hasResume && !hasLinkedIn) {
         toast({

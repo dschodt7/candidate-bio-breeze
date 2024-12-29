@@ -12,12 +12,14 @@ export const useCredibilityOperations = (
   setIsEditing: (value: boolean) => void,
   setValue: (value: string) => void
 ) => {
+  // Initialize all hooks at the top level
   const { toast } = useToast();
   const [isMerging, setIsMerging] = useState(false);
   const [mergeResult, setMergeResult] = useState<MergeResult | null>(null);
-  
   const { validateCandidate, validateSourcesForMerge } = useCredibilityValidation(candidateId);
   const { submitToDatabase, resetInDatabase } = useCredibilityDatabase(candidateId);
+
+  console.log("Initializing credibility operations hook for candidate:", candidateId);
 
   const handleSubmit = async () => {
     if (!validateCandidate()) return;

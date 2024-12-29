@@ -2,6 +2,7 @@ import { useCredibilityState } from "./credibility/useCredibilityState";
 import { useCredibilityOperations } from "./credibility/useCredibilityOperations";
 
 export const useCredibilitySection = (candidateId: string | null) => {
+  // Initialize all hooks at the top level
   const {
     value,
     setValue,
@@ -28,6 +29,17 @@ export const useCredibilitySection = (candidateId: string | null) => {
     setIsEditing,
     setValue
   );
+
+  console.log("Credibility section hook state:", {
+    value,
+    isSubmitted,
+    isEditing,
+    isLoading,
+    isMerging,
+    hasResume,
+    hasLinkedIn,
+    hasScreening
+  });
 
   return {
     // State
