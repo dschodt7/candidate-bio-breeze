@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { MergeResult } from "@/types/executive-summary";
+import { useCredibilityValidation } from "./validation/useCredibilityValidation";
+import { useCredibilityDatabase } from "./database/useCredibilityDatabase";
 
 export const useCredibilityOperations = (
   candidateId: string | null,
@@ -13,19 +15,9 @@ export const useCredibilityOperations = (
   const { toast } = useToast();
   const [isMerging, setIsMerging] = useState(false);
   const [mergeResult, setMergeResult] = useState<MergeResult | null>(null);
-
-  const validateCandidate = () => {
-    if (!candidateId) {
-      console.error("Operation attempted without candidate ID");
-      toast({
-        title: "Error",
-        description: "No candidate selected. Please select a candidate first.",
-        variant: "destructive",
-      });
-      return false;
-    }
-    return true;
-  };
+  
+  const { validateCandidate, validateSourcesForMerge } = useCredibilityValidation(candidateId);
+  const { submitToDatabase, resetInDatabase } = useCredibilityDatabase(candidateId);
 
   const handleSubmit = async () => {
     if (!validateCandidate()) return;
@@ -40,114 +32,22 @@ export const useCredibilityOperations = (
       return;
     }
 
-    try {
-      console.log("Submitting credibility with value:", value);
-      
-      const { error } = await supabase
-        .from('executive_summaries')
-        .upsert({
-          candidate_id: candidateId,
-          credibility_statement: value,
-          credibility_submitted: true
-        });
-
-      if (error) throw error;
-
+    const success = await submitToDatabase(value);
+    if (success) {
       setIsSubmitted(true);
       setIsEditing(false);
-      
-      console.log("Credibility submitted successfully");
-      toast({
-        title: "Success",
-        description: "Credibility statements saved",
-      });
-    } catch (error) {
-      console.error("Error submitting credibility:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save credibility statements. Please try again.",
-        variant: "destructive",
-      });
     }
   };
 
   const handleReset = async () => {
     if (!validateCandidate()) return;
 
-    try {
-      console.log("Resetting credibility for candidate:", candidateId);
-      
-      const { error } = await supabase
-        .from('executive_summaries')
-        .update({
-          credibility_statement: null,
-          credibility_submitted: false,
-          resume_credibility_source: null,
-          linkedin_credibility_source: null
-        })
-        .eq('candidate_id', candidateId);
-
-      if (error) throw error;
-
+    const success = await resetInDatabase();
+    if (success) {
       setValue("");
       setIsSubmitted(false);
       setIsEditing(false);
       setMergeResult(null);
-      
-      console.log("Credibility reset successfully");
-      toast({
-        title: "Reset Complete",
-        description: "Credibility statements have been reset",
-      });
-    } catch (error) {
-      console.error("Error resetting credibility:", error);
-      toast({
-        title: "Reset Failed",
-        description: "Failed to reset credibility statements. Please try again.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const validateSourcesForMerge = async (): Promise<boolean> => {
-    if (!candidateId) return false;
-
-    try {
-      const [resumeResponse, linkedInResponse] = await Promise.all([
-        supabase
-          .from('resume_analyses')
-          .select('credibility_statements')
-          .eq('candidate_id', candidateId)
-          .maybeSingle(),
-        supabase
-          .from('linkedin_sections')
-          .select('analysis')
-          .eq('candidate_id', candidateId)
-          .eq('section_type', 'about')
-          .maybeSingle()
-      ]);
-
-      const hasResume = !!resumeResponse.data?.credibility_statements;
-      const hasLinkedIn = !!linkedInResponse.data?.analysis;
-
-      if (!hasResume && !hasLinkedIn) {
-        toast({
-          title: "Missing Data",
-          description: "Please upload either a resume or LinkedIn data before merging.",
-          variant: "destructive",
-        });
-        return false;
-      }
-
-      return true;
-    } catch (error) {
-      console.error("Error validating sources:", error);
-      toast({
-        title: "Validation Error",
-        description: "Failed to validate data sources. Please try again.",
-        variant: "destructive",
-      });
-      return false;
     }
   };
 
