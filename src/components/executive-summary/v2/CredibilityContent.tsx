@@ -8,7 +8,7 @@ interface CredibilityContentProps {
   isEditing: boolean;
   isLoading?: boolean;
   onChange: (value: string) => void;
-  onSubmit: () => void;
+  onSubmit: () => void; // Updated to match the expected signature
   onEdit: () => void;
   onReset: () => void;
 }
@@ -23,6 +23,8 @@ export const CredibilityContent = ({
   onEdit,
   onReset,
 }: CredibilityContentProps) => {
+  console.log("CredibilityContent rendering with:", { value, isSubmitted, isEditing, isLoading });
+
   if (isLoading) {
     return (
       <div className="space-y-4">

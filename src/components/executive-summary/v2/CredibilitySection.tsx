@@ -27,6 +27,22 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
     mergeResult
   } = useCredibilitySection(candidateId);
 
+  console.log("CredibilitySection rendering with:", {
+    value,
+    isSubmitted,
+    isEditing,
+    isLoading,
+    isMerging,
+    hasResume,
+    hasLinkedIn,
+    hasScreening
+  });
+
+  const handleSubmitWrapper = () => {
+    console.log("Submitting credibility with value:", value);
+    handleSubmit(value);
+  };
+
   return (
     <ExecutiveSummarySection
       title="Credibility Statements"
@@ -59,7 +75,7 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
           isEditing={isEditing}
           isLoading={isLoading}
           onChange={setValue}
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmitWrapper}
           onEdit={() => setIsEditing(true)}
           onReset={handleReset}
         />
