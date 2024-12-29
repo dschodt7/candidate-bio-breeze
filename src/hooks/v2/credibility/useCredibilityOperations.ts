@@ -14,8 +14,24 @@ export const useCredibilityOperations = (
   const [isMerging, setIsMerging] = useState(false);
   const [mergeResult, setMergeResult] = useState<MergeResult | null>(null);
 
+  const validateCandidate = () => {
+    if (!candidateId) {
+      console.error("Operation attempted without candidate ID");
+      toast({
+        title: "Error",
+        description: "No candidate selected. Please select a candidate first.",
+        variant: "destructive",
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async () => {
-    if (!candidateId || !value.trim()) {
+    if (!validateCandidate()) return;
+
+    if (!value.trim()) {
+      console.error("Submit attempted with empty content");
       toast({
         title: "Error",
         description: "Please enter some content before submitting",
@@ -49,14 +65,14 @@ export const useCredibilityOperations = (
       console.error("Error submitting credibility:", error);
       toast({
         title: "Error",
-        description: "Failed to save credibility statements",
+        description: "Failed to save credibility statements. Please try again.",
         variant: "destructive",
       });
     }
   };
 
   const handleReset = async () => {
-    if (!candidateId) return;
+    if (!validateCandidate()) return;
 
     try {
       console.log("Resetting credibility for candidate:", candidateId);
@@ -80,29 +96,67 @@ export const useCredibilityOperations = (
       
       console.log("Credibility reset successfully");
       toast({
-        title: "Reset",
+        title: "Reset Complete",
         description: "Credibility statements have been reset",
       });
     } catch (error) {
       console.error("Error resetting credibility:", error);
       toast({
-        title: "Error",
-        description: "Failed to reset credibility statements",
+        title: "Reset Failed",
+        description: "Failed to reset credibility statements. Please try again.",
         variant: "destructive",
       });
     }
   };
 
-  const handleMerge = async () => {
-    if (!candidateId) {
+  const validateSourcesForMerge = async (): Promise<boolean> => {
+    if (!candidateId) return false;
+
+    try {
+      const [resumeResponse, linkedInResponse] = await Promise.all([
+        supabase
+          .from('resume_analyses')
+          .select('credibility_statements')
+          .eq('candidate_id', candidateId)
+          .maybeSingle(),
+        supabase
+          .from('linkedin_sections')
+          .select('analysis')
+          .eq('candidate_id', candidateId)
+          .eq('section_type', 'about')
+          .maybeSingle()
+      ]);
+
+      const hasResume = !!resumeResponse.data?.credibility_statements;
+      const hasLinkedIn = !!linkedInResponse.data?.analysis;
+
+      if (!hasResume && !hasLinkedIn) {
+        toast({
+          title: "Missing Data",
+          description: "Please upload either a resume or LinkedIn data before merging.",
+          variant: "destructive",
+        });
+        return false;
+      }
+
+      return true;
+    } catch (error) {
+      console.error("Error validating sources:", error);
       toast({
-        title: "Error",
-        description: "No candidate selected",
+        title: "Validation Error",
+        description: "Failed to validate data sources. Please try again.",
         variant: "destructive",
       });
-      return;
+      return false;
     }
+  };
+
+  const handleMerge = async () => {
+    if (!validateCandidate()) return;
     
+    const hasValidSources = await validateSourcesForMerge();
+    if (!hasValidSources) return;
+
     setIsMerging(true);
     try {
       console.log("Starting merge operation for candidate:", candidateId);
@@ -122,12 +176,14 @@ export const useCredibilityOperations = (
           title: "Success",
           description: "Credibility statements merged successfully",
         });
+      } else {
+        throw new Error("No merged statements received");
       }
     } catch (error) {
       console.error("Error merging credibility statements:", error);
       toast({
-        title: "Error",
-        description: "Failed to merge credibility statements",
+        title: "Merge Failed",
+        description: "Failed to merge credibility statements. Please try again.",
         variant: "destructive",
       });
     } finally {
