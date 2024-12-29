@@ -12,7 +12,6 @@ export const useCredibilityOperations = (
   setIsEditing: (value: boolean) => void,
   setValue: (value: string) => void
 ) => {
-  // Initialize all hooks at the top level
   const { toast } = useToast();
   const [isMerging, setIsMerging] = useState(false);
   const [mergeResult, setMergeResult] = useState<MergeResult | null>(null);
@@ -66,14 +65,14 @@ export const useCredibilityOperations = (
     setIsMerging(true);
     try {
       console.log("Starting merge operation for candidate:", candidateId);
-      const { data: { data }, error } = await supabase.functions.invoke('merge-credibility-statements', {
+      const { data, error } = await supabase.functions.invoke('merge-credibility-statements', {
         body: { candidateId }
       });
 
       if (error) throw error;
 
-      if (data?.mergedStatements) {
-        const result = data as MergeResult;
+      if (data?.data?.mergedStatements) {
+        const result = data.data as MergeResult;
         setMergeResult(result);
         setValue(result.mergedStatements.join("\n\n"));
         setIsEditing(true);
