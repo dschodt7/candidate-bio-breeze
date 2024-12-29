@@ -93,7 +93,6 @@ export const CredibilitySection = ({
         console.log("Merge result:", data.data);
         setMergeResult(data.data);
         onChange(data.data.mergedStatements.join("\n\n"));
-        onSubmit();
       }
       
       toast({
@@ -126,6 +125,7 @@ export const CredibilitySection = ({
         <CredibilityInput
           value={value}
           onChange={onChange}
+          onSubmit={onSubmit}
         />
         <SourceAnalysis mergeResult={mergeResult} />
       </div>
