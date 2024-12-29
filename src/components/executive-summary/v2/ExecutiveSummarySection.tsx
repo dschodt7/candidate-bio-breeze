@@ -1,3 +1,4 @@
+import { ReactNode } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { HelpCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
@@ -10,7 +11,7 @@ interface ExecutiveSummarySectionProps {
   hasResume?: boolean;
   hasLinkedIn?: boolean;
   hasScreening?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 export const ExecutiveSummarySection = ({
