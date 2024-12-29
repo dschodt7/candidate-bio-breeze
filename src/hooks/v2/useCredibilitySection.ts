@@ -10,6 +10,7 @@ export const useCredibilitySection = (candidateId: string | null) => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isMerging, setIsMerging] = useState(false);
 
   const {
     hasResume,
@@ -68,12 +69,11 @@ export const useCredibilitySection = (candidateId: string | null) => {
 
     try {
       console.log("Submitting credibility with value:", value);
-      const brassTaxData: BrassTaxCriteria = { credibility: value };
       const { error } = await supabase
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: brassTaxData,
+          brass_tax_criteria: { credibility: value } as unknown as Json,
           credibility_submitted: true
         });
 
@@ -102,12 +102,11 @@ export const useCredibilitySection = (candidateId: string | null) => {
 
     try {
       console.log("Resetting credibility for candidate:", candidateId);
-      const brassTaxData: BrassTaxCriteria = { credibility: "" };
       const { error } = await supabase
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: brassTaxData,
+          brass_tax_criteria: { credibility: "" } as unknown as Json,
           credibility_submitted: false
         });
 
@@ -132,6 +131,34 @@ export const useCredibilitySection = (candidateId: string | null) => {
     }
   };
 
+  const handleMerge = async () => {
+    if (!candidateId) return;
+    
+    setIsMerging(true);
+    try {
+      const response = await fetch(`/api/merge-credibility-statements?candidateId=${candidateId}`);
+      if (!response.ok) throw new Error('Failed to merge statements');
+      
+      const result = await response.json();
+      setValue(result.mergedStatements.join("\n\n"));
+      setIsEditing(true);
+      
+      toast({
+        title: "Success",
+        description: "Credibility statements merged successfully",
+      });
+    } catch (error) {
+      console.error("Error merging credibility statements:", error);
+      toast({
+        title: "Error",
+        description: "Failed to merge credibility statements",
+        variant: "destructive",
+      });
+    } finally {
+      setIsMerging(false);
+    }
+  };
+
   return {
     value,
     setValue,
@@ -139,10 +166,12 @@ export const useCredibilitySection = (candidateId: string | null) => {
     isEditing,
     setIsEditing,
     isLoading: isLoading || isSourceCheckLoading,
+    isMerging,
     hasResume,
     hasLinkedIn,
     hasScreening,
     handleSubmit,
     handleReset,
+    handleMerge,
   };
 };
