@@ -21,10 +21,10 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
     hasResume,
     hasLinkedIn,
     hasScreening,
+    mergeResult,
     handleSubmit,
     handleReset,
-    handleMerge,
-    mergeResult
+    handleMerge
   } = useCredibilitySection(candidateId);
 
   console.log("CredibilitySection rendering with:", {
@@ -38,33 +38,6 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
     hasScreening
   });
 
-  const handleSubmitWrapper = async () => {
-    try {
-      console.log("Submitting credibility with value:", value);
-      await handleSubmit(value);
-    } catch (error) {
-      console.error("Error in handleSubmitWrapper:", error);
-    }
-  };
-
-  const handleResetWrapper = async () => {
-    try {
-      console.log("Resetting credibility");
-      await handleReset();
-    } catch (error) {
-      console.error("Error in handleResetWrapper:", error);
-    }
-  };
-
-  const handleMergeWrapper = async () => {
-    try {
-      console.log("Starting merge operation");
-      await handleMerge();
-    } catch (error) {
-      console.error("Error in handleMergeWrapper:", error);
-    }
-  };
-
   return (
     <ExecutiveSummarySection
       title="Credibility Statements"
@@ -77,7 +50,7 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
       <div className="space-y-4">
         <Button
           variant="outline"
-          onClick={handleMergeWrapper}
+          onClick={handleMerge}
           disabled={isMerging || !hasResume || (isSubmitted && !isEditing)}
           className="gap-2 w-full group relative"
         >
@@ -97,9 +70,9 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
           isEditing={isEditing}
           isLoading={isLoading}
           onChange={setValue}
-          onSubmit={handleSubmitWrapper}
+          onSubmit={handleSubmit}
           onEdit={() => setIsEditing(true)}
-          onReset={handleResetWrapper}
+          onReset={handleReset}
         />
 
         <SourceAnalysis mergeResult={mergeResult} />
