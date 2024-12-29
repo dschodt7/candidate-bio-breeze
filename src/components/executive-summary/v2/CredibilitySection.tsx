@@ -1,9 +1,8 @@
-import { useSearchParams } from "react-router-dom";
+import { useCredibilitySection } from "@/hooks/v2/useCredibilitySection";
 import { ExecutiveSummarySection } from "./ExecutiveSummarySection";
 import { CredibilityContent } from "./CredibilityContent";
-import { useCredibilitySection } from "@/hooks/v2/useCredibilitySection";
 import { Button } from "@/components/ui/button";
-import { Loader2 } from "lucide-react";
+import { Loader2, Wand2 } from "lucide-react";
 
 interface CredibilitySectionProps {
   candidateId: string | null;
@@ -40,10 +39,23 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
           variant="outline"
           onClick={handleMerge}
           disabled={isMerging || !hasResume}
-          className="gap-2 w-full"
+          className="gap-2 w-full group relative overflow-hidden"
         >
-          {isMerging && <Loader2 className="h-4 w-4 animate-spin" />}
-          AI Compile
+          {isMerging ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <Wand2 className="h-4 w-4 transition-transform group-hover:rotate-12" />
+          )}
+          <span className={isMerging ? "" : "group-hover:scale-105 transition-transform"}>
+            AI Compile
+          </span>
+          {!isMerging && (
+            <>
+              <span className="absolute -top-2 left-2 animate-sparkle delay-100">✨</span>
+              <span className="absolute -top-2 right-2 animate-sparkle delay-300">✨</span>
+              <span className="absolute -bottom-2 left-1/3 animate-sparkle delay-500">✨</span>
+            </>
+          )}
         </Button>
         
         <CredibilityContent
