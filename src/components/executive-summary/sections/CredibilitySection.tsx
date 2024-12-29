@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { CredibilityHeader } from "./credibility/CredibilityHeader";
 import { CredibilityInput } from "./credibility/CredibilityInput";
 import { SourceAnalysis } from "./credibility/SourceAnalysis";
@@ -19,6 +19,9 @@ export const CredibilitySection = ({
   onChange,
   onSubmit
 }: CredibilitySectionProps) => {
+  console.log("CredibilitySection rendering with value:", value);
+  console.log("CredibilitySection candidateId:", candidateId);
+
   const {
     mergeResult,
     setMergeResult,
@@ -39,8 +42,20 @@ export const CredibilitySection = ({
     handleReset
   } = useCredibilitySubmission(candidateId);
 
+  useEffect(() => {
+    console.log("CredibilitySection mounted/updated");
+    console.log("Current submission state:", isSubmitted);
+    console.log("Current merge result:", mergeResult);
+    
+    return () => {
+      console.log("CredibilitySection unmounting");
+    };
+  }, [isSubmitted, mergeResult]);
+
   const handleMerge = async () => {
+    console.log("Initiating merge operation");
     const result = await handleMergeCredibility();
+    console.log("Merge operation result:", result);
     if (result) {
       setMergeResult(result);
       onChange(result.mergedStatements.join("\n\n"));
@@ -48,11 +63,16 @@ export const CredibilitySection = ({
   };
 
   const handleSubmitCredibility = async () => {
+    console.log("Submitting credibility with value:", value);
     const success = await handleSubmit(value);
+    console.log("Submission result:", success);
     if (success) {
       onSubmit();
     }
   };
+
+  console.log("Current render state - isSubmitted:", isSubmitted);
+  console.log("Current render state - mergeResult:", mergeResult);
 
   return (
     <div className="space-y-4">
