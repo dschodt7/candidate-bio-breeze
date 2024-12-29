@@ -9,6 +9,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { CredibilitySection } from "./executive-summary/sections/CredibilitySection";
+import { BrassTaxSection } from "./executive-summary/sections/brass-tax/BrassTaxSection";
 
 const initialSections = {
   compensation: {
@@ -52,6 +53,7 @@ export const BrassTaxCriteria = () => {
   const { sections, savedSections, handleSubmit, handleReset, handleChange } = 
     useCriteriaSection(initialSections);
   const [searchParams] = useSearchParams();
+  const candidateId = searchParams.get('candidate');
 
   return (
     <Accordion type="multiple" className="space-y-2">
@@ -77,21 +79,18 @@ export const BrassTaxCriteria = () => {
           <AccordionContent className="px-4 pb-4">
             {key === 'credibility' ? (
               <CredibilitySection
-                candidateId={searchParams.get('candidate')}
+                candidateId={candidateId}
                 value={section.value}
                 onChange={(value) => handleChange(key, value)}
                 onSubmit={() => handleSubmit(key)}
               />
             ) : (
-              <CriteriaSection
-                title=""
-                helpText={section.helpText}
+              <BrassTaxSection
+                candidateId={candidateId}
+                sectionKey={key}
                 value={section.value}
-                isSubmitted={savedSections[key]}
                 onChange={(value) => handleChange(key, value)}
                 onSubmit={() => handleSubmit(key)}
-                onReset={() => handleReset(key)}
-                hideHelp={true}
               />
             )}
           </AccordionContent>
