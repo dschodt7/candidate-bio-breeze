@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useCredibilitySourceCheck } from "@/hooks/useCredibilitySourceCheck";
+import { BrassTaxCriteria } from "@/types/executive-summary";
 
 export const useCredibilitySection = (candidateId: string | null) => {
   const { toast } = useToast();
@@ -36,7 +37,8 @@ export const useCredibilitySection = (candidateId: string | null) => {
 
         if (data) {
           console.log("Fetched credibility state:", data);
-          setValue(data.brass_tax_criteria?.credibility || "");
+          const brassTaxData = data.brass_tax_criteria as BrassTaxCriteria;
+          setValue(brassTaxData?.credibility || "");
           setIsSubmitted(data.credibility_submitted || false);
         }
       } catch (error) {
@@ -66,11 +68,12 @@ export const useCredibilitySection = (candidateId: string | null) => {
 
     try {
       console.log("Submitting credibility with value:", value);
+      const brassTaxData: BrassTaxCriteria = { credibility: value };
       const { error } = await supabase
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: { credibility: value },
+          brass_tax_criteria: brassTaxData,
           credibility_submitted: true
         });
 
@@ -99,11 +102,12 @@ export const useCredibilitySection = (candidateId: string | null) => {
 
     try {
       console.log("Resetting credibility for candidate:", candidateId);
+      const brassTaxData: BrassTaxCriteria = { credibility: "" };
       const { error } = await supabase
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: { credibility: "" },
+          brass_tax_criteria: brassTaxData,
           credibility_submitted: false
         });
 
