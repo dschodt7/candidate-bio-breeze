@@ -1,10 +1,10 @@
-import { useState, useEffect } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { CredibilityHeader } from "./credibility/CredibilityHeader";
 import { CredibilityInput } from "./credibility/CredibilityInput";
 import { SourceAnalysis } from "./credibility/SourceAnalysis";
-import { MergeResult } from "@/types/executive-summary";
+import { useCredibilityState } from "./credibility/useCredibilityState";
 
 interface CredibilitySectionProps {
   candidateId: string | null;
@@ -20,63 +20,17 @@ export const CredibilitySection = ({
   onSubmit
 }: CredibilitySectionProps) => {
   const { toast } = useToast();
-  const [mergeResult, setMergeResult] = useState<MergeResult | null>(null);
-  const [isMerging, setIsMerging] = useState(false);
-  const [hasResume, setHasResume] = useState(false);
-  const [hasLinkedIn, setHasLinkedIn] = useState(false);
-  const [hasScreening, setHasScreening] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-
-  useEffect(() => {
-    const checkSources = async () => {
-      if (!candidateId) return;
-
-      try {
-        console.log("Checking sources for candidate:", candidateId);
-        
-        // Check for resume analysis
-        const { data: resumeAnalysis } = await supabase
-          .from('resume_analyses')
-          .select('credibility_statements')
-          .eq('candidate_id', candidateId)
-          .single();
-        
-        const resumeAvailable = !!resumeAnalysis?.credibility_statements;
-        console.log("Resume analysis available:", resumeAvailable);
-        setHasResume(resumeAvailable);
-
-        // Check for LinkedIn analysis
-        const { data: linkedInSection } = await supabase
-          .from('linkedin_sections')
-          .select('analysis')
-          .eq('candidate_id', candidateId)
-          .eq('section_type', 'about')
-          .single();
-        
-        const linkedInAvailable = !!linkedInSection?.analysis;
-        console.log("LinkedIn analysis available:", linkedInAvailable);
-        setHasLinkedIn(linkedInAvailable);
-
-        // Check submission state
-        const { data: executiveSummary } = await supabase
-          .from('executive_summaries')
-          .select('credibility_submitted')
-          .eq('candidate_id', candidateId)
-          .single();
-
-        setIsSubmitted(!!executiveSummary?.credibility_submitted);
-        console.log("Credibility submitted state:", executiveSummary?.credibility_submitted);
-
-        // For now, screening is always false since we haven't implemented it
-        setHasScreening(false);
-
-      } catch (error) {
-        console.error("Error checking sources:", error);
-      }
-    };
-
-    checkSources();
-  }, [candidateId]);
+  const {
+    mergeResult,
+    setMergeResult,
+    isMerging,
+    setIsMerging,
+    hasResume,
+    hasLinkedIn,
+    hasScreening,
+    isSubmitted,
+    setIsSubmitted,
+  } = useCredibilityState(candidateId);
 
   const handleMergeCredibility = async () => {
     if (!candidateId) {
@@ -129,7 +83,7 @@ export const CredibilitySection = ({
       const { error } = await supabase
         .from('executive_summaries')
         .update({ 
-          brass_tax_criteria: { ...value },
+          brass_tax_criteria: { credibility: value },
           credibility_submitted: true 
         })
         .eq('candidate_id', candidateId);
@@ -160,6 +114,7 @@ export const CredibilitySection = ({
       const { error } = await supabase
         .from('executive_summaries')
         .update({ 
+          brass_tax_criteria: { credibility: "" },
           credibility_submitted: false 
         })
         .eq('candidate_id', candidateId);
