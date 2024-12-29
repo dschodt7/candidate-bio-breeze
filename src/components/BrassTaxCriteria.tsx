@@ -8,7 +8,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { CredibilitySection as CredibilitySectionV2 } from "./executive-summary/v2/CredibilitySection";
+import { CredibilitySection } from "./executive-summary/v2/CredibilitySection";
 import { BrassTaxSection } from "./executive-summary/sections/brass-tax/BrassTaxSection";
 
 const initialSections = {
@@ -78,7 +78,7 @@ export const BrassTaxCriteria = () => {
           </AccordionTrigger>
           <AccordionContent className="px-4 pb-4">
             {key === 'credibility' ? (
-              <CredibilitySectionV2 />
+              <CredibilitySection candidateId={candidateId} />
             ) : (
               <BrassTaxSection
                 candidateId={candidateId}

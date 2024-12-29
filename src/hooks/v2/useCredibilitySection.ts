@@ -73,7 +73,7 @@ export const useCredibilitySection = (candidateId: string | null) => {
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: { credibility: value } as unknown as Json,
+          brass_tax_criteria: { credibility: value },
           credibility_submitted: true
         });
 
@@ -106,7 +106,7 @@ export const useCredibilitySection = (candidateId: string | null) => {
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: { credibility: "" } as unknown as Json,
+          brass_tax_criteria: { credibility: "" },
           credibility_submitted: false
         });
 
@@ -136,17 +136,22 @@ export const useCredibilitySection = (candidateId: string | null) => {
     
     setIsMerging(true);
     try {
-      const response = await fetch(`/api/merge-credibility-statements?candidateId=${candidateId}`);
-      if (!response.ok) throw new Error('Failed to merge statements');
-      
-      const result = await response.json();
-      setValue(result.mergedStatements.join("\n\n"));
-      setIsEditing(true);
-      
-      toast({
-        title: "Success",
-        description: "Credibility statements merged successfully",
+      console.log("Starting merge operation for candidate:", candidateId);
+      const { data, error } = await supabase.functions.invoke('merge-credibility-statements', {
+        body: { candidateId }
       });
+
+      if (error) throw error;
+
+      if (data?.data?.mergedStatements) {
+        setValue(data.data.mergedStatements.join("\n\n"));
+        setIsEditing(true);
+        
+        toast({
+          title: "Success",
+          description: "Credibility statements merged successfully",
+        });
+      }
     } catch (error) {
       console.error("Error merging credibility statements:", error);
       toast({
