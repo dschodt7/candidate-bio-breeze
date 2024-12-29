@@ -52,6 +52,7 @@ export type Database = {
           brass_tax_criteria: Json
           candidate_id: string
           created_at: string
+          credibility_source_analysis: Json | null
           credibility_submitted: boolean
           id: string
           linkedin_about: string | null
@@ -62,6 +63,7 @@ export type Database = {
           brass_tax_criteria?: Json
           candidate_id: string
           created_at?: string
+          credibility_source_analysis?: Json | null
           credibility_submitted?: boolean
           id?: string
           linkedin_about?: string | null
@@ -72,6 +74,7 @@ export type Database = {
           brass_tax_criteria?: Json
           candidate_id?: string
           created_at?: string
+          credibility_source_analysis?: Json | null
           credibility_submitted?: boolean
           id?: string
           linkedin_about?: string | null
