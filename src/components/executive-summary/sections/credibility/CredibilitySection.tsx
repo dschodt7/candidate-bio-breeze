@@ -26,7 +26,6 @@ export const CredibilitySection = ({
     setValue,
     handleSubmit,
     handleReset,
-    handleMerge,
     isLoading: isStateLoading
   } = useCredibilityState(candidateId);
 
@@ -46,15 +45,6 @@ export const CredibilitySection = ({
       console.log("CredibilitySection unmounting");
     };
   }, [isSubmitted, mergeResult]);
-
-  const handleMergeClick = async () => {
-    console.log("Initiating merge operation");
-    const result = await handleMerge();
-    console.log("Merge operation result:", result);
-    if (result) {
-      onChange(result.mergedStatements.join("\n\n"));
-    }
-  };
 
   const handleSubmitClick = async () => {
     console.log("Submitting credibility with value:", value);
@@ -86,8 +76,6 @@ export const CredibilitySection = ({
   return (
     <div className="space-y-4">
       <CredibilityHeader
-        onMerge={handleMergeClick}
-        isMerging={isMerging}
         hasResume={hasResume}
         hasLinkedIn={hasLinkedIn}
         hasScreening={hasScreening}
