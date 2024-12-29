@@ -35,7 +35,7 @@ serve(async (req) => {
       throw resumeError;
     }
 
-    // Fetch LinkedIn analysis
+    // Fetch LinkedIn analysis - now getting the credibility statements from the analysis
     const { data: linkedinAnalysis, error: linkedinError } = await supabase
       .from('linkedin_sections')
       .select('analysis')
@@ -49,6 +49,7 @@ serve(async (req) => {
     }
 
     const resumeCredibility = resumeAnalysis?.credibility_statements || '';
+    // Extract credibility statements from the LinkedIn analysis
     const linkedinCredibility = linkedinAnalysis?.analysis?.credibilityStatements || '';
 
     console.log('Resume credibility:', resumeCredibility);
@@ -74,7 +75,7 @@ serve(async (req) => {
 
     const systemPrompt = `You are an expert executive recruiter assistant specializing in merging and prioritizing candidate credibility statements from multiple sources. Your task is to:
 
-1. Analyze and combine credibility statements from both resume and LinkedIn profile
+1. Analyze and combine credibility statements from both resume and LinkedIn profile analyses
 2. Prioritize concrete metrics, achievements, and quantifiable results
 3. Remove duplicates while preserving unique insights
 4. Structure the output in a clear, impactful format
