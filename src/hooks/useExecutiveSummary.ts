@@ -24,14 +24,12 @@ export const useExecutiveSummary = (candidateId: string | undefined) => {
     enabled: !!candidateId,
   });
 
-  const brassTaxCount = executiveSummary?.brass_tax_criteria ? 
-    Object.values(executiveSummary.brass_tax_criteria).filter(value => value).length : 0;
+  // Count non-null values in sensory_criteria
   const sensoryCount = executiveSummary?.sensory_criteria ? 
     Object.values(executiveSummary.sensory_criteria).filter(value => value).length : 0;
 
   return {
     executiveSummary,
-    brassTaxCount,
     sensoryCount,
   };
 };

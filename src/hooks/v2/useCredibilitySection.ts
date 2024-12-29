@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useCredibilitySourceCheck } from "@/hooks/useCredibilitySourceCheck";
-import { MergeResult } from "@/types/executive-summary";
+import { MergeResult, SourceAnalysis } from "@/types/executive-summary";
 
 export const useCredibilitySection = (candidateId: string | null) => {
   const { toast } = useToast();
@@ -41,12 +41,16 @@ export const useCredibilitySection = (candidateId: string | null) => {
           console.log("Fetched credibility state:", data);
           setValue(data.credibility_statement || "");
           setIsSubmitted(data.credibility_submitted || false);
-          if (data.resume_credibility_source || data.linkedin_credibility_source) {
+          
+          const resumeSource = data.resume_credibility_source as SourceAnalysis | null;
+          const linkedinSource = data.linkedin_credibility_source as SourceAnalysis | null;
+          
+          if (resumeSource || linkedinSource) {
             setMergeResult({
               mergedStatements: [data.credibility_statement || ""],
               sourceBreakdown: {
-                resume: data.resume_credibility_source || { relevance: "No analysis available" },
-                linkedin: data.linkedin_credibility_source || { relevance: "No analysis available" }
+                resume: resumeSource || { relevance: "No analysis available" },
+                linkedin: linkedinSource || { relevance: "No analysis available" }
               }
             });
           }

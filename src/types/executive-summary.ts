@@ -1,3 +1,5 @@
+import { Json } from "@/integrations/supabase/types/json";
+
 export interface ExecutiveSummary {
   id: string;
   created_at: string;
