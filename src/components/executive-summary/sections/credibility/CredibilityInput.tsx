@@ -1,5 +1,6 @@
 import { EditableTextarea } from "@/components/common/EditableTextarea";
 import { TextareaActions } from "@/components/common/TextareaActions";
+import { Skeleton } from "@/components/ui/skeleton";
 import { useState, useEffect } from "react";
 
 interface CredibilityInputProps {
@@ -8,6 +9,7 @@ interface CredibilityInputProps {
   onSubmit: () => void;
   onReset: () => void;
   isSubmitted: boolean;
+  isLoading?: boolean;
 }
 
 export const CredibilityInput = ({ 
@@ -15,7 +17,8 @@ export const CredibilityInput = ({
   onChange,
   onSubmit,
   onReset,
-  isSubmitted
+  isSubmitted,
+  isLoading = false
 }: CredibilityInputProps) => {
   const [isEditing, setIsEditing] = useState(false);
 
@@ -31,6 +34,18 @@ export const CredibilityInput = ({
     onSubmit();
     setIsEditing(false);
   };
+
+  if (isLoading) {
+    return (
+      <div className="space-y-4">
+        <Skeleton className="w-full h-[200px]" />
+        <div className="flex gap-2">
+          <Skeleton className="h-10 w-24" />
+          <Skeleton className="h-10 w-24" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-4">

@@ -30,6 +30,7 @@ export const CredibilitySection = ({
     hasScreening,
     isSubmitted,
     setIsSubmitted,
+    isLoading,
   } = useCredibilityState(candidateId);
 
   const handleMergeCredibility = async () => {
@@ -161,6 +162,7 @@ export const CredibilitySection = ({
           onSubmit={handleSubmit}
           onReset={handleReset}
           isSubmitted={isSubmitted}
+          isLoading={isLoading}
         />
         <SourceAnalysis mergeResult={mergeResult} />
       </div>

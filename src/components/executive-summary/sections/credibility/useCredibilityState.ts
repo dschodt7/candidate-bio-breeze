@@ -11,20 +11,25 @@ export const useCredibilityState = (candidateId: string | null) => {
   const [hasLinkedIn, setHasLinkedIn] = useState(false);
   const [hasScreening, setHasScreening] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const checkSources = async () => {
-      if (!candidateId) return;
+      if (!candidateId) {
+        setIsLoading(false);
+        return;
+      }
 
       try {
         console.log("Checking sources for candidate:", candidateId);
+        setIsLoading(true);
         
         // Check for resume analysis
         const { data: resumeAnalysis } = await supabase
           .from('resume_analyses')
           .select('credibility_statements')
           .eq('candidate_id', candidateId)
-          .single();
+          .maybeSingle();
         
         const resumeAvailable = !!resumeAnalysis?.credibility_statements;
         console.log("Resume analysis available:", resumeAvailable);
@@ -36,7 +41,7 @@ export const useCredibilityState = (candidateId: string | null) => {
           .select('analysis')
           .eq('candidate_id', candidateId)
           .eq('section_type', 'about')
-          .single();
+          .maybeSingle();
         
         const linkedInAvailable = !!linkedInSection?.analysis;
         console.log("LinkedIn analysis available:", linkedInAvailable);
@@ -47,7 +52,7 @@ export const useCredibilityState = (candidateId: string | null) => {
           .from('executive_summaries')
           .select('credibility_submitted')
           .eq('candidate_id', candidateId)
-          .single();
+          .maybeSingle();
 
         const submitted = !!executiveSummary?.credibility_submitted;
         console.log("Credibility submitted state:", submitted);
@@ -63,6 +68,8 @@ export const useCredibilityState = (candidateId: string | null) => {
           description: "Failed to check source availability",
           variant: "destructive",
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -79,5 +86,6 @@ export const useCredibilityState = (candidateId: string | null) => {
     hasScreening,
     isSubmitted,
     setIsSubmitted,
+    isLoading,
   };
 };
