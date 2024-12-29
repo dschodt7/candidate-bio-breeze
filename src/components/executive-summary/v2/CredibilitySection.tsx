@@ -27,27 +27,25 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
   } = useCredibilitySection(candidateId);
 
   return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
+    <ExecutiveSummarySection
+      title="Credibility Statements"
+      helpText="Highlight achievements and qualifications that validate the candidate's expertise. Use data-driven examples or significant milestones."
+      sectionKey="credibility"
+      hasResume={hasResume}
+      hasLinkedIn={hasLinkedIn}
+      hasScreening={hasScreening}
+    >
+      <div className="space-y-4">
         <Button
           variant="outline"
           onClick={handleMerge}
           disabled={isMerging || !hasResume}
-          className="gap-2"
+          className="gap-2 w-full"
         >
           {isMerging && <Loader2 className="h-4 w-4 animate-spin" />}
           AI Compile
         </Button>
-      </div>
-      
-      <ExecutiveSummarySection
-        title="Credibility Statements"
-        helpText="Highlight achievements and qualifications that validate the candidate's expertise. Use data-driven examples or significant milestones."
-        sectionKey="credibility"
-        hasResume={hasResume}
-        hasLinkedIn={hasLinkedIn}
-        hasScreening={hasScreening}
-      >
+        
         <CredibilityContent
           value={value}
           isSubmitted={isSubmitted}
@@ -58,7 +56,7 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
           onEdit={() => setIsEditing(true)}
           onReset={handleReset}
         />
-      </ExecutiveSummarySection>
-    </div>
+      </div>
+    </ExecutiveSummarySection>
   );
 };
