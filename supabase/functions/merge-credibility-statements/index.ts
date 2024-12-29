@@ -51,39 +51,32 @@ serve(async (req) => {
     console.log('Resume credibility:', resumeCredibility);
     console.log('LinkedIn credibility:', linkedinCredibility);
 
-    // If both sources are empty, return early
-    if (!resumeCredibility && !linkedinCredibility) {
-      console.log('No credibility statements found from either source');
-      return new Response(
-        JSON.stringify({
-          success: true,
-          data: {
-            mergedStatements: [],
-            sourceBreakdown: {
-              resume: null,
-              linkedin: null
-            }
-          }
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
+    const systemPrompt = `You are an expert executive recruiter assistant specializing in analyzing and merging candidate credibility statements. Your task is to:
 
-    const systemPrompt = `You are an expert executive recruiter assistant specializing in merging and analyzing candidate credibility statements from multiple sources. Your task is to:
-
-1. Analyze credibility statements from both resume and LinkedIn profile
-2. Merge and prioritize statements, emphasizing:
-   - Concrete metrics and achievements
-   - Quantifiable results
-   - Significant career milestones
-3. Remove duplicates while preserving unique insights
-4. Analyze the strength and quality of each source
+1. Analyze credibility statements from both resume and LinkedIn sources
+2. Create a merged set of statements that:
+   - Emphasizes concrete metrics and quantifiable achievements
+   - Highlights significant career milestones
+   - Removes duplicates while preserving unique insights
+   - Maintains professional executive tone
+3. Analyze the strength and quality of each source
 
 Return a JSON object with:
-1. mergedStatements: Array of final, prioritized credibility statements
-2. sourceBreakdown: Object containing analysis of each source:
-   - resume: { relevance, confidence, uniqueValue }
-   - linkedin: { relevance, confidence, uniqueValue }`;
+{
+  "mergedStatements": ["statement1", "statement2", ...],
+  "sourceBreakdown": {
+    "resume": {
+      "relevance": "Description of how relevant the resume content was",
+      "confidence": "Assessment of the credibility of claims",
+      "uniqueValue": "What unique insights this source provided"
+    },
+    "linkedin": {
+      "relevance": "Description of how relevant the LinkedIn content was",
+      "confidence": "Assessment of the credibility of claims",
+      "uniqueValue": "What unique insights this source provided"
+    }
+  }
+}`;
 
     const userPrompt = `Please analyze and merge these credibility statements:
 
@@ -93,7 +86,7 @@ ${resumeCredibility}
 LinkedIn Statements:
 ${linkedinCredibility}
 
-Provide merged statements and detailed source analysis.`;
+Create a cohesive set of credibility statements and analyze each source's contribution.`;
 
     console.log('Sending request to OpenAI');
 
