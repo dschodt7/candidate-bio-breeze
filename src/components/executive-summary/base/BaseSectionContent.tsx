@@ -52,13 +52,20 @@ export const BaseSectionContent = ({
     );
   }
 
+  // The button should be enabled if:
+  // 1. We're not currently merging AND
+  // 2. Either:
+  //    - The content isn't submitted yet, OR
+  //    - We're in editing mode
+  const isCompileDisabled = isMerging || (!isEditing && isSubmitted);
+
   return (
     <div className="space-y-4">
       {showAICompile && (
         <Button
           variant="outline"
           onClick={onMerge}
-          disabled={isMerging || !value || (isSubmitted && !isEditing)}
+          disabled={isCompileDisabled}
           className="gap-2 w-full group relative"
         >
           {isMerging ? (

@@ -71,6 +71,8 @@ export const useCredibilityOperations = (
 
       if (error) throw error;
 
+      console.log("Received merge response:", data);
+
       if (data?.data?.mergedStatements) {
         const result = data.data as MergeResult;
         setMergeResult(result);
