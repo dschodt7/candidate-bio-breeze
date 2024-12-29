@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useCredibilitySourceCheck } from "@/hooks/useCredibilitySourceCheck";
-import { BrassTaxCriteria, MergeResult, SourceAnalysisResult } from "@/types/executive-summary";
+import { MergeResult } from "@/types/executive-summary";
 
 export const useCredibilitySection = (candidateId: string | null) => {
   const { toast } = useToast();
@@ -31,7 +31,7 @@ export const useCredibilitySection = (candidateId: string | null) => {
         console.log("Fetching credibility state for candidate:", candidateId);
         const { data, error } = await supabase
           .from('executive_summaries')
-          .select('brass_tax_criteria, credibility_submitted, credibility_source_analysis')
+          .select('credibility_statement, credibility_submitted, resume_credibility_source, linkedin_credibility_source')
           .eq('candidate_id', candidateId)
           .maybeSingle();
 
@@ -39,13 +39,15 @@ export const useCredibilitySection = (candidateId: string | null) => {
 
         if (data) {
           console.log("Fetched credibility state:", data);
-          const brassTaxData = data.brass_tax_criteria as BrassTaxCriteria;
-          setValue(brassTaxData?.credibility || "");
+          setValue(data.credibility_statement || "");
           setIsSubmitted(data.credibility_submitted || false);
-          if (data.credibility_source_analysis) {
+          if (data.resume_credibility_source || data.linkedin_credibility_source) {
             setMergeResult({
-              mergedStatements: [brassTaxData?.credibility || ""],
-              sourceBreakdown: data.credibility_source_analysis as SourceAnalysisResult
+              mergedStatements: [data.credibility_statement || ""],
+              sourceBreakdown: {
+                resume: data.resume_credibility_source || { relevance: "No analysis available" },
+                linkedin: data.linkedin_credibility_source || { relevance: "No analysis available" }
+              }
             });
           }
         }
@@ -81,11 +83,10 @@ export const useCredibilitySection = (candidateId: string | null) => {
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: {
-            credibility: value
-          },
+          credibility_statement: value,
           credibility_submitted: true,
-          credibility_source_analysis: mergeResult?.sourceBreakdown || null
+          resume_credibility_source: mergeResult?.sourceBreakdown.resume || null,
+          linkedin_credibility_source: mergeResult?.sourceBreakdown.linkedin || null
         });
 
       if (error) throw error;
@@ -117,11 +118,10 @@ export const useCredibilitySection = (candidateId: string | null) => {
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: {
-            credibility: ""
-          },
+          credibility_statement: null,
           credibility_submitted: false,
-          credibility_source_analysis: null
+          resume_credibility_source: null,
+          linkedin_credibility_source: null
         });
 
       if (error) throw error;

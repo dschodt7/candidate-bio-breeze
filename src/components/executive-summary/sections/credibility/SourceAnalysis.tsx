@@ -4,10 +4,8 @@ interface SourceAnalysisProps {
   mergeResult: MergeResult | null;
 }
 
-const formatSourceAnalysis = (analysis: string | SourceAnalysisType): string => {
-  if (typeof analysis === 'string') {
-    return analysis || "No analysis available";
-  }
+const formatSourceAnalysis = (analysis: SourceAnalysisType | null): string => {
+  if (!analysis) return "No analysis available";
   
   return Object.entries(analysis)
     .map(([key, value]) => `${key.charAt(0).toUpperCase() + key.slice(1)}: ${value}`)

@@ -49,35 +49,38 @@ export type Database = {
       }
       executive_summaries: {
         Row: {
-          brass_tax_criteria: Json
           candidate_id: string
           created_at: string
-          credibility_source_analysis: Json | null
+          credibility_statement: string | null
           credibility_submitted: boolean
           id: string
           linkedin_about: string | null
+          linkedin_credibility_source: Json | null
+          resume_credibility_source: Json | null
           sensory_criteria: Json
           updated_at: string
         }
         Insert: {
-          brass_tax_criteria?: Json
           candidate_id: string
           created_at?: string
-          credibility_source_analysis?: Json | null
+          credibility_statement?: string | null
           credibility_submitted?: boolean
           id?: string
           linkedin_about?: string | null
+          linkedin_credibility_source?: Json | null
+          resume_credibility_source?: Json | null
           sensory_criteria?: Json
           updated_at?: string
         }
         Update: {
-          brass_tax_criteria?: Json
           candidate_id?: string
           created_at?: string
-          credibility_source_analysis?: Json | null
+          credibility_statement?: string | null
           credibility_submitted?: boolean
           id?: string
           linkedin_about?: string | null
+          linkedin_credibility_source?: Json | null
+          resume_credibility_source?: Json | null
           sensory_criteria?: Json
           updated_at?: string
         }
