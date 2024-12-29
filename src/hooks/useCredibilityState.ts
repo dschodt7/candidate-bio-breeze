@@ -3,11 +3,6 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { MergeResult } from "@/types/executive-summary";
 
-interface BrassTaxCriteria {
-  credibility?: string;
-  [key: string]: string | undefined;
-}
-
 export const useCredibilityState = (candidateId: string | null) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -35,8 +30,7 @@ export const useCredibilityState = (candidateId: string | null) => {
 
         if (data) {
           console.log("Fetched credibility state:", data);
-          const criteria = data.brass_tax_criteria as BrassTaxCriteria;
-          setValue(criteria.credibility || "");
+          setValue(data.brass_tax_criteria?.credibility || "");
           setIsSubmitted(data.credibility_submitted || false);
         }
       } catch (error) {

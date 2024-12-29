@@ -5,10 +5,15 @@ export interface ExecutiveSummary {
   created_at: string;
   updated_at: string;
   candidate_id: string;
-  brass_tax_criteria: Json;
+  brass_tax_criteria: BrassTaxCriteria;
   sensory_criteria: Json;
   linkedin_about: string | null;
   credibility_submitted: boolean;
+}
+
+export interface BrassTaxCriteria {
+  credibility?: string;
+  [key: string]: string | undefined;
 }
 
 export interface MergeResult {
