@@ -4,12 +4,9 @@ import { useCandidate } from "@/hooks/useCandidate";
 import { useExecutiveSummary } from "@/hooks/useExecutiveSummary";
 import { ChecklistItem } from "./checklist/ChecklistItem";
 
-const BRASS_TAX_TOTAL = 7;
-const SENSORY_TOTAL = 5;
-
 export const CandidateStatusChecklist = () => {
   const { candidate } = useCandidate();
-  const { brassTaxCount, sensoryCount } = useExecutiveSummary(candidate?.id);
+  const { executiveSummary } = useExecutiveSummary(candidate?.id);
 
   const checklistItems = [
     {
@@ -29,17 +26,13 @@ export const CandidateStatusChecklist = () => {
     },
     {
       label: "Executive Summary Complete",
-      isComplete: brassTaxCount === BRASS_TAX_TOTAL && sensoryCount === SENSORY_TOTAL,
+      isComplete: !!executiveSummary?.credibility_submitted,
       icon: FileCheck,
       subItems: [
         {
-          label: `Brass Tax Job Matching Criteria (${brassTaxCount}/${BRASS_TAX_TOTAL})`,
-          isComplete: brassTaxCount === BRASS_TAX_TOTAL,
-        },
-        {
-          label: `Sensory Job Matching Criteria (${sensoryCount}/${SENSORY_TOTAL})`,
-          isComplete: sensoryCount === SENSORY_TOTAL,
-        },
+          label: "Credibility Statements",
+          isComplete: !!executiveSummary?.credibility_submitted,
+        }
       ],
     },
   ];

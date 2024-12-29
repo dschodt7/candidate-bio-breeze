@@ -24,12 +24,7 @@ export const useExecutiveSummary = (candidateId: string | undefined) => {
     enabled: !!candidateId,
   });
 
-  // Count non-null values in sensory_criteria
-  const sensoryCount = executiveSummary?.sensory_criteria ? 
-    Object.values(executiveSummary.sensory_criteria).filter(value => value).length : 0;
-
   return {
     executiveSummary,
-    sensoryCount,
   };
 };
