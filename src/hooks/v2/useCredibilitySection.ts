@@ -75,10 +75,8 @@ export const useCredibilitySection = (candidateId: string | null) => {
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: { 
-            ...mergeResult?.sourceBreakdown,
-            credibility: value 
-          },
+          credibility_statements: value,
+          credibility_source_analysis: mergeResult?.sourceBreakdown || null,
           credibility_submitted: true
         }, {
           onConflict: 'candidate_id'
