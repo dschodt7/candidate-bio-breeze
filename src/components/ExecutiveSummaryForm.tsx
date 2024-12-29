@@ -1,6 +1,7 @@
 import { Card } from "@/components/ui/card";
 import { CredibilitySection } from "@/components/executive-summary/v2/CredibilitySection";
 import { useSearchParams } from "react-router-dom";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
 export const ExecutiveSummaryForm = () => {
   const [searchParams] = useSearchParams();
@@ -13,7 +14,9 @@ export const ExecutiveSummaryForm = () => {
         <div>
           <h4 className="text-base font-medium mb-4">Executive Lens, Brass Tax Job Matching Criteria</h4>
           <div className="pl-4">
-            <CredibilitySection candidateId={candidateId} />
+            <ErrorBoundary>
+              <CredibilitySection candidateId={candidateId} />
+            </ErrorBoundary>
           </div>
         </div>
       </div>
