@@ -35,8 +35,8 @@ export const TextareaActions = ({
           disabled={!hasContent}
           className="gap-2"
         >
-          {isSubmitted && <Check className="h-4 w-4 text-green-500" />}
-          {isSubmitted ? "Submitted" : "Submit"}
+          {isSubmitted && !isEditing && <Check className="h-4 w-4 text-green-500" />}
+          {isSubmitted && !isEditing ? "Submitted" : "Submit"}
         </Button>
       )}
       {(isSubmitted || hasContent) && (
