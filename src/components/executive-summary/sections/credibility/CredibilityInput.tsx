@@ -1,35 +1,34 @@
 import { EditableTextarea } from "@/components/common/EditableTextarea";
 import { TextareaActions } from "@/components/common/TextareaActions";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 interface CredibilityInputProps {
   value: string;
   onChange: (value: string) => void;
   onSubmit: () => void;
+  onReset: () => void;
+  isSubmitted: boolean;
 }
 
 export const CredibilityInput = ({ 
   value,
   onChange,
-  onSubmit
+  onSubmit,
+  onReset,
+  isSubmitted
 }: CredibilityInputProps) => {
-  const [isSubmitted, setIsSubmitted] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const handleSubmit = () => {
-    onSubmit();
-    setIsSubmitted(true);
+  useEffect(() => {
     setIsEditing(false);
-  };
+  }, [isSubmitted]);
 
   const handleEdit = () => {
     setIsEditing(true);
-    setIsSubmitted(false);
   };
 
-  const handleReset = () => {
-    onChange("");
-    setIsSubmitted(false);
+  const handleSubmit = () => {
+    onSubmit();
     setIsEditing(false);
   };
 
@@ -48,7 +47,7 @@ export const CredibilityInput = ({
         hasContent={!!value.trim()}
         onSubmit={handleSubmit}
         onEdit={handleEdit}
-        onReset={handleReset}
+        onReset={onReset}
       />
     </div>
   );

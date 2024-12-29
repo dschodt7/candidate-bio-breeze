@@ -25,6 +25,7 @@ export const CredibilitySection = ({
   const [hasResume, setHasResume] = useState(false);
   const [hasLinkedIn, setHasLinkedIn] = useState(false);
   const [hasScreening, setHasScreening] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
 
   useEffect(() => {
     const checkSources = async () => {
@@ -55,6 +56,16 @@ export const CredibilitySection = ({
         const linkedInAvailable = !!linkedInSection?.analysis;
         console.log("LinkedIn analysis available:", linkedInAvailable);
         setHasLinkedIn(linkedInAvailable);
+
+        // Check submission state
+        const { data: executiveSummary } = await supabase
+          .from('executive_summaries')
+          .select('credibility_submitted')
+          .eq('candidate_id', candidateId)
+          .single();
+
+        setIsSubmitted(!!executiveSummary?.credibility_submitted);
+        console.log("Credibility submitted state:", executiveSummary?.credibility_submitted);
 
         // For now, screening is always false since we haven't implemented it
         setHasScreening(false);
@@ -111,6 +122,67 @@ export const CredibilitySection = ({
     }
   };
 
+  const handleSubmit = async () => {
+    if (!candidateId || !value.trim()) return;
+
+    try {
+      const { error } = await supabase
+        .from('executive_summaries')
+        .update({ 
+          brass_tax_criteria: { ...value },
+          credibility_submitted: true 
+        })
+        .eq('candidate_id', candidateId);
+
+      if (error) throw error;
+
+      setIsSubmitted(true);
+      onSubmit();
+      
+      toast({
+        title: "Success",
+        description: "Credibility statements saved and locked.",
+      });
+    } catch (error) {
+      console.error("Error saving credibility statements:", error);
+      toast({
+        title: "Save Failed",
+        description: "Failed to save credibility statements.",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const handleReset = async () => {
+    if (!candidateId) return;
+
+    try {
+      const { error } = await supabase
+        .from('executive_summaries')
+        .update({ 
+          credibility_submitted: false 
+        })
+        .eq('candidate_id', candidateId);
+
+      if (error) throw error;
+
+      setIsSubmitted(false);
+      onChange("");
+      
+      toast({
+        title: "Reset",
+        description: "Credibility statements have been reset.",
+      });
+    } catch (error) {
+      console.error("Error resetting credibility statements:", error);
+      toast({
+        title: "Reset Failed",
+        description: "Failed to reset credibility statements.",
+        variant: "destructive",
+      });
+    }
+  };
+
   return (
     <div className="space-y-4">
       <CredibilityHeader
@@ -125,7 +197,9 @@ export const CredibilitySection = ({
         <CredibilityInput
           value={value}
           onChange={onChange}
-          onSubmit={onSubmit}
+          onSubmit={handleSubmit}
+          onReset={handleReset}
+          isSubmitted={isSubmitted}
         />
         <SourceAnalysis mergeResult={mergeResult} />
       </div>
