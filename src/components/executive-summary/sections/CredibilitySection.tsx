@@ -1,10 +1,10 @@
 import { useState } from "react";
-import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 import { CredibilityHeader } from "./credibility/CredibilityHeader";
 import { CredibilityInput } from "./credibility/CredibilityInput";
 import { SourceAnalysis } from "./credibility/SourceAnalysis";
-import { useCredibilityState } from "./credibility/useCredibilityState";
+import { useCredibilityMerge } from "@/hooks/useCredibilityMerge";
+import { useCredibilitySourceCheck } from "@/hooks/useCredibilitySourceCheck";
+import { useCredibilitySubmission } from "@/hooks/useCredibilitySubmission";
 
 interface CredibilitySectionProps {
   candidateId: string | null;
@@ -19,136 +19,45 @@ export const CredibilitySection = ({
   onChange,
   onSubmit
 }: CredibilitySectionProps) => {
-  const { toast } = useToast();
   const {
     mergeResult,
     setMergeResult,
     isMerging,
-    setIsMerging,
+    handleMergeCredibility
+  } = useCredibilityMerge(candidateId);
+
+  const {
     hasResume,
     hasLinkedIn,
     hasScreening,
+    isLoading
+  } = useCredibilitySourceCheck(candidateId);
+
+  const {
     isSubmitted,
-    setIsSubmitted,
-    isLoading,
-  } = useCredibilityState(candidateId);
+    handleSubmit,
+    handleReset
+  } = useCredibilitySubmission(candidateId);
 
-  const handleMergeCredibility = async () => {
-    if (!candidateId) {
-      toast({
-        title: "Error",
-        description: "No candidate selected",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      setIsMerging(true);
-      setMergeResult(null);
-      console.log("Starting credibility merge for candidate:", candidateId);
-
-      const { data, error } = await supabase.functions.invoke('merge-credibility-statements', {
-        body: { candidateId }
-      });
-
-      if (error) throw error;
-
-      console.log("Credibility merge completed:", data);
-      if (data?.data) {
-        console.log("Merge result:", data.data);
-        setMergeResult(data.data);
-        onChange(data.data.mergedStatements.join("\n\n"));
-      }
-      
-      toast({
-        title: "Success",
-        description: "Credibility statements have been merged successfully.",
-      });
-    } catch (error) {
-      console.error("Error merging credibility statements:", error);
-      toast({
-        title: "Merge Failed",
-        description: "There was an error merging the credibility statements.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsMerging(false);
+  const handleMerge = async () => {
+    const result = await handleMergeCredibility();
+    if (result) {
+      setMergeResult(result);
+      onChange(result.mergedStatements.join("\n\n"));
     }
   };
 
-  const handleSubmit = async () => {
-    if (!candidateId || !value.trim()) return;
-
-    try {
-      console.log("Submitting credibility statements for candidate:", candidateId);
-      
-      const { error } = await supabase
-        .from('executive_summaries')
-        .update({ 
-          brass_tax_criteria: { credibility: value },
-          credibility_submitted: true 
-        })
-        .eq('candidate_id', candidateId);
-
-      if (error) throw error;
-
-      setIsSubmitted(true);
+  const handleSubmitCredibility = async () => {
+    const success = await handleSubmit(value);
+    if (success) {
       onSubmit();
-      
-      console.log("Credibility statements submitted successfully");
-      toast({
-        title: "Success",
-        description: "Credibility statements saved and locked.",
-      });
-    } catch (error) {
-      console.error("Error saving credibility statements:", error);
-      toast({
-        title: "Save Failed",
-        description: "Failed to save credibility statements.",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleReset = async () => {
-    if (!candidateId) return;
-
-    try {
-      console.log("Resetting credibility statements for candidate:", candidateId);
-      
-      const { error } = await supabase
-        .from('executive_summaries')
-        .update({ 
-          brass_tax_criteria: { credibility: "" },
-          credibility_submitted: false 
-        })
-        .eq('candidate_id', candidateId);
-
-      if (error) throw error;
-
-      setIsSubmitted(false);
-      onChange("");
-      
-      console.log("Credibility statements reset successfully");
-      toast({
-        title: "Reset",
-        description: "Credibility statements have been reset.",
-      });
-    } catch (error) {
-      console.error("Error resetting credibility statements:", error);
-      toast({
-        title: "Reset Failed",
-        description: "Failed to reset credibility statements.",
-        variant: "destructive",
-      });
     }
   };
 
   return (
     <div className="space-y-4">
       <CredibilityHeader
-        onMerge={handleMergeCredibility}
+        onMerge={handleMerge}
         isMerging={isMerging}
         hasResume={hasResume}
         hasLinkedIn={hasLinkedIn}
@@ -159,7 +68,7 @@ export const CredibilitySection = ({
         <CredibilityInput
           value={value}
           onChange={onChange}
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmitCredibility}
           onReset={handleReset}
           isSubmitted={isSubmitted}
           isLoading={isLoading}
