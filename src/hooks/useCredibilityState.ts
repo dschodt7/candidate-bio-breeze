@@ -3,16 +3,25 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { MergeResult } from "@/types/executive-summary";
 
+interface BrassTaxCriteria {
+  credibility?: string;
+  [key: string]: string | undefined;
+}
+
 export const useCredibilityState = (candidateId: string | null) => {
   const { toast } = useToast();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [mergeResult, setMergeResult] = useState<MergeResult | null>(null);
   const [isMerging, setIsMerging] = useState(false);
   const [value, setValue] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchCredibilityState = async () => {
-      if (!candidateId) return;
+      if (!candidateId) {
+        setIsLoading(false);
+        return;
+      }
 
       try {
         console.log("Fetching credibility state for candidate:", candidateId);
@@ -26,7 +35,8 @@ export const useCredibilityState = (candidateId: string | null) => {
 
         if (data) {
           console.log("Fetched credibility state:", data);
-          setValue(data.brass_tax_criteria?.credibility || "");
+          const criteria = data.brass_tax_criteria as BrassTaxCriteria;
+          setValue(criteria.credibility || "");
           setIsSubmitted(data.credibility_submitted || false);
         }
       } catch (error) {
@@ -36,6 +46,8 @@ export const useCredibilityState = (candidateId: string | null) => {
           description: "Failed to fetch credibility state",
           variant: "destructive",
         });
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -60,8 +72,6 @@ export const useCredibilityState = (candidateId: string | null) => {
           candidate_id: candidateId,
           brass_tax_criteria: { credibility: newValue },
           credibility_submitted: true
-        }, {
-          onConflict: 'candidate_id'
         });
 
       if (error) throw error;
@@ -97,8 +107,6 @@ export const useCredibilityState = (candidateId: string | null) => {
           candidate_id: candidateId,
           brass_tax_criteria: { credibility: "" },
           credibility_submitted: false
-        }, {
-          onConflict: 'candidate_id'
         });
 
       if (error) throw error;
@@ -131,7 +139,7 @@ export const useCredibilityState = (candidateId: string | null) => {
         description: "No candidate selected",
         variant: "destructive",
       });
-      return;
+      return null;
     }
 
     try {
@@ -178,6 +186,7 @@ export const useCredibilityState = (candidateId: string | null) => {
     setValue,
     handleSubmit,
     handleReset,
-    handleMerge
+    handleMerge,
+    isLoading
   };
 };

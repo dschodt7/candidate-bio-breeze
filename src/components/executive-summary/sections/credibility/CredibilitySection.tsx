@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { CredibilityHeader } from "./CredibilityHeader";
 import { CredibilityContent } from "./CredibilityContent";
 import { useCredibilitySourceCheck } from "@/hooks/useCredibilitySourceCheck";
-import { useCredibilityState } from "./useCredibilityState";
+import { useCredibilityState } from "@/hooks/useCredibilityState";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface CredibilitySectionProps {
@@ -26,14 +26,15 @@ export const CredibilitySection = ({
     setValue,
     handleSubmit,
     handleReset,
-    handleMerge
+    handleMerge,
+    isLoading: isStateLoading
   } = useCredibilityState(candidateId);
 
   const {
     hasResume,
     hasLinkedIn,
     hasScreening,
-    isLoading
+    isLoading: isSourceLoading
   } = useCredibilitySourceCheck(candidateId);
 
   useEffect(() => {
@@ -70,7 +71,7 @@ export const CredibilitySection = ({
     onChange(newValue);
   };
 
-  if (isLoading) {
+  if (isStateLoading || isSourceLoading) {
     return (
       <div className="space-y-4">
         <Skeleton className="w-full h-[200px]" />
