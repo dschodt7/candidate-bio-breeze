@@ -49,19 +49,25 @@ export const useCredibilityState = (candidateId: string | null) => {
           .eq('candidate_id', candidateId)
           .single();
 
-        setIsSubmitted(!!executiveSummary?.credibility_submitted);
-        console.log("Credibility submitted state:", executiveSummary?.credibility_submitted);
+        const submitted = !!executiveSummary?.credibility_submitted;
+        console.log("Credibility submitted state:", submitted);
+        setIsSubmitted(submitted);
 
         // For now, screening is always false since we haven't implemented it
         setHasScreening(false);
 
       } catch (error) {
         console.error("Error checking sources:", error);
+        toast({
+          title: "Error",
+          description: "Failed to check source availability",
+          variant: "destructive",
+        });
       }
     };
 
     checkSources();
-  }, [candidateId]);
+  }, [candidateId, toast]);
 
   return {
     mergeResult,

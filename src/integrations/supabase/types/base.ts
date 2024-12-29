@@ -60,6 +60,7 @@ export interface ExecutiveSummariesTable extends BaseTable<{
   brass_tax_criteria: Json;
   sensory_criteria: Json;
   linkedin_about: string | null;
+  credibility_submitted: boolean;
 }> {}
 
 export interface LinkedInSectionsTable extends BaseTable<{
