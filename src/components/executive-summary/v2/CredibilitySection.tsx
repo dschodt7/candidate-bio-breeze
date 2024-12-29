@@ -5,10 +5,11 @@ import { useCredibilitySection } from "@/hooks/v2/useCredibilitySection";
 import { Button } from "@/components/ui/button";
 import { Loader2 } from "lucide-react";
 
-export const CredibilitySection = () => {
-  const [searchParams] = useSearchParams();
-  const candidateId = searchParams.get('candidate');
-  
+interface CredibilitySectionProps {
+  candidateId: string | null;
+}
+
+export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => {
   const {
     value,
     setValue,
