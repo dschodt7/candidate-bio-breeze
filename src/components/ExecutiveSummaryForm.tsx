@@ -1,5 +1,5 @@
 import { Card } from "@/components/ui/card";
-import { CredibilitySection } from "@/components/executive-summary/v2/CredibilitySection";
+import { CredibilitySection } from "@/components/executive-summary/v3/CredibilitySection";
 import { useSearchParams } from "react-router-dom";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
