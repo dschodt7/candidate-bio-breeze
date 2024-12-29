@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useCredibilitySourceCheck } from "@/hooks/useCredibilitySourceCheck";
-import { BrassTaxCriteria, MergeResult } from "@/types/executive-summary";
+import { BrassTaxCriteria, MergeResult, SourceAnalysisResult } from "@/types/executive-summary";
 
 export const useCredibilitySection = (candidateId: string | null) => {
   const { toast } = useToast();
@@ -31,7 +31,7 @@ export const useCredibilitySection = (candidateId: string | null) => {
         console.log("Fetching credibility state for candidate:", candidateId);
         const { data, error } = await supabase
           .from('executive_summaries')
-          .select('brass_tax_criteria, credibility_submitted')
+          .select('brass_tax_criteria, credibility_submitted, credibility_source_analysis')
           .eq('candidate_id', candidateId)
           .maybeSingle();
 
@@ -42,6 +42,12 @@ export const useCredibilitySection = (candidateId: string | null) => {
           const brassTaxData = data.brass_tax_criteria as BrassTaxCriteria;
           setValue(brassTaxData?.credibility || "");
           setIsSubmitted(data.credibility_submitted || false);
+          if (data.credibility_source_analysis) {
+            setMergeResult({
+              mergedStatements: [brassTaxData?.credibility || ""],
+              sourceBreakdown: data.credibility_source_analysis as SourceAnalysisResult
+            });
+          }
         }
       } catch (error) {
         console.error("Error fetching credibility state:", error);

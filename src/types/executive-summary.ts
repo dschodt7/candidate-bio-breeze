@@ -1,5 +1,3 @@
-import { Json } from "@/integrations/supabase/types";
-
 export interface ExecutiveSummary {
   id: string;
   created_at: string;
@@ -9,7 +7,6 @@ export interface ExecutiveSummary {
   sensory_criteria: Json;
   linkedin_about: string | null;
   credibility_submitted: boolean;
-  credibility_statements: string | null;
   credibility_source_analysis: SourceAnalysisResult | null;
 }
 
@@ -23,8 +20,8 @@ export interface MergeResult {
 }
 
 export interface SourceAnalysisResult {
-  resume: string | SourceAnalysis;
-  linkedin: string | SourceAnalysis;
+  resume: SourceAnalysis | string;
+  linkedin: SourceAnalysis | string;
 }
 
 export interface SourceAnalysis {
