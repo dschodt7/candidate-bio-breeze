@@ -38,7 +38,7 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
         <Button
           variant="outline"
           onClick={handleMerge}
-          disabled={isMerging || !hasResume}
+          disabled={isMerging || !hasResume || (isSubmitted && !isEditing)}
           className="gap-2 w-full group relative"
         >
           {isMerging ? (
