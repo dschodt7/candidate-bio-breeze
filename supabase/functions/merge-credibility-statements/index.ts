@@ -7,9 +7,6 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-const ALLOWED_MODELS = ['gpt-4o'];
-const DEFAULT_MODEL = 'gpt-4o';
-
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -35,7 +32,7 @@ serve(async (req) => {
       throw resumeError;
     }
 
-    // Fetch LinkedIn analysis - now getting the credibility statements from the analysis
+    // Fetch LinkedIn analysis
     const { data: linkedinAnalysis, error: linkedinError } = await supabase
       .from('linkedin_sections')
       .select('analysis')
@@ -49,7 +46,6 @@ serve(async (req) => {
     }
 
     const resumeCredibility = resumeAnalysis?.credibility_statements || '';
-    // Extract credibility statements from the LinkedIn analysis
     const linkedinCredibility = linkedinAnalysis?.analysis?.credibilityStatements || '';
 
     console.log('Resume credibility:', resumeCredibility);
@@ -64,8 +60,8 @@ serve(async (req) => {
           data: {
             mergedStatements: [],
             sourceBreakdown: {
-              resume: 'No credibility statements found in resume',
-              linkedin: 'No credibility statements found in LinkedIn profile'
+              resume: null,
+              linkedin: null
             }
           }
         }),
@@ -73,23 +69,21 @@ serve(async (req) => {
       );
     }
 
-    const systemPrompt = `You are an expert executive recruiter assistant specializing in merging and prioritizing candidate credibility statements from multiple sources. Your task is to:
+    const systemPrompt = `You are an expert executive recruiter assistant specializing in merging and analyzing candidate credibility statements from multiple sources. Your task is to:
 
-1. Analyze and combine credibility statements from both resume and LinkedIn profile analyses
-2. Prioritize concrete metrics, achievements, and quantifiable results
+1. Analyze credibility statements from both resume and LinkedIn profile
+2. Merge and prioritize statements, emphasizing:
+   - Concrete metrics and achievements
+   - Quantifiable results
+   - Significant career milestones
 3. Remove duplicates while preserving unique insights
-4. Structure the output in a clear, impactful format
-5. Focus on information that validates the candidate's expertise
+4. Analyze the strength and quality of each source
 
-For the sourceBreakdown analysis:
-- Evaluate the strength and quality of credibility statements from each source
-- Highlight the unique contributions from each source
-- Note any patterns or complementary information between sources
-- Assess the specificity and measurability of statements from each source
-
-Return a JSON object with two properties:
-- mergedStatements: An array of the final, merged credibility statements
-- sourceBreakdown: An object containing detailed analysis of both sources' contributions, with 'resume' and 'linkedin' properties`;
+Return a JSON object with:
+1. mergedStatements: Array of final, prioritized credibility statements
+2. sourceBreakdown: Object containing analysis of each source:
+   - resume: { relevance, confidence, uniqueValue }
+   - linkedin: { relevance, confidence, uniqueValue }`;
 
     const userPrompt = `Please analyze and merge these credibility statements:
 
@@ -99,7 +93,7 @@ ${resumeCredibility}
 LinkedIn Statements:
 ${linkedinCredibility}
 
-Provide a merged version that emphasizes concrete achievements and metrics while eliminating duplicates, and include a detailed analysis of each source's contribution.`;
+Provide merged statements and detailed source analysis.`;
 
     console.log('Sending request to OpenAI');
 
@@ -110,7 +104,7 @@ Provide a merged version that emphasizes concrete achievements and metrics while
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: DEFAULT_MODEL,
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
@@ -137,15 +131,14 @@ Provide a merged version that emphasizes concrete achievements and metrics while
       analysis = JSON.parse(content);
       console.log('Parsed analysis:', analysis);
 
-      // Store the merged analysis
+      // Store the merged analysis in executive_summaries
       const { error: updateError } = await supabase
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: {
-            ...analysis,
-            lastUpdated: new Date().toISOString()
-          }
+          credibility_statement: analysis.mergedStatements.join('\n\n'),
+          resume_credibility_source: analysis.sourceBreakdown.resume,
+          linkedin_credibility_source: analysis.sourceBreakdown.linkedin
         }, {
           onConflict: 'candidate_id'
         });
@@ -154,7 +147,13 @@ Provide a merged version that emphasizes concrete achievements and metrics while
       console.log('Stored merged analysis in database');
 
       return new Response(
-        JSON.stringify({ success: true, data: analysis }),
+        JSON.stringify({ 
+          success: true, 
+          data: {
+            mergedStatements: analysis.mergedStatements,
+            sourceBreakdown: analysis.sourceBreakdown
+          }
+        }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
 
@@ -165,7 +164,10 @@ Provide a merged version that emphasizes concrete achievements and metrics while
   } catch (error) {
     console.error('Error in merge-credibility-statements function:', error);
     return new Response(
-      JSON.stringify({ success: false, error: error.message }),
+      JSON.stringify({ 
+        success: false, 
+        error: error.message 
+      }),
       {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
