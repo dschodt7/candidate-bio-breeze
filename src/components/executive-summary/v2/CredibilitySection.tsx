@@ -1,6 +1,7 @@
 import { useCredibilitySection } from "@/hooks/v2/useCredibilitySection";
 import { ExecutiveSummarySection } from "./ExecutiveSummarySection";
 import { CredibilityContent } from "./CredibilityContent";
+import { SourceAnalysis } from "../sections/credibility/SourceAnalysis";
 import { Button } from "@/components/ui/button";
 import { Loader2, Wand2 } from "lucide-react";
 
@@ -23,6 +24,7 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
     handleSubmit,
     handleReset,
     handleMerge,
+    mergeResult
   } = useCredibilitySection(candidateId);
 
   return (
@@ -61,6 +63,8 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
           onEdit={() => setIsEditing(true)}
           onReset={handleReset}
         />
+
+        <SourceAnalysis mergeResult={mergeResult} />
       </div>
     </ExecutiveSummarySection>
   );

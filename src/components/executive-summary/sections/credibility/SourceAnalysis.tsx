@@ -18,11 +18,16 @@ export const SourceAnalysis = ({ mergeResult }: SourceAnalysisProps) => {
   if (!mergeResult) return null;
 
   return (
-    <div className="space-y-4">
-      <div>
-        <div className="mt-2 space-y-2 text-sm">
-          <p><strong>Resume:</strong> {formatSourceAnalysis(mergeResult.sourceBreakdown.resume)}</p>
-          <p><strong>LinkedIn:</strong> {formatSourceAnalysis(mergeResult.sourceBreakdown.linkedin)}</p>
+    <div className="mt-6 space-y-4 text-sm text-muted-foreground border rounded-lg p-4 bg-muted/50">
+      <h4 className="font-medium text-foreground">Source Analysis</h4>
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <p className="font-medium">Resume Analysis:</p>
+          <p className="whitespace-pre-line">{formatSourceAnalysis(mergeResult.sourceBreakdown.resume)}</p>
+        </div>
+        <div className="space-y-2">
+          <p className="font-medium">LinkedIn Analysis:</p>
+          <p className="whitespace-pre-line">{formatSourceAnalysis(mergeResult.sourceBreakdown.linkedin)}</p>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useCredibilitySourceCheck } from "@/hooks/useCredibilitySourceCheck";
-import { BrassTaxCriteria } from "@/types/executive-summary";
+import { BrassTaxCriteria, MergeResult } from "@/types/executive-summary";
 
 export const useCredibilitySection = (candidateId: string | null) => {
   const { toast } = useToast();
@@ -11,6 +11,7 @@ export const useCredibilitySection = (candidateId: string | null) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isMerging, setIsMerging] = useState(false);
+  const [mergeResult, setMergeResult] = useState<MergeResult | null>(null);
 
   const {
     hasResume,
@@ -70,16 +71,17 @@ export const useCredibilitySection = (candidateId: string | null) => {
     try {
       console.log("Submitting credibility with value:", value);
       
-      // Using upsert operation with candidate_id as the conflict target
       const { error } = await supabase
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: { credibility: value },
+          brass_tax_criteria: { 
+            ...mergeResult?.sourceBreakdown,
+            credibility: value 
+          },
           credibility_submitted: true
         }, {
-          onConflict: 'candidate_id',
-          ignoreDuplicates: false
+          onConflict: 'candidate_id'
         });
 
       if (error) throw error;
@@ -96,7 +98,7 @@ export const useCredibilitySection = (candidateId: string | null) => {
       console.error("Error submitting credibility:", error);
       toast({
         title: "Error",
-        description: "Failed to save credibility statements. Please try again.",
+        description: "Failed to save credibility statements",
         variant: "destructive",
       });
     }
@@ -114,8 +116,7 @@ export const useCredibilitySection = (candidateId: string | null) => {
           brass_tax_criteria: { credibility: "" },
           credibility_submitted: false
         }, {
-          onConflict: 'candidate_id',
-          ignoreDuplicates: false
+          onConflict: 'candidate_id'
         });
 
       if (error) throw error;
@@ -123,6 +124,7 @@ export const useCredibilitySection = (candidateId: string | null) => {
       setValue("");
       setIsSubmitted(false);
       setIsEditing(false);
+      setMergeResult(null);
       
       console.log("Credibility reset successfully");
       toast({
@@ -152,7 +154,9 @@ export const useCredibilitySection = (candidateId: string | null) => {
       if (error) throw error;
 
       if (data?.data?.mergedStatements) {
-        setValue(data.data.mergedStatements.join("\n\n"));
+        const result = data.data as MergeResult;
+        setMergeResult(result);
+        setValue(result.mergedStatements.join("\n\n"));
         setIsEditing(true);
         
         toast({
@@ -186,5 +190,6 @@ export const useCredibilitySection = (candidateId: string | null) => {
     handleSubmit,
     handleReset,
     handleMerge,
+    mergeResult,
   };
 };
