@@ -25,7 +25,7 @@ serve(async (req) => {
       .from('resume_analyses')
       .select('credibility_statements')
       .eq('candidate_id', candidateId)
-      .single();
+      .maybeSingle();
 
     if (resumeError) {
       console.error('Error fetching resume analysis:', resumeError);
@@ -38,7 +38,7 @@ serve(async (req) => {
       .select('analysis')
       .eq('candidate_id', candidateId)
       .eq('section_type', 'about')
-      .single();
+      .maybeSingle();
 
     if (linkedinError) {
       console.error('Error fetching LinkedIn analysis:', linkedinError);
@@ -50,6 +50,24 @@ serve(async (req) => {
 
     console.log('Resume credibility:', resumeCredibility);
     console.log('LinkedIn credibility:', linkedinCredibility);
+
+    // If both sources are empty, return early
+    if (!resumeCredibility && !linkedinCredibility) {
+      console.log('No credibility statements found from either source');
+      return new Response(
+        JSON.stringify({
+          success: true,
+          data: {
+            mergedStatements: [],
+            sourceBreakdown: {
+              resume: 'No credibility statements found in resume',
+              linkedin: 'No credibility statements found in LinkedIn profile'
+            }
+          }
+        }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     const systemPrompt = `You are an expert executive recruiter assistant specializing in merging and prioritizing candidate credibility statements from multiple sources. Your task is to:
 
@@ -88,7 +106,7 @@ Provide a merged version that emphasizes concrete achievements and metrics while
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
