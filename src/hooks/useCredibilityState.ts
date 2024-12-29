@@ -31,8 +31,8 @@ export const useCredibilityState = (candidateId: string | null) => {
         if (data) {
           const summary = data as ExecutiveSummary;
           console.log("Fetched credibility state:", summary);
-          const brassTaxCriteria = summary.brass_tax_criteria as BrassTaxCriteria;
-          setValue(brassTaxCriteria.credibility || "");
+          const brassTaxData = summary.brass_tax_criteria as Record<string, unknown>;
+          setValue(brassTaxData?.credibility as string || "");
           setIsSubmitted(summary.credibility_submitted || false);
         }
       } catch (error) {
@@ -50,52 +50,6 @@ export const useCredibilityState = (candidateId: string | null) => {
     fetchCredibilityState();
   }, [candidateId, toast]);
 
-  const handleMerge = async () => {
-    if (!candidateId) {
-      toast({
-        title: "Error",
-        description: "No candidate selected",
-        variant: "destructive",
-      });
-      return null;
-    }
-
-    try {
-      setIsMerging(true);
-      setMergeResult(null);
-      console.log("Starting credibility merge for candidate:", candidateId);
-
-      const { data: { data }, error } = await supabase.functions.invoke('merge-credibility-statements', {
-        body: { candidateId }
-      });
-
-      if (error) throw error;
-
-      if (data) {
-        console.log("Merge result:", data);
-        setMergeResult(data);
-        setValue(data.mergedStatements.join("\n\n"));
-        return data;
-      }
-      
-      toast({
-        title: "Success",
-        description: "Credibility statements have been merged",
-      });
-      return null;
-    } catch (error) {
-      console.error("Error merging credibility statements:", error);
-      toast({
-        title: "Merge Failed",
-        description: "There was an error merging the credibility statements",
-        variant: "destructive",
-      });
-      return null;
-    } finally {
-      setIsMerging(false);
-    }
-  };
-
   const handleSubmit = async (newValue: string) => {
     if (!candidateId) {
       toast({
@@ -112,7 +66,7 @@ export const useCredibilityState = (candidateId: string | null) => {
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: { credibility: newValue } as BrassTaxCriteria,
+          brass_tax_criteria: { credibility: newValue },
           credibility_submitted: true
         });
 
@@ -147,7 +101,7 @@ export const useCredibilityState = (candidateId: string | null) => {
         .from('executive_summaries')
         .upsert({
           candidate_id: candidateId,
-          brass_tax_criteria: { credibility: "" } as BrassTaxCriteria,
+          brass_tax_criteria: { credibility: "" },
           credibility_submitted: false
         });
 
@@ -182,7 +136,6 @@ export const useCredibilityState = (candidateId: string | null) => {
     setValue,
     handleSubmit,
     handleReset,
-    handleMerge,
     isLoading
   };
 };

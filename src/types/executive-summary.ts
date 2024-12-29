@@ -5,20 +5,15 @@ export interface ExecutiveSummary {
   created_at: string;
   updated_at: string;
   candidate_id: string;
-  brass_tax_criteria: BrassTaxCriteria;
+  brass_tax_criteria: Json;
   sensory_criteria: Json;
   linkedin_about: string | null;
   credibility_submitted: boolean;
 }
 
+// This is our internal type for working with the data
 export interface BrassTaxCriteria {
-  compensation?: string;
-  workPreference?: string;
   credibility?: string;
-  caseStudies?: string;
-  jobAssessment?: string;
-  motivations?: string;
-  timeframe?: string;
 }
 
 export interface MergeResult {
