@@ -21,16 +21,20 @@ export const useCredibilityOperations = (
 
   console.log("Initializing credibility operations hook for candidate:", candidateId);
 
+  const showToast = (title: string, description: string, type: "success" | "error" = "success") => {
+    toast({
+      title,
+      description,
+      variant: type === "error" ? "destructive" : "default",
+    });
+  };
+
   const handleSubmit = async () => {
     if (!validateCandidate()) return;
 
     if (!value.trim()) {
       console.error("Submit attempted with empty content");
-      toast({
-        title: "Error",
-        description: "Please enter some content before submitting",
-        variant: "destructive",
-      });
+      showToast("Error", "Please enter some content before submitting", "error");
       return;
     }
 
@@ -74,20 +78,17 @@ export const useCredibilityOperations = (
         setValue(result.mergedStatements.join("\n\n"));
         setIsEditing(true);
         
-        toast({
-          title: "Success",
-          description: "Credibility statements merged successfully",
-        });
+        showToast("Success", "Credibility statements merged successfully");
       } else {
         throw new Error("No merged statements received");
       }
     } catch (error) {
       console.error("Error merging credibility statements:", error);
-      toast({
-        title: "Merge Failed",
-        description: "Failed to merge credibility statements. Please try again.",
-        variant: "destructive",
-      });
+      showToast(
+        "Merge Failed",
+        "Failed to merge credibility statements. Please try again.",
+        "error"
+      );
     } finally {
       setIsMerging(false);
     }

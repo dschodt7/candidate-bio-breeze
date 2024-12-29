@@ -44,7 +44,15 @@ export const useCredibilityState = (candidateId: string | null) => {
             .maybeSingle()
         ]);
 
-        if (summaryResponse.error) throw summaryResponse.error;
+        if (summaryResponse.error) {
+          console.error("Error fetching summary:", summaryResponse.error);
+          toast({
+            title: "Error Loading Data",
+            description: "Failed to load credibility data. Please try again.",
+            variant: "destructive",
+          });
+          throw summaryResponse.error;
+        }
         
         // Set core state
         if (summaryResponse.data) {
@@ -68,7 +76,7 @@ export const useCredibilityState = (candidateId: string | null) => {
         console.error("Error fetching initial state:", error);
         toast({
           title: "Error",
-          description: "Failed to load credibility section",
+          description: "Failed to load credibility section. Please refresh the page.",
           variant: "destructive",
         });
       } finally {
