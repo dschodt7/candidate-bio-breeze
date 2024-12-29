@@ -13,19 +13,26 @@ export const useCredibilityMerge = (
   const [mergeResult, setMergeResult] = useState<MergeResult | null>(null);
 
   const handleMerge = async () => {
-    if (!candidateId) return;
+    if (!candidateId) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
+      return;
+    }
     
     setIsMerging(true);
     try {
       console.log("Starting merge operation for candidate:", candidateId);
-      const { data, error } = await supabase.functions.invoke('merge-credibility-statements', {
+      const { data: { data }, error } = await supabase.functions.invoke('merge-credibility-statements', {
         body: { candidateId }
       });
 
       if (error) throw error;
 
-      if (data?.data?.mergedStatements) {
-        const result = data.data as MergeResult;
+      if (data?.mergedStatements) {
+        const result = data as MergeResult;
         setMergeResult(result);
         setValue(result.mergedStatements.join("\n\n"));
         setIsEditing(true);
