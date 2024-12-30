@@ -30,8 +30,14 @@ export const NotesInput = () => {
         if (error) throw error;
 
         console.log("Fetched notes:", data.screening_notes);
-        setNotes(data.screening_notes || "");
-        setIsSubmitted(!!data.screening_notes);
+        if (data.screening_notes) {
+          setNotes(data.screening_notes);
+          // Only set submitted state if notes exist and are not empty
+          setIsSubmitted(data.screening_notes.trim().length > 0);
+        } else {
+          setNotes("");
+          setIsSubmitted(false);
+        }
       } catch (error) {
         console.error("Error fetching notes:", error);
         toast({
@@ -55,7 +61,7 @@ export const NotesInput = () => {
       return;
     }
 
-    if (!notes) {
+    if (!notes.trim()) {
       toast({
         title: "Error",
         description: "Please enter some notes",
