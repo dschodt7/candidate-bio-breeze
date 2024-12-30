@@ -32,15 +32,15 @@ export const useFileUpload = () => {
         console.log("Fetching resume path for candidate:", candidateId);
         const { data, error } = await supabase
           .from('candidates')
-          .select('resume_path')
+          .select('original_filename')
           .eq('id', candidateId)
           .single();
 
         if (error) throw error;
 
-        if (data.resume_path) {
-          console.log("Fetched resume path:", data.resume_path);
-          setUploadedFileName(data.resume_path.split('/').pop());
+        if (data.original_filename) {
+          console.log("Fetched original filename:", data.original_filename);
+          setUploadedFileName(data.original_filename);
         } else {
           setUploadedFileName(null);
         }
@@ -74,7 +74,7 @@ export const useFileUpload = () => {
       console.log("Starting file upload process for:", uploadedFile.name);
 
       const filePath = await uploadToStorage(uploadedFile, candidateId);
-      await updateCandidateResume(candidateId, filePath);
+      await updateCandidateResume(candidateId, filePath, uploadedFile.name);
 
       setUploadedFileName(uploadedFile.name);
       toast({
