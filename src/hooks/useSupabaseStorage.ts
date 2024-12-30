@@ -27,12 +27,15 @@ export const useSupabaseStorage = () => {
     }
   };
 
-  const updateCandidateResume = async (candidateId: string, filePath: string) => {
+  const updateCandidateResume = async (candidateId: string, filePath: string, originalFilename: string) => {
     try {
       console.log("Updating candidate resume path:", filePath);
       const { error: updateError } = await supabase
         .from('candidates')
-        .update({ resume_path: filePath })
+        .update({ 
+          resume_path: filePath,
+          original_filename: originalFilename
+        })
         .eq('id', candidateId);
 
       if (updateError) {

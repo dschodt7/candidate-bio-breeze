@@ -1,9 +1,10 @@
+import { useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import { useSearchParams } from "react-router-dom";
 import { validateFile } from "@/utils/fileValidation";
 import { useFileState } from "@/hooks/useFileState";
 import { useSupabaseStorage } from "@/hooks/useSupabaseStorage";
-import { useResumeRetrieval } from "@/hooks/useResumeRetrieval";
 
 export const useFileUpload = () => {
   const { toast } = useToast();
@@ -23,7 +24,38 @@ export const useFileUpload = () => {
     handleDragLeave
   } = useFileState();
 
-  useResumeRetrieval(candidateId, setUploadedFileName);
+  useEffect(() => {
+    const fetchResumePath = async () => {
+      if (!candidateId) return;
+
+      try {
+        console.log("Fetching resume path for candidate:", candidateId);
+        const { data, error } = await supabase
+          .from('candidates')
+          .select('original_filename')
+          .eq('id', candidateId)
+          .single();
+
+        if (error) throw error;
+
+        if (data.original_filename) {
+          console.log("Fetched original filename:", data.original_filename);
+          setUploadedFileName(data.original_filename);
+        } else {
+          setUploadedFileName(null);
+        }
+      } catch (error) {
+        console.error("Error fetching resume path:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load resume information",
+          variant: "destructive",
+        });
+      }
+    };
+
+    fetchResumePath();
+  }, [candidateId, toast, setUploadedFileName]);
 
   const uploadFile = async (uploadedFile: File) => {
     if (!validateFile(uploadedFile, toast)) return;
@@ -42,7 +74,7 @@ export const useFileUpload = () => {
       console.log("Starting file upload process for:", uploadedFile.name);
 
       const filePath = await uploadToStorage(uploadedFile, candidateId);
-      await updateCandidateResume(candidateId, filePath);
+      await updateCandidateResume(candidateId, filePath, uploadedFile.name);
 
       setUploadedFileName(uploadedFile.name);
       toast({
