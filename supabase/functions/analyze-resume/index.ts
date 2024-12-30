@@ -50,24 +50,22 @@ serve(async (req) => {
 
     const systemPrompt = `You are an expert executive recruiter with decades of experience analyzing resumes. Your task is to provide a detailed, insightful analysis of the resume focusing on concrete examples and specific details. For each section, you must extract and analyze actual content from the resume, not make generic statements.
 
-Analyze the resume and return a JSON object with the following sections:
+Analyze the resume and provide detailed insights in these categories:
 
-{
-  "credibility_statements": "List specific achievements, metrics, and recognition that establish the candidate's credibility. Include numbers, percentages, and concrete results.",
-  "case_studies": "Describe 2-3 significant projects or initiatives from the resume, including the challenge, action, and quantifiable results.",
-  "job_assessment": "Analyze their career progression, including role transitions, promotions, and skill development. Note any interesting patterns or rapid advancement.",
-  "motivations": "Based on their career choices and achievements, infer their key professional motivations and career drivers.",
-  "business_problems": "From their experience, identify specific types of business challenges they excel at solving. Include examples from their work history.",
-  "additional_observations": "Share unique insights about their career path, leadership style, or distinctive patterns in their experience."
-}
+1. Credibility Statements: List specific achievements, metrics, and recognition that establish credibility
+2. Case Studies: Describe 2-3 significant projects or initiatives, including challenges and results
+3. Job Assessment: Analyze career progression, transitions, and skill development
+4. Motivations: Infer key professional motivations from career choices
+5. Business Problems: Identify specific types of business challenges they excel at solving
+6. Additional Observations: Share unique insights about their career path or leadership style
 
-Important guidelines:
-1. Always reference specific details from the resume
-2. Use concrete examples and metrics whenever possible
-3. If certain information isn't available, explain what would make the analysis stronger rather than stating it's missing
-4. Focus on insights that would be valuable for executive recruitment`;
+Important:
+- Focus on extracting ACTUAL examples and metrics from the resume
+- Do not make generic statements
+- If certain information isn't available, note what's missing
+- Maintain a professional, executive recruitment perspective`;
 
-    const userPrompt = `Analyze this executive resume and provide detailed insights based on the actual content:\n\n${resumeText}`;
+    const userPrompt = `Please analyze this executive resume and provide detailed insights based on the actual content:\n\n${resumeText}`;
 
     console.log('Sending request to OpenAI');
 
@@ -84,7 +82,6 @@ Important guidelines:
           { role: 'user', content: userPrompt }
         ],
         temperature: 0.7,
-        response_format: { type: "json_object" }
       }),
     });
 
@@ -96,64 +93,57 @@ Important guidelines:
 
     const openAIData = await openAIResponse.json();
     console.log('Received OpenAI response');
-
+    
     const content = openAIData.choices[0].message.content;
     console.log('Raw OpenAI response:', content);
 
-    let analysis;
-    try {
-      analysis = JSON.parse(content);
+    // Parse the response into sections
+    const sections = {
+      credibility_statements: '',
+      case_studies: '',
+      job_assessment: '',
+      motivations: '',
+      business_problems: '',
+      additional_observations: ''
+    };
 
-      // Validate all required fields are present and are strings
-      const requiredFields = [
-        'credibility_statements',
-        'case_studies',
-        'job_assessment',
-        'motivations',
-        'business_problems',
-        'additional_observations'
-      ];
-
-      for (const field of requiredFields) {
-        if (!(field in analysis)) {
-          throw new Error(`Missing required field: ${field}`);
-        }
-        if (typeof analysis[field] !== 'string' || !analysis[field].trim()) {
-          throw new Error(`Field ${field} must be a non-empty string`);
-        }
-      }
-
-      // Delete any existing analysis for this candidate
-      const { error: deleteError } = await supabase
-        .from('resume_analyses')
-        .delete()
-        .eq('candidate_id', candidateId);
-
-      if (deleteError) throw deleteError;
-
-      // Insert new analysis
-      const { error: insertError } = await supabase
-        .from('resume_analyses')
-        .insert({
-          candidate_id: candidateId,
-          ...analysis
-        });
-
-      if (insertError) throw insertError;
-
-      console.log('Stored analysis results in database');
-
-      return new Response(JSON.stringify({ 
-        success: true,
-        data: analysis
-      }), {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    } catch (error) {
-      console.error('Error processing OpenAI response:', error);
-      console.error('Raw response:', content);
-      throw new Error('OpenAI returned an invalid or incomplete response. Please try again.');
+    // Split the content by numbered sections and parse
+    const parts = content.split(/\d\.\s+/);
+    if (parts.length > 1) {
+      sections.credibility_statements = parts[1]?.split('\n\n')[0]?.trim() || '';
+      sections.case_studies = parts[2]?.split('\n\n')[0]?.trim() || '';
+      sections.job_assessment = parts[3]?.split('\n\n')[0]?.trim() || '';
+      sections.motivations = parts[4]?.split('\n\n')[0]?.trim() || '';
+      sections.business_problems = parts[5]?.split('\n\n')[0]?.trim() || '';
+      sections.additional_observations = parts[6]?.split('\n\n')[0]?.trim() || '';
     }
+
+    // Delete any existing analysis for this candidate
+    const { error: deleteError } = await supabase
+      .from('resume_analyses')
+      .delete()
+      .eq('candidate_id', candidateId);
+
+    if (deleteError) throw deleteError;
+
+    // Insert new analysis
+    const { error: insertError } = await supabase
+      .from('resume_analyses')
+      .insert({
+        candidate_id: candidateId,
+        ...sections
+      });
+
+    if (insertError) throw insertError;
+
+    console.log('Stored analysis results in database');
+
+    return new Response(JSON.stringify({ 
+      success: true,
+      data: sections
+    }), {
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+    });
   } catch (error) {
     console.error('Error in analyze-resume function:', error);
     return new Response(JSON.stringify({ 
