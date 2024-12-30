@@ -42,7 +42,7 @@ export const CandidateStatusChecklist = () => {
       icon: User,
     },
     {
-      label: "Resume Submitted",
+      label: "Resume Analyzed",
       isComplete: !!candidate?.resume_path,
       icon: FileText,
     },
