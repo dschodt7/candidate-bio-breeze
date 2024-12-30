@@ -1,6 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
+import mammoth from 'npm:mammoth@1.6.0';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -26,7 +27,7 @@ serve(async (req) => {
     // Fetch candidate data
     const { data: candidate, error: candidateError } = await supabase
       .from('candidates')
-      .select('resume_path')
+      .select('resume_path, original_filename')
       .eq('id', candidateId)
       .single();
 
@@ -36,6 +37,7 @@ serve(async (req) => {
     }
 
     console.log('Found resume path:', candidate.resume_path);
+    console.log('Original filename:', candidate.original_filename);
 
     // Get resume content from storage
     const { data: resumeFile, error: storageError } = await supabase
@@ -45,8 +47,24 @@ serve(async (req) => {
 
     if (storageError) throw storageError;
 
-    const resumeText = await resumeFile.text();
+    // Extract text based on file type
+    let resumeText = '';
+    const fileExtension = candidate.original_filename?.toLowerCase().split('.').pop();
+    
+    if (fileExtension === 'docx') {
+      console.log('Processing DOCX file');
+      const arrayBuffer = await resumeFile.arrayBuffer();
+      const result = await mammoth.extractRawText({ arrayBuffer });
+      resumeText = result.value;
+    } else {
+      console.log('Processing as text file');
+      resumeText = await resumeFile.text();
+    }
+
     console.log('Resume text length:', resumeText.length);
+    if (resumeText.length === 0) {
+      throw new Error('Failed to extract text from resume');
+    }
 
     const systemPrompt = `You are an expert executive recruiter with decades of experience analyzing resumes. Your task is to provide a detailed, insightful analysis of the resume focusing on concrete examples and specific details. For each section, you must extract and analyze actual content from the resume, not make generic statements.
 
