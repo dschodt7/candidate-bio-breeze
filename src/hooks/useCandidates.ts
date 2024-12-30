@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useNavigate } from "react-router-dom";
 
@@ -54,12 +54,8 @@ export const useCandidates = () => {
       const userId = session.user.id;
       console.log("Current user ID:", userId);
 
-      let candidate = candidates.find(c => 
-        c.linkedin_url?.includes(name.toLowerCase()) || 
-        c.screening_notes?.includes(name)
-      );
-
-      if (!candidate) {
+      // Only create a new candidate if the "New Candidate" button was clicked
+      if (name === "New Candidate") {
         console.log("Creating new candidate");
         
         const { data: newCandidate, error: insertError } = await supabase
@@ -76,17 +72,34 @@ export const useCandidates = () => {
           throw insertError || new Error("Failed to create candidate");
         }
 
-        candidate = newCandidate;
-        console.log("Created new candidate:", candidate);
-        setCandidates(prev => [...prev, candidate]);
-      }
+        console.log("Created new candidate:", newCandidate);
+        setCandidates(prev => [...prev, newCandidate]);
+        
+        navigate(`/?candidate=${newCandidate.id}`);
+        
+        toast({
+          title: "Success",
+          description: "New candidate profile created",
+        });
+      } else {
+        // Find existing candidate and navigate to their profile
+        const existingCandidate = candidates.find(c => 
+          c.linkedin_url?.includes(name.toLowerCase()) || 
+          c.screening_notes?.includes(name)
+        );
 
-      navigate(`/?candidate=${candidate.id}`);
-      
-      toast({
-        title: "Success",
-        description: "New candidate profile created",
-      });
+        if (existingCandidate) {
+          console.log("Navigating to existing candidate:", existingCandidate);
+          navigate(`/?candidate=${existingCandidate.id}`);
+        } else {
+          console.error("Could not find candidate:", name);
+          toast({
+            title: "Error",
+            description: "Could not find candidate profile",
+            variant: "destructive",
+          });
+        }
+      }
     } catch (error) {
       console.error("Error handling candidate click:", error);
       toast({
