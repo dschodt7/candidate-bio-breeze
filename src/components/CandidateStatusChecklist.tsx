@@ -15,14 +15,21 @@ export const CandidateStatusChecklist = () => {
     queryKey: ['linkedInAnalysis', candidate?.id],
     queryFn: async () => {
       if (!candidate?.id) return null;
+      console.log("Fetching LinkedIn analysis for candidate:", candidate.id);
+      
       const { data, error } = await supabase
         .from('linkedin_sections')
         .select('analysis')
         .eq('candidate_id', candidate.id)
         .eq('section_type', 'about')
-        .maybeSingle();
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching LinkedIn analysis:", error);
+        return null;
+      }
+
+      console.log("LinkedIn analysis data:", data);
       return data?.analysis;
     },
     enabled: !!candidate?.id,
