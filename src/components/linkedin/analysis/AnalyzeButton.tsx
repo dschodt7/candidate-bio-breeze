@@ -63,14 +63,11 @@ export const AnalyzeButton = ({
     }
   };
 
-  const hasSections = linkedInSections && linkedInSections.length > 0;
-
-  if (!hasSections) return null;
-
+  // Remove the conditional rendering check
   return (
     <Button 
       onClick={handleAnalyze} 
-      disabled={isLoading || isAnalyzing}
+      disabled={isLoading || isAnalyzing || !candidateId || !linkedInSections?.length}
       className="w-full mb-4"
     >
       {isAnalyzing ? "Analyzing..." : "Analyze LinkedIn Sections"}
