@@ -60,14 +60,14 @@ export const useCandidates = () => {
       );
 
       if (!candidate) {
-        console.log("Creating new candidate for:", name);
+        console.log("Creating new candidate");
         
         const { data: newCandidate, error: insertError } = await supabase
           .from("candidates")
           .insert([{ 
             profile_id: userId,
-            linkedin_url: `https://linkedin.com/in/${name.toLowerCase().replace(" ", "-")}`,
-            screening_notes: `Initial notes for ${name}`,
+            linkedin_url: null,
+            screening_notes: null,
           }])
           .select()
           .single();
@@ -85,7 +85,7 @@ export const useCandidates = () => {
       
       toast({
         title: "Success",
-        description: `Loaded profile for ${name}`,
+        description: "New candidate profile created",
       });
     } catch (error) {
       console.error("Error handling candidate click:", error);
