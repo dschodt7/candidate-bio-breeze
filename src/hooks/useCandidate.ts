@@ -5,6 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 
 interface Candidate {
   id: string;
+  name: string;
   linkedin_url: string | null;
   screening_notes: string | null;
   resume_path: string | null;
@@ -49,13 +50,8 @@ export const useCandidate = () => {
   }, [searchParams, toast]);
 
   const getCandidateName = () => {
-    if (!candidate?.linkedin_url) return "Select a Candidate";
-    const urlParts = candidate.linkedin_url.split('/').pop()?.split('-');
-    if (!urlParts) return "Unknown Candidate";
-    return urlParts
-      .slice(0, 2)
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-      .join(' ');
+    if (!candidate) return "Select a Candidate";
+    return candidate.name;
   };
 
   return {

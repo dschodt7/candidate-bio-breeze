@@ -5,8 +5,8 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 
 interface CandidateListProps {
-  candidates: { name: string | null; linkedin_url: string | null }[];
-  onCandidateClick: (candidate: { name: string | null; linkedin_url: string | null }) => void;
+  candidates: { name: string; linkedin_url: string | null }[];
+  onCandidateClick: (candidate: { name: string; linkedin_url: string | null }) => void;
 }
 
 export const CandidateList = ({ candidates, onCandidateClick }: CandidateListProps) => {
@@ -19,29 +19,16 @@ export const CandidateList = ({ candidates, onCandidateClick }: CandidateListPro
     setIsDialogOpen(false);
   };
 
-  const getCandidateDisplayName = (candidate: { name: string | null; linkedin_url: string | null }) => {
-    if (candidate.name) return candidate.name;
-    if (candidate.linkedin_url) {
-      const urlParts = candidate.linkedin_url.split('/').pop()?.split('-');
-      if (!urlParts) return "Unknown Candidate";
-      return urlParts
-        .slice(0, 2)
-        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-        .join(' ');
-    }
-    return "Unknown Candidate";
-  };
-
   return (
     <div className="space-y-2">
       {candidates.map((candidate) => (
         <Button
-          key={candidate.name || candidate.linkedin_url}
+          key={candidate.name}
           variant="ghost"
           className="w-full justify-start text-left"
           onClick={() => onCandidateClick(candidate)}
         >
-          {getCandidateDisplayName(candidate)}
+          {candidate.name}
         </Button>
       ))}
       

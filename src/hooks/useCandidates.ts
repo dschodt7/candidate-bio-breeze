@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 interface Candidate {
   id: string;
-  name: string | null;
+  name: string;
   linkedin_url: string | null;
   screening_notes: string | null;
   resume_path: string | null;
@@ -42,7 +42,7 @@ export const useCandidates = () => {
     }
   };
 
-  const handleCandidateClick = async (candidate: { name: string | null; linkedin_url: string | null }) => {
+  const handleCandidateClick = async (candidate: { name: string; linkedin_url: string | null }) => {
     try {
       console.log("Handling click for candidate:", candidate);
       
@@ -56,7 +56,7 @@ export const useCandidates = () => {
       console.log("Current user ID:", userId);
 
       // Check if this is a new candidate
-      if (!candidate.linkedin_url && candidate.name) {
+      if (!candidate.linkedin_url) {
         console.log("Creating new candidate with name:", candidate.name);
         
         const { data: newCandidate, error: insertError } = await supabase
@@ -85,10 +85,7 @@ export const useCandidates = () => {
         });
       } else {
         // Find existing candidate
-        const existingCandidate = candidates.find(c => 
-          (c.name === candidate.name) || 
-          (c.linkedin_url === candidate.linkedin_url)
-        );
+        const existingCandidate = candidates.find(c => c.name === candidate.name);
 
         if (existingCandidate) {
           console.log("Navigating to existing candidate:", existingCandidate);
