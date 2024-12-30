@@ -55,50 +55,43 @@ export const useCandidates = () => {
       const userId = session.user.id;
       console.log("Current user ID:", userId);
 
-      // Check if this is a new candidate
-      if (!candidate.linkedin_url) {
-        console.log("Creating new candidate with name:", candidate.name);
-        
-        const { data: newCandidate, error: insertError } = await supabase
-          .from("candidates")
-          .insert([{ 
-            profile_id: userId,
-            name: candidate.name,
-            linkedin_url: null,
-            screening_notes: null,
-          }])
-          .select()
-          .single();
-
-        if (insertError || !newCandidate) {
-          throw insertError || new Error("Failed to create candidate");
-        }
-
-        console.log("Created new candidate:", newCandidate);
-        setCandidates(prev => [...prev, newCandidate]);
-        
-        navigate(`/?candidate=${newCandidate.id}`);
-        
-        toast({
-          title: "Success",
-          description: "New candidate profile created",
-        });
-      } else {
-        // Find existing candidate
-        const existingCandidate = candidates.find(c => c.name === candidate.name);
-
-        if (existingCandidate) {
-          console.log("Navigating to existing candidate:", existingCandidate);
-          navigate(`/?candidate=${existingCandidate.id}`);
-        } else {
-          console.error("Could not find candidate:", candidate);
-          toast({
-            title: "Error",
-            description: "Could not find candidate profile",
-            variant: "destructive",
-          });
-        }
+      // First check if this candidate already exists in our list
+      const existingCandidate = candidates.find(c => c.name === candidate.name);
+      
+      if (existingCandidate) {
+        // If the candidate exists, just navigate to their profile
+        console.log("Navigating to existing candidate:", existingCandidate);
+        navigate(`/?candidate=${existingCandidate.id}`);
+        return;
       }
+
+      // If we get here, this is a new candidate
+      console.log("Creating new candidate with name:", candidate.name);
+      
+      const { data: newCandidate, error: insertError } = await supabase
+        .from("candidates")
+        .insert([{ 
+          profile_id: userId,
+          name: candidate.name,
+          linkedin_url: null,
+          screening_notes: null,
+        }])
+        .select()
+        .single();
+
+      if (insertError || !newCandidate) {
+        throw insertError || new Error("Failed to create candidate");
+      }
+
+      console.log("Created new candidate:", newCandidate);
+      setCandidates(prev => [...prev, newCandidate]);
+      
+      navigate(`/?candidate=${newCandidate.id}`);
+      
+      toast({
+        title: "Success",
+        description: "New candidate profile created",
+      });
     } catch (error) {
       console.error("Error handling candidate click:", error);
       toast({
