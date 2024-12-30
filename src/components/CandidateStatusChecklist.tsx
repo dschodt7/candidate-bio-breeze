@@ -22,7 +22,7 @@ export const CandidateStatusChecklist = () => {
         .select('analysis')
         .eq('candidate_id', candidate.id)
         .eq('section_type', 'about')
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("Error fetching LinkedIn analysis:", error);

@@ -34,6 +34,8 @@ export const LinkedInAnalysis = () => {
     queryKey: ['linkedInAnalysis', candidateId],
     queryFn: async () => {
       if (!candidateId) return null;
+      console.log("Fetching LinkedIn analysis for candidate:", candidateId);
+      
       const { data, error } = await supabase
         .from('linkedin_sections')
         .select('analysis')
@@ -41,7 +43,12 @@ export const LinkedInAnalysis = () => {
         .eq('section_type', 'about')
         .maybeSingle();
 
-      if (error) throw error;
+      if (error) {
+        console.error("Error fetching LinkedIn analysis:", error);
+        throw error;
+      }
+
+      console.log("LinkedIn analysis data:", data);
       return data?.analysis;
     },
     enabled: !!candidateId,
