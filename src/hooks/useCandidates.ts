@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 interface Candidate {
   id: string;
+  name: string | null;
   linkedin_url: string | null;
   screening_notes: string | null;
   resume_path: string | null;
@@ -41,9 +42,9 @@ export const useCandidates = () => {
     }
   };
 
-  const handleCandidateClick = async (name: string) => {
+  const handleCandidateClick = async (candidate: { name: string | null; linkedin_url: string | null }) => {
     try {
-      console.log("Handling click for candidate:", name);
+      console.log("Handling click for candidate:", candidate);
       
       const { data: { session }, error: sessionError } = await supabase.auth.getSession();
       
@@ -54,14 +55,15 @@ export const useCandidates = () => {
       const userId = session.user.id;
       console.log("Current user ID:", userId);
 
-      // Only create a new candidate if the "New Candidate" button was clicked
-      if (name === "New Candidate") {
-        console.log("Creating new candidate");
+      // Check if this is a new candidate
+      if (!candidate.linkedin_url && candidate.name) {
+        console.log("Creating new candidate with name:", candidate.name);
         
         const { data: newCandidate, error: insertError } = await supabase
           .from("candidates")
           .insert([{ 
             profile_id: userId,
+            name: candidate.name,
             linkedin_url: null,
             screening_notes: null,
           }])
@@ -82,17 +84,17 @@ export const useCandidates = () => {
           description: "New candidate profile created",
         });
       } else {
-        // Find existing candidate and navigate to their profile
+        // Find existing candidate
         const existingCandidate = candidates.find(c => 
-          c.linkedin_url?.includes(name.toLowerCase()) || 
-          c.screening_notes?.includes(name)
+          (c.name === candidate.name) || 
+          (c.linkedin_url === candidate.linkedin_url)
         );
 
         if (existingCandidate) {
           console.log("Navigating to existing candidate:", existingCandidate);
           navigate(`/?candidate=${existingCandidate.id}`);
         } else {
-          console.error("Could not find candidate:", name);
+          console.error("Could not find candidate:", candidate);
           toast({
             title: "Error",
             description: "Could not find candidate profile",

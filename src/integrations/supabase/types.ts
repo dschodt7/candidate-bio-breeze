@@ -14,6 +14,7 @@ export type Database = {
           created_at: string
           id: string
           linkedin_url: string | null
+          name: string | null
           original_filename: string | null
           profile_id: string
           resume_path: string | null
@@ -24,6 +25,7 @@ export type Database = {
           created_at?: string
           id?: string
           linkedin_url?: string | null
+          name?: string | null
           original_filename?: string | null
           profile_id: string
           resume_path?: string | null
@@ -34,6 +36,7 @@ export type Database = {
           created_at?: string
           id?: string
           linkedin_url?: string | null
+          name?: string | null
           original_filename?: string | null
           profile_id?: string
           resume_path?: string | null
