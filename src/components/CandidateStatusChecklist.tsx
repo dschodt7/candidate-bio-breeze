@@ -10,14 +10,14 @@ export const CandidateStatusChecklist = () => {
 
   const checklistItems = [
     {
+      label: "LinkedIn Profile Analyzed",
+      isComplete: !!candidate?.linkedin_url,
+      icon: User,
+    },
+    {
       label: "Resume Submitted",
       isComplete: !!candidate?.resume_path,
       icon: FileText,
-    },
-    {
-      label: "LinkedIn Profile Found",
-      isComplete: !!candidate?.linkedin_url,
-      icon: User,
     },
     {
       label: "Screening Notes",
