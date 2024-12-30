@@ -26,8 +26,8 @@ const MainContentPanel = () => {
             {candidate && (
               <div className="grid gap-6">
                 <CandidateStatusChecklist />
-                <FileUpload />
                 <LinkedInInput />
+                <FileUpload />
                 <NotesInput />
                 <ExecutiveSummaryForm />
               </div>
