@@ -3,15 +3,35 @@ import { Card } from "@/components/ui/card";
 import { useCandidate } from "@/hooks/useCandidate";
 import { useExecutiveSummary } from "@/hooks/useExecutiveSummary";
 import { ChecklistItem } from "./checklist/ChecklistItem";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 export const CandidateStatusChecklist = () => {
   const { candidate } = useCandidate();
   const { executiveSummary } = useExecutiveSummary(candidate?.id);
 
+  // Query to check if LinkedIn analysis exists
+  const { data: linkedInAnalysis } = useQuery({
+    queryKey: ['linkedInAnalysis', candidate?.id],
+    queryFn: async () => {
+      if (!candidate?.id) return null;
+      const { data, error } = await supabase
+        .from('linkedin_sections')
+        .select('analysis')
+        .eq('candidate_id', candidate.id)
+        .eq('section_type', 'about')
+        .maybeSingle();
+
+      if (error) throw error;
+      return data?.analysis;
+    },
+    enabled: !!candidate?.id,
+  });
+
   const checklistItems = [
     {
       label: "LinkedIn Profile Analyzed",
-      isComplete: !!candidate?.linkedin_url,
+      isComplete: !!linkedInAnalysis && Object.keys(linkedInAnalysis).length > 0,
       icon: User,
     },
     {
