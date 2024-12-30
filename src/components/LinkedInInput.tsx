@@ -11,37 +11,33 @@ export const LinkedInInput = () => {
   return (
     <Card className="p-6 animate-fadeIn">
       <LinkedInUrlInput />
-      {candidate?.linkedin_url && (
-        <>
-          <Accordion type="single" collapsible className="mt-6">
-            <LinkedInSection 
-              title="About Section"
-              sectionType="about"
-            />
-            <LinkedInSection 
-              title="Experience 1"
-              sectionType="experience_1"
-            />
-            <LinkedInSection 
-              title="Experience 2"
-              sectionType="experience_2"
-            />
-            <LinkedInSection 
-              title="Experience 3"
-              sectionType="experience_3"
-            />
-            <LinkedInSection 
-              title="Skills"
-              sectionType="skills"
-            />
-            <LinkedInSection 
-              title="Recommendations"
-              sectionType="recommendations"
-            />
-          </Accordion>
-          <LinkedInAnalysis />
-        </>
-      )}
+      <Accordion type="single" collapsible className="mt-6">
+        <LinkedInSection 
+          title="About Section"
+          sectionType="about"
+        />
+        <LinkedInSection 
+          title="Experience 1"
+          sectionType="experience_1"
+        />
+        <LinkedInSection 
+          title="Experience 2"
+          sectionType="experience_2"
+        />
+        <LinkedInSection 
+          title="Experience 3"
+          sectionType="experience_3"
+        />
+        <LinkedInSection 
+          title="Skills"
+          sectionType="skills"
+        />
+        <LinkedInSection 
+          title="Recommendations"
+          sectionType="recommendations"
+        />
+      </Accordion>
+      <LinkedInAnalysis />
     </Card>
   );
 };
