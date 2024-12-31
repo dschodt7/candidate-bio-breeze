@@ -49,7 +49,7 @@ serve(async (req) => {
             {
               "credibilityStatements": "detailed endorsements and recognitions that enhance credibility, focusing on specific achievements and metrics",
               "caseStudies": "concrete examples of professional achievements with measurable outcomes",
-              "jobAssessment": "comprehensive insights into responsibilities and leadership roles, including scope and impact",
+              "jobAssessment": "comprehensive analysis of current skills, experiences, and leadership capabilities, including scope of responsibilities and demonstrated impact",
               "motivations": "clear personal and professional aspirations backed by examples from their career history",
               "businessProblems": "specific areas of expertise and demonstrated excellence with examples",
               "interests": "professional interests and passions that align with their career trajectory",

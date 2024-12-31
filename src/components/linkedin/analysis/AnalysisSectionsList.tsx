@@ -4,7 +4,7 @@ import { useAnalysisState } from "@/components/file-upload/analysis/useAnalysisS
 const ANALYSIS_SECTIONS = [
   { key: 'credibilityStatements', title: 'Credibility Statements' },
   { key: 'caseStudies', title: 'Case Studies' },
-  { key: 'jobAssessment', title: 'Complete Assessment of Job' },
+  { key: 'jobAssessment', title: 'Assessment of Current Skills and Experiences' },
   { key: 'motivations', title: 'Motivations' },
   { key: 'businessProblems', title: 'Business Problems They Solve Better Than Most' },
   { key: 'interests', title: 'Interests' },
