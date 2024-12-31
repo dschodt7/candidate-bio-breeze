@@ -8,10 +8,12 @@ import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { ResumeAnalysis } from "./ResumeAnalysis";
+import { useQueryClient } from "@tanstack/react-query";
 
 export const FileUpload = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   
   const {
@@ -65,6 +67,11 @@ export const FileUpload = () => {
         hasData: !!data.data,
         sections: data.data ? Object.keys(data.data) : [],
         firstSection: data.data?.credibility_statements?.substring(0, 100)
+      });
+
+      // Invalidate the resumeAnalysis query to force a refresh
+      await queryClient.invalidateQueries({
+        queryKey: ['resumeAnalysis', candidateId]
       });
 
       toast({
