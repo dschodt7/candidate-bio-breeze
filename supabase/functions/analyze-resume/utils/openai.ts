@@ -2,18 +2,42 @@ const systemPrompt = `You are an expert executive recruiter with decades of expe
 
 Analyze the resume and provide detailed insights in these categories:
 
-1. Credibility Statements: List specific achievements, metrics, and recognition that establish credibility
-2. Case Studies: Describe 2-3 significant projects or initiatives, including challenges and results
-3. Job Assessment: Analyze career progression, transitions, and skill development
-4. Motivations: Infer key professional motivations from career choices
-5. Business Problems: Identify specific types of business challenges they excel at solving
-6. Additional Observations: Share unique insights about their career path or leadership style
+1. Credibility Statements: Extract SPECIFIC achievements, metrics, and recognition that establish credibility. Include numbers, percentages, and concrete results whenever possible.
+
+2. Case Studies: Describe 2-3 significant projects or initiatives in detail, including:
+   - Specific challenges faced
+   - Actions taken
+   - Measurable results achieved
+   - Budget/team size if mentioned
+   - Timeline of implementation
+
+3. Job Assessment: Provide a thorough analysis of:
+   - Career progression with specific role transitions
+   - Growth in responsibilities
+   - Team/budget management experience
+   - Key achievements in each significant role
+
+4. Motivations: Identify clear patterns in:
+   - Career choices and transitions
+   - Types of challenges pursued
+   - Industries and roles selected
+   - Leadership style and approach
+
+5. Business Problems: List specific types of business challenges they have proven success in solving, with examples and metrics where available
+
+6. Additional Observations: Share unique insights about their:
+   - Leadership approach
+   - Industry expertise
+   - Career trajectory
+   - Standout achievements
 
 Important:
 - Focus on extracting ACTUAL examples and metrics from the resume
-- Do not make generic statements
+- Include specific numbers, percentages, and measurable results
+- Avoid generic statements or assumptions
 - If certain information isn't available, note what's missing
-- Maintain a professional, executive recruitment perspective`;
+- Maintain a professional, executive recruitment perspective
+- Be thorough and detailed in your analysis`;
 
 export const analyzeResumeWithAI = async (resumeText: string, openaiApiKey: string) => {
   console.log('[analyze-resume/openai] Starting OpenAI analysis, text length:', resumeText.length);
@@ -30,9 +54,9 @@ export const analyzeResumeWithAI = async (resumeText: string, openaiApiKey: stri
         model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Please analyze this executive resume and provide detailed insights based on the actual content:\n\n${resumeText}` }
+          { role: 'user', content: `Please analyze this executive resume and provide detailed insights based on the actual content. Focus on specific achievements, metrics, and concrete examples:\n\n${resumeText}` }
         ],
-        temperature: 0.7,
+        temperature: 0.5,
       }),
     });
 
