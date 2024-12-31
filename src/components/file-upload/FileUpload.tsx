@@ -10,6 +10,11 @@ import { useToast } from "@/hooks/use-toast";
 import { ResumeAnalysis } from "./ResumeAnalysis";
 
 export const FileUpload = () => {
+  // Move all hook calls to the top level
+  const [searchParams] = useSearchParams();
+  const { toast } = useToast();
+  const [isAnalyzing, setIsAnalyzing] = useState(false);
+  
   const {
     isDragging,
     isUploading,
@@ -20,10 +25,6 @@ export const FileUpload = () => {
     handleDrop,
     handleFileInput,
   } = useFileUpload();
-
-  const [searchParams] = useSearchParams();
-  const { toast } = useToast();
-  const [isAnalyzing, setIsAnalyzing] = useState(false);
 
   const handleAnalyzeResume = async () => {
     const candidateId = searchParams.get('candidate');
