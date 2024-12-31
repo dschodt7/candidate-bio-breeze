@@ -1,6 +1,13 @@
+/**
+ * ⚠️ WARNING: This component is locked and should not be modified without explicit approval.
+ * Last verified working state: March 2024
+ * Contact: Project owner
+ */
+
 import { AnalysisSection } from "@/components/file-upload/analysis/AnalysisSection";
 import { useAnalysisState } from "@/components/file-upload/analysis/useAnalysisState";
 
+// This configuration is locked - do not modify without explicit approval
 const ANALYSIS_SECTIONS = [
   { key: 'jobAssessment', title: 'Assessment of Current Skills and Experiences' },
   { key: 'caseStudies', title: 'Case Studies' },
@@ -12,17 +19,16 @@ const ANALYSIS_SECTIONS = [
   { key: 'foundationalUnderstanding', title: 'Foundational Understanding on a Personal Level' },
 ];
 
-interface AnalysisSectionsListProps {
-  candidateId: string;
-  analysis: any;
-  isLoading: boolean;
-}
-
+// This component is locked - do not modify without explicit approval
 export const AnalysisSectionsList = ({
   candidateId,
   analysis,
   isLoading
-}: AnalysisSectionsListProps) => {
+}: {
+  candidateId: string;
+  analysis: any;
+  isLoading: boolean;
+}) => {
   const {
     editingSection,
     editedContent,
@@ -52,3 +58,5 @@ export const AnalysisSectionsList = ({
     </div>
   );
 };
+
+// End of locked component
