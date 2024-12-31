@@ -24,7 +24,7 @@ export const ResumeAnalysis = () => {
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
 
-  const { data: analysis, isLoading } = useQuery({
+  const { data: analysis, isLoading, error } = useQuery({
     queryKey: ['resumeAnalysis', candidateId],
     queryFn: async () => {
       if (!candidateId) return null;
@@ -59,11 +59,20 @@ export const ResumeAnalysis = () => {
   console.log("Resume analysis component state:", {
     analysis,
     isLoading,
+    error,
     candidateId,
     hasContent: analysis && Object.values(analysis).some(value => value && value !== "No data found")
   });
 
-  if (!analysis && !isLoading) return null;
+  if (error) {
+    console.error("Error in resume analysis:", error);
+    return <div className="text-sm text-red-500">Error loading analysis</div>;
+  }
+
+  if (!analysis && !isLoading) {
+    console.log("No analysis data found");
+    return null;
+  }
 
   const hasContent = analysis && Object.values(analysis).some(value => value && value !== "No data found");
 
