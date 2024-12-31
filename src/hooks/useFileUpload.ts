@@ -7,7 +7,19 @@ import { useFileState } from "@/hooks/useFileState";
 import { useSupabaseStorage } from "@/hooks/useSupabaseStorage";
 import mammoth from "mammoth";
 
-export const useFileUpload = () => {
+interface FileUploadState {
+  isDragging: boolean;
+  isUploading: boolean;
+  file: File | null;
+  uploadedFileName: string | null;
+  uploadProgress: number;
+  handleDragOver: (e: React.DragEvent) => void;
+  handleDragLeave: () => void;
+  handleDrop: (e: React.DragEvent) => void;
+  handleFileInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}
+
+export const useFileUpload = (): FileUploadState => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
@@ -95,12 +107,9 @@ export const useFileUpload = () => {
       setFile(uploadedFile);
       setUploadProgress(0);
       console.log("Starting file upload process for:", uploadedFile.name);
-      toast({
-        title: "Processing",
-        description: "Starting file upload..."
-      });
 
       // Extract text first
+      setUploadProgress(10);
       const extractedText = await extractText(uploadedFile);
       setUploadProgress(30);
       console.log("Text extracted, length:", extractedText.length);

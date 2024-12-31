@@ -14,11 +14,11 @@ export const FileUpload = () => {
     isDragging,
     isUploading,
     uploadedFileName,
+    uploadProgress,
     handleDragOver,
     handleDragLeave,
     handleDrop,
     handleFileInput,
-    uploadProgress
   } = useFileUpload();
 
   const [searchParams] = useSearchParams();
@@ -83,11 +83,11 @@ export const FileUpload = () => {
           isDragging={isDragging}
           isUploading={isUploading}
           uploadedFileName={uploadedFileName}
+          uploadProgress={uploadProgress}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onFileSelect={handleFileInput}
-          uploadProgress={uploadProgress}
         />
         {uploadedFileName && (
           <>
