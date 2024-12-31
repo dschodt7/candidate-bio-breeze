@@ -10,11 +10,11 @@ export async function analyzeResumeWithAI(resumeText: string, apiKey: string) {
     console.log('[analyze-resume/openai] Sending request to OpenAI');
     const response = await openai.createChatCompletion({
       model: "gpt-4o",
-      temperature: 0.5, // Lowered from 0.7 for more consistent outputs
+      temperature: 0.7,
       messages: [
         {
           role: "system",
-          content: `You are an expert executive resume analyst. Your task is to provide a comprehensive analysis of the resume in these specific categories:
+          content: `Expert executive recruiter tasked to extract facts as well as deep insights from the resume in these sections. Ensure that all sections are responded to:
 
 1. Results and Achievements
 - Focus on quantifiable impacts and leadership outcomes
