@@ -28,7 +28,7 @@ export const ResumeAnalysis = () => {
     queryKey: ['resumeAnalysis', candidateId],
     queryFn: async () => {
       if (!candidateId) return null;
-      console.log("Fetching resume analysis for candidate:", candidateId);
+      console.log("[ResumeAnalysis] Fetching analysis for candidate:", candidateId);
       const { data, error } = await supabase
         .from('resume_analyses')
         .select('*')
@@ -38,11 +38,15 @@ export const ResumeAnalysis = () => {
         .maybeSingle();
 
       if (error) {
-        console.error("Error fetching resume analysis:", error);
+        console.error("[ResumeAnalysis] Error fetching analysis:", error);
         throw error;
       }
 
-      console.log("Fetched resume analysis data:", data);
+      console.log("[ResumeAnalysis] Database query result:", {
+        hasData: !!data,
+        sections: data ? Object.keys(data) : [],
+        firstSection: data?.credibility_statements?.substring(0, 100)
+      });
       return data;
     },
     enabled: !!candidateId,
@@ -56,7 +60,7 @@ export const ResumeAnalysis = () => {
     setEditedContent
   } = useAnalysisState(candidateId, analysis);
 
-  console.log("Resume analysis component state:", {
+  console.log("[ResumeAnalysis] Component state:", {
     analysis,
     isLoading,
     error,
@@ -70,12 +74,12 @@ export const ResumeAnalysis = () => {
   });
 
   if (error) {
-    console.error("Error in resume analysis:", error);
+    console.error("[ResumeAnalysis] Error in component:", error);
     return <div className="text-sm text-red-500">Error loading analysis</div>;
   }
 
   if (!analysis && !isLoading) {
-    console.log("No analysis data found");
+    console.log("[ResumeAnalysis] No analysis data found");
     return null;
   }
 

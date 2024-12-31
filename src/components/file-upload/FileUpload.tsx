@@ -48,7 +48,7 @@ export const FileUpload = () => {
 
     try {
       setIsAnalyzing(true);
-      console.log("Starting resume analysis for candidate:", candidateId);
+      console.log("[FileUpload] Starting resume analysis for candidate:", candidateId);
       toast({
         title: "Processing",
         description: "Starting resume analysis...",
@@ -60,13 +60,19 @@ export const FileUpload = () => {
 
       if (error) throw error;
 
-      console.log("Analysis completed:", data);
+      console.log("[FileUpload] Analysis response:", {
+        success: data.success,
+        hasData: !!data.data,
+        sections: data.data ? Object.keys(data.data) : [],
+        firstSection: data.data?.credibility_statements?.substring(0, 100)
+      });
+
       toast({
         title: "Success",
         description: "Resume analysis completed successfully",
       });
     } catch (error) {
-      console.error("Error analyzing resume:", error);
+      console.error("[FileUpload] Error analyzing resume:", error);
       toast({
         title: "Analysis Failed",
         description: "There was an error analyzing the resume",
