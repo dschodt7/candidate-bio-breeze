@@ -19,11 +19,27 @@ interface FileUploadState {
   handleFileInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
+const cleanText = (text: string): string => {
+  console.log("Cleaning text, original length:", text.length);
+  const cleaned = text
+    .replace(/\u0000/g, '') // Remove null bytes
+    .replace(/[\uFFFD\uFFFE\uFFFF]/g, '') // Remove replacement characters
+    .replace(/[^\x20-\x7E\x0A\x0D\u00A0-\u00FF\u0100-\u017F\u0180-\u024F\u1E00-\u1EFF]/g, ' ') // Replace other problematic Unicode with spaces
+    .trim();
+  console.log("Text cleaned, new length:", cleaned.length);
+  return cleaned;
+};
+
+const getFileExtension = (filename: string): string => {
+  const parts = filename.toLowerCase().split('.');
+  return parts[parts.length - 1];
+};
+
 export const useFileUpload = (): FileUploadState => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
-  const { uploadToStorage, updateCandidateResume } = useSupabaseStorage();
+  const { uploadToStorage } = useSupabaseStorage();
   const [uploadProgress, setUploadProgress] = useState(0);
   
   const {
@@ -49,11 +65,11 @@ export const useFileUpload = (): FileUploadState => {
           .from('candidates')
           .select('original_filename')
           .eq('id', candidateId)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
 
-        if (data.original_filename) {
+        if (data?.original_filename) {
           console.log("Fetched original filename:", data.original_filename);
           setUploadedFileName(data.original_filename);
         } else {
@@ -75,16 +91,27 @@ export const useFileUpload = (): FileUploadState => {
   const extractText = async (file: File): Promise<string> => {
     console.log("Starting text extraction from file:", file.name);
     try {
-      if (file.name.toLowerCase().endsWith('.docx')) {
+      const extension = getFileExtension(file.name);
+      console.log("File extension detected:", extension);
+
+      let extractedText = '';
+      if (extension === 'docx') {
         const arrayBuffer = await file.arrayBuffer();
         const result = await mammoth.extractRawText({ arrayBuffer });
-        console.log("Successfully extracted text from DOCX, length:", result.value.length);
-        return result.value;
+        extractedText = result.value;
+        console.log("Successfully extracted text from DOCX, length:", extractedText.length);
+      } else if (extension === 'pdf') {
+        extractedText = await file.text();
+        console.log("Successfully extracted text from PDF, length:", extractedText.length);
       } else {
-        const text = await file.text();
-        console.log("Successfully extracted text from PDF, length:", text.length);
-        return text;
+        throw new Error(`Unsupported file type: ${extension}`);
       }
+
+      // Clean the extracted text
+      const cleanedText = cleanText(extractedText);
+      console.log("Text cleaned, final length:", cleanedText.length);
+      return cleanedText;
+
     } catch (error) {
       console.error("Error extracting text:", error);
       throw error;
@@ -108,29 +135,34 @@ export const useFileUpload = (): FileUploadState => {
       setUploadProgress(0);
       console.log("Starting file upload process for:", uploadedFile.name);
 
-      // Extract text first
+      // Extract and clean text first
       setUploadProgress(10);
-      const extractedText = await extractText(uploadedFile);
+      const cleanedText = await extractText(uploadedFile);
       setUploadProgress(30);
-      console.log("Text extracted, length:", extractedText.length);
+      console.log("Text extracted and cleaned, length:", cleanedText.length);
 
-      // Upload file to storage
+      // Upload file to storage with proper extension
       const filePath = await uploadToStorage(uploadedFile, candidateId);
       setUploadProgress(60);
       console.log("File uploaded to storage:", filePath);
       
-      // Update candidate record with file info and extracted text
-      await supabase
+      // Update candidate record with file info and cleaned text
+      const { error: updateError } = await supabase
         .from('candidates')
         .update({
           resume_path: filePath,
           original_filename: uploadedFile.name,
-          resume_text: extractedText
+          resume_text: cleanedText
         })
         .eq('id', candidateId);
 
+      if (updateError) {
+        console.error("Error updating candidate record:", updateError);
+        throw updateError;
+      }
+
       setUploadProgress(100);
-      console.log("Database updated with file info and text");
+      console.log("Database updated with file info and cleaned text");
       
       setUploadedFileName(uploadedFile.name);
       toast({
@@ -141,7 +173,7 @@ export const useFileUpload = (): FileUploadState => {
       console.error("Error in upload process:", error);
       toast({
         title: "Upload failed",
-        description: "There was an error uploading your file",
+        description: error.message || "There was an error uploading your file",
         variant: "destructive"
       });
     } finally {
