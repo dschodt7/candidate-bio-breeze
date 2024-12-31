@@ -21,12 +21,22 @@ export const LinkedInInput = () => {
     { title: "Recommendations", type: "recommendations" },
   ];
 
+  // Create an array of section types to track expanded state
+  const [expandedSections, setExpandedSections] = useState<string[]>(
+    isExpanded ? sections.map(s => s.type) : []
+  );
+
+  const handleToggleAll = () => {
+    setIsExpanded(!isExpanded);
+    setExpandedSections(isExpanded ? [] : sections.map(s => s.type));
+  };
+
   return (
     <Card className="p-6 animate-fadeIn">
       <LinkedInUrlInput />
       <div className="mt-6 relative">
         <button
-          onClick={() => setIsExpanded(!isExpanded)}
+          onClick={handleToggleAll}
           className="absolute right-0 -top-2 flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
         >
           <span className="text-sm">
@@ -40,10 +50,10 @@ export const LinkedInInput = () => {
           />
         </button>
         <Accordion
-          type="single"
-          collapsible
+          type="multiple"
           className="mt-6"
-          value={isExpanded ? undefined : ""}
+          value={expandedSections}
+          onValueChange={setExpandedSections}
         >
           {sections.map(({ title, type }) => (
             <LinkedInSection
