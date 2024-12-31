@@ -61,7 +61,7 @@ export const ResumeAnalysis = () => {
     isLoading,
     error,
     candidateId,
-    hasContent: analysis && Object.values(analysis).some(value => value && value !== "No data found")
+    hasContent: analysis && Object.values(analysis).some(value => value && typeof value === 'string' && value !== "No data found")
   });
 
   if (error) {
@@ -74,7 +74,9 @@ export const ResumeAnalysis = () => {
     return null;
   }
 
-  const hasContent = analysis && Object.values(analysis).some(value => value && value !== "No data found");
+  const hasContent = analysis && Object.values(analysis).some(value => 
+    value && typeof value === 'string' && value !== "No data found"
+  );
 
   return (
     <div className="mt-4">
