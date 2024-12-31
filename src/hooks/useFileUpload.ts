@@ -51,7 +51,18 @@ export const useFileUpload = (): FileUploadState => {
     try {
       console.log("Resetting resume and analysis for candidate:", candidateId);
       
+      // Delete the analysis first
+      console.log("Deleting resume analysis");
+      const { error: deleteAnalysisError } = await supabase
+        .from('resume_analyses')
+        .delete()
+        .eq('candidate_id', candidateId);
+
+      if (deleteAnalysisError) throw deleteAnalysisError;
+      console.log("Resume analysis deleted successfully");
+
       // Reset the resume information
+      console.log("Resetting resume information");
       const { error: updateError } = await supabase
         .from('candidates')
         .update({
@@ -62,14 +73,7 @@ export const useFileUpload = (): FileUploadState => {
         .eq('id', candidateId);
 
       if (updateError) throw updateError;
-
-      // Delete the analysis
-      const { error: deleteError } = await supabase
-        .from('resume_analyses')
-        .delete()
-        .eq('candidate_id', candidateId);
-
-      if (deleteError) throw deleteError;
+      console.log("Resume information reset successfully");
 
       // Reset local state
       setFile(null);
