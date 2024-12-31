@@ -1,14 +1,13 @@
-import { Configuration, OpenAIApi } from "https://esm.sh/openai@4.28.0";
+import OpenAI from "https://esm.sh/openai@4.28.0";
 
 export async function analyzeResumeWithAI(resumeText: string, apiKey: string) {
   console.log('[analyze-resume/openai] Starting resume analysis, text length:', resumeText.length);
   
-  const configuration = new Configuration({ apiKey });
-  const openai = new OpenAIApi(configuration);
+  const openai = new OpenAI({ apiKey });
 
   try {
     console.log('[analyze-resume/openai] Sending request to OpenAI');
-    const response = await openai.createChatCompletion({
+    const response = await openai.chat.completions.create({
       model: "gpt-4o",
       temperature: 0.7,
       messages: [
@@ -55,7 +54,7 @@ Format each section with clear headers and detailed bullet points. Ensure all se
       ]
     });
 
-    const content = response.data.choices[0].message?.content;
+    const content = response.choices[0].message?.content;
     if (!content) {
       throw new Error('No content received from OpenAI');
     }
