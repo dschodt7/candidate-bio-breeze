@@ -28,7 +28,15 @@ export const AnalysisSection = ({
   onSave,
   onContentChange,
 }: AnalysisSectionProps) => {
-  console.log("AnalysisSection rendering with content:", { title, content, isEditing });
+  console.log("AnalysisSection rendering with content:", { 
+    title, 
+    contentLength: content?.length,
+    isEditing,
+    hasContent: content && content.trim() !== "" && content !== "No data found"
+  });
+  
+  const displayContent = cleanMarkdownSyntax(content);
+  const hasValidContent = displayContent && displayContent.trim() !== "" && displayContent !== "No data found";
   
   return (
     <div className="space-y-1">
@@ -62,7 +70,7 @@ export const AnalysisSection = ({
         />
       ) : (
         <p className="text-sm whitespace-pre-wrap">
-          {cleanMarkdownSyntax(content) || "No data found"}
+          {hasValidContent ? displayContent : "No data found"}
         </p>
       )}
     </div>
