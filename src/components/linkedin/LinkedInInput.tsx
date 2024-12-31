@@ -5,10 +5,10 @@
  */
 
 import { Card } from "@/components/ui/card";
-import { LinkedInUrlInput } from "./linkedin/LinkedInUrlInput";
+import { LinkedInUrlInput } from "./LinkedInUrlInput";
 import { Accordion } from "@/components/ui/accordion";
-import { LinkedInSection } from "./linkedin/LinkedInSection";
-import { LinkedInAnalysis } from "./linkedin/LinkedInAnalysis";
+import { LinkedInSection } from "./LinkedInSection";
+import { LinkedInAnalysis } from "./LinkedInAnalysis";
 import { useCandidate } from "@/hooks/useCandidate";
 
 // This component is locked - do not modify without explicit approval
