@@ -18,13 +18,19 @@ serve(async (req) => {
     const { candidateId } = await req.json();
     console.log('[analyze-resume] Starting analysis for candidate:', candidateId);
 
+    if (!candidateId) {
+      console.error('[analyze-resume] Error: No candidate ID provided');
+      throw new Error('No candidate ID provided');
+    }
+
     const supabase = initializeSupabase();
+    console.log('[analyze-resume] Supabase client initialized');
 
     // Fetch candidate data
     console.log('[analyze-resume] Fetching candidate data');
     const { data: candidate, error: candidateError } = await supabase
       .from('candidates')
-      .select('resume_path, original_filename, resume_text')
+      .select('resume_path, original_filename, resume_text, name')
       .eq('id', candidateId)
       .single();
 
@@ -38,9 +44,12 @@ serve(async (req) => {
       throw new Error('No resume found for this candidate');
     }
 
-    console.log('[analyze-resume] Found resume:', {
+    console.log('[analyze-resume] Found resume for candidate:', {
+      candidateId,
+      candidateName: candidate.name,
       path: candidate.resume_path,
-      filename: candidate.original_filename
+      filename: candidate.original_filename,
+      hasStoredText: !!candidate.resume_text
     });
 
     let resumeText = candidate.resume_text;
@@ -58,8 +67,12 @@ serve(async (req) => {
         throw storageError;
       }
 
+      console.log('[analyze-resume] Resume file retrieved successfully');
       const fileExtension = candidate.original_filename?.toLowerCase().split('.').pop();
+      console.log('[analyze-resume] Extracting text from', fileExtension, 'file');
+      
       resumeText = await extractTextFromFile(resumeFile, fileExtension);
+      console.log('[analyze-resume] Text extraction completed, length:', resumeText.length);
 
       // Store the extracted text
       console.log('[analyze-resume] Storing extracted text...');
@@ -71,22 +84,28 @@ serve(async (req) => {
       if (updateError) {
         console.error('[analyze-resume] Error storing resume text:', updateError);
         // Continue with analysis even if storage fails
+      } else {
+        console.log('[analyze-resume] Resume text stored successfully');
       }
     }
 
-    if (resumeText.length === 0) {
+    if (!resumeText || resumeText.length === 0) {
       console.error('[analyze-resume] Empty text extracted from resume');
       throw new Error('Failed to extract text from resume');
     }
 
     // Analyze with OpenAI
+    console.log('[analyze-resume] Starting OpenAI analysis, text length:', resumeText.length);
     const content = await analyzeResumeWithAI(resumeText, Deno.env.get('OPENAI_API_KEY')!);
+    console.log('[analyze-resume] OpenAI analysis completed successfully');
     
     // Process and store the analysis
+    console.log('[analyze-resume] Processing analysis content');
     const sections = processAnalysisContent(content);
+    console.log('[analyze-resume] Analysis processed into sections:', Object.keys(sections).length);
+    
     await storeAnalysis(supabase, candidateId, sections);
-
-    console.log('[analyze-resume] Analysis completed successfully');
+    console.log('[analyze-resume] Analysis stored successfully');
 
     return new Response(JSON.stringify({ 
       success: true,

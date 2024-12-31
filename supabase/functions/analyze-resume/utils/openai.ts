@@ -19,6 +19,7 @@ export const analyzeResumeWithAI = async (resumeText: string, openaiApiKey: stri
   console.log('[analyze-resume/openai] Starting OpenAI analysis, text length:', resumeText.length);
   
   try {
+    console.log('[analyze-resume/openai] Making API request to OpenAI');
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -42,7 +43,7 @@ export const analyzeResumeWithAI = async (resumeText: string, openaiApiKey: stri
     }
 
     const openAIData = await openAIResponse.json();
-    console.log('[analyze-resume/openai] Received OpenAI response');
+    console.log('[analyze-resume/openai] Received OpenAI response, processing content');
     return openAIData.choices[0].message.content;
   } catch (error) {
     console.error('[analyze-resume/openai] Error in OpenAI analysis:', error);

@@ -1,6 +1,7 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 export const initializeSupabase = () => {
+  console.log('[analyze-resume/database] Initializing Supabase client');
   const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
   const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
   return createClient(supabaseUrl, supabaseKey);
@@ -28,7 +29,10 @@ export const processAnalysisContent = (content: string) => {
     sections.additional_observations = parts[6]?.split('\n\n')[0]?.trim() || '';
   }
 
-  console.log('[analyze-resume/database] Sections extracted:', Object.keys(sections).length);
+  console.log('[analyze-resume/database] Sections extracted:', {
+    totalSections: Object.keys(sections).length,
+    nonEmptySections: Object.values(sections).filter(v => v).length
+  });
   return sections;
 };
 
@@ -36,6 +40,7 @@ export const storeAnalysis = async (supabase: any, candidateId: string, sections
   console.log('[analyze-resume/database] Storing analysis for candidate:', candidateId);
   
   try {
+    console.log('[analyze-resume/database] Deleting existing analysis');
     const { error: deleteError } = await supabase
       .from('resume_analyses')
       .delete()
@@ -46,6 +51,7 @@ export const storeAnalysis = async (supabase: any, candidateId: string, sections
       throw deleteError;
     }
 
+    console.log('[analyze-resume/database] Inserting new analysis');
     const { error: insertError } = await supabase
       .from('resume_analyses')
       .insert({
