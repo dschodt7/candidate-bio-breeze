@@ -6,9 +6,8 @@ import { Button } from "@/components/ui/button";
 import { FileSearch } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { ResumeAnalysis } from "./ResumeAnalysis";
-import mammoth from "mammoth";
 
 export const FileUpload = () => {
   const {

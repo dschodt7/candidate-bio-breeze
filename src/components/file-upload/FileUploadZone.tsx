@@ -6,7 +6,7 @@ interface FileUploadZoneProps {
   isDragging: boolean;
   isUploading: boolean;
   uploadedFileName: string | null;
-  uploadProgress: number;
+  uploadProgress?: number;
   onDragOver: (e: React.DragEvent) => void;
   onDragLeave: () => void;
   onDrop: (e: React.DragEvent) => void;
@@ -17,7 +17,7 @@ export const FileUploadZone = ({
   isDragging,
   isUploading,
   uploadedFileName,
-  uploadProgress,
+  uploadProgress = 0,
   onDragOver,
   onDragLeave,
   onDrop,
