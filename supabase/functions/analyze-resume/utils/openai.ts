@@ -81,7 +81,7 @@ export const analyzeResumeWithAI = async (resumeText: string, openaiApiKey: stri
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',  // Changed from gpt-4o to gpt-4o-mini
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Please analyze this executive resume and provide detailed insights based on the actual content. Focus on specific achievements, metrics, and concrete examples:\n\n${resumeText}` }
