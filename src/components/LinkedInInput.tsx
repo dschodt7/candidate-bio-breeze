@@ -7,11 +7,12 @@ import { useCandidate } from "@/hooks/useCandidate";
 import { useState } from "react";
 import { ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { LinkedInSectionType } from "@/integrations/supabase/types/linkedin";
 
 export const LinkedInInput = () => {
   const { candidate } = useCandidate();
   const [isExpanded, setIsExpanded] = useState(true);
-  const sections = [
+  const sections: Array<{ title: string; type: LinkedInSectionType }> = [
     { title: "About Section", type: "about" },
     { title: "Experience 1", type: "experience_1" },
     { title: "Experience 2", type: "experience_2" },
