@@ -81,7 +81,7 @@ export const analyzeResumeWithAI = async (resumeText: string, openaiApiKey: stri
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',  // Changed from gpt-4o to gpt-4o-mini
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: `Please analyze this executive resume and provide detailed insights based on the actual content. Focus on specific achievements, metrics, and concrete examples:\n\n${resumeText}` }
@@ -98,7 +98,11 @@ export const analyzeResumeWithAI = async (resumeText: string, openaiApiKey: stri
     }
 
     const openAIData = await openAIResponse.json();
-    console.log('[analyze-resume/openai] Received OpenAI response, processing content');
+    console.log('[analyze-resume/openai] Response status:', openAIResponse.status);
+    console.log('[analyze-resume/openai] Response headers:', Object.fromEntries(openAIResponse.headers));
+    console.log('[analyze-resume/openai] Full OpenAI response:', JSON.stringify(openAIData));
+    console.log('[analyze-resume/openai] Content length:', openAIData.choices[0].message.content.length);
+    console.log('[analyze-resume/openai] First 500 chars:', openAIData.choices[0].message.content.substring(0, 500));
     return openAIData.choices[0].message.content;
   } catch (error) {
     console.error('[analyze-resume/openai] Error in OpenAI analysis:', error);
