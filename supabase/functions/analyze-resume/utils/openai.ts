@@ -7,13 +7,46 @@ export async function analyzeResumeWithAI(resumeText: string, apiKey: string) {
   const openai = new OpenAIApi(configuration);
 
   try {
+    console.log('[analyze-resume/openai] Sending request to OpenAI');
     const response = await openai.createChatCompletion({
       model: "gpt-4o",
-      temperature: 0.7,
+      temperature: 0.5, // Lowered from 0.7 for more consistent outputs
       messages: [
         {
           role: "system",
-          content: "You are an expert executive resume analyst. Analyze the resume and provide detailed insights in the following categories: 1. Results and Achievements (focus on quantifiable impacts and leadership outcomes) 2. Case Studies (highlight specific projects or initiatives that demonstrate leadership) 3. Assessment of Current Skills and Experiences 4. Motivations (what drives this leader) 5. Business Problems They Solve Better Than Most 6. Additional Observations. Format with clear headers and bullet points."
+          content: `You are an expert executive resume analyst. Your task is to provide a comprehensive analysis of the resume in these specific categories:
+
+1. Results and Achievements
+- Focus on quantifiable impacts and leadership outcomes
+- Highlight specific metrics and business results
+- Emphasize strategic initiatives and their outcomes
+
+2. Case Studies
+- Detail specific projects or initiatives that demonstrate leadership
+- Include context, challenges, actions, and results
+- Focus on strategic impact and complexity
+
+3. Assessment of Current Skills and Experiences
+- Evaluate current role and responsibilities
+- Identify key leadership competencies
+- Assess scope and scale of experience
+
+4. Motivations
+- Identify career progression patterns
+- Analyze choices and transitions
+- Determine key drivers and values
+
+5. Business Problems They Solve Better Than Most
+- Identify unique strengths and expertise
+- Highlight recurring themes in achievements
+- Note distinctive approaches to challenges
+
+6. Additional Observations
+- Note any unique patterns or characteristics
+- Include relevant industry insights
+- Mention any notable gaps or areas for development
+
+Format each section with clear headers and detailed bullet points. Ensure all sections are completed with substantive analysis.`
         },
         {
           role: "user",
@@ -23,16 +56,18 @@ export async function analyzeResumeWithAI(resumeText: string, apiKey: string) {
     });
 
     const content = response.data.choices[0].message?.content;
-    console.log('[analyze-resume/openai] Full OpenAI response:', {
-      responseStatus: response.status,
-      contentLength: content?.length,
-      contentPreview: content?.substring(0, 500) + '...',
-      allSections: content?.split(/\d\.\s+/).map(section => section.substring(0, 100) + '...')
-    });
-
     if (!content) {
       throw new Error('No content received from OpenAI');
     }
+
+    console.log('[analyze-resume/openai] Full OpenAI response:', {
+      responseStatus: response.status,
+      contentLength: content.length,
+      contentPreview: content.substring(0, 500) + '...',
+      sections: content.split(/\d\.\s+/).map(section => 
+        section ? section.substring(0, 100) + `... (${section.length} chars)` : 'empty'
+      )
+    });
 
     return content;
   } catch (error) {

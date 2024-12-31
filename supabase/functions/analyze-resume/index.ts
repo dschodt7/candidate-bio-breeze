@@ -10,6 +10,13 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Add request logging
+  console.log('[analyze-resume] Received request:', {
+    method: req.method,
+    url: req.url,
+    headers: Object.fromEntries(req.headers.entries())
+  });
+
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -19,15 +26,13 @@ serve(async (req) => {
     console.log('[analyze-resume] Starting analysis for candidate:', candidateId);
 
     if (!candidateId) {
-      console.error('[analyze-resume] Error: No candidate ID provided');
       throw new Error('No candidate ID provided');
     }
 
     const supabase = initializeSupabase();
     console.log('[analyze-resume] Supabase client initialized');
 
-    // Fetch candidate data
-    console.log('[analyze-resume] Fetching candidate data');
+    // Fetch candidate data with error handling
     const { data: candidate, error: candidateError } = await supabase
       .from('candidates')
       .select('resume_path, original_filename, resume_text, name')
@@ -38,7 +43,7 @@ serve(async (req) => {
       console.error('[analyze-resume] Error fetching candidate:', candidateError);
       throw candidateError;
     }
-    
+
     if (!candidate?.resume_path) {
       console.error('[analyze-resume] No resume found for candidate:', candidateId);
       throw new Error('No resume found for this candidate');
@@ -71,38 +76,55 @@ serve(async (req) => {
       const fileExtension = candidate.original_filename?.toLowerCase().split('.').pop();
       console.log('[analyze-resume] Extracting text from', fileExtension, 'file');
       
-      resumeText = await extractTextFromFile(resumeFile, fileExtension);
-      console.log('[analyze-resume] Text extraction completed, length:', resumeText.length);
+      try {
+        resumeText = await extractTextFromFile(resumeFile, fileExtension);
+        console.log('[analyze-resume] Text extraction completed, length:', resumeText.length);
 
-      // Store the extracted text
-      console.log('[analyze-resume] Storing extracted text...');
-      const { error: updateError } = await supabase
-        .from('candidates')
-        .update({ resume_text: resumeText })
-        .eq('id', candidateId);
+        // Store the extracted text
+        const { error: updateError } = await supabase
+          .from('candidates')
+          .update({ resume_text: resumeText })
+          .eq('id', candidateId);
 
-      if (updateError) {
-        console.error('[analyze-resume] Error storing resume text:', updateError);
-        // Continue with analysis even if storage fails
-      } else {
-        console.log('[analyze-resume] Resume text stored successfully');
+        if (updateError) {
+          console.error('[analyze-resume] Error storing resume text:', updateError);
+        } else {
+          console.log('[analyze-resume] Resume text stored successfully');
+        }
+      } catch (extractError) {
+        console.error('[analyze-resume] Text extraction error:', extractError);
+        throw new Error(`Failed to extract text: ${extractError.message}`);
       }
     }
 
     if (!resumeText || resumeText.length === 0) {
-      console.error('[analyze-resume] Empty text extracted from resume');
-      throw new Error('Failed to extract text from resume');
+      throw new Error('No text content found in resume');
     }
 
     // Analyze with OpenAI
     console.log('[analyze-resume] Starting OpenAI analysis, text length:', resumeText.length);
-    const content = await analyzeResumeWithAI(resumeText, Deno.env.get('OPENAI_API_KEY')!);
-    console.log('[analyze-resume] OpenAI analysis completed successfully');
+    let content;
+    try {
+      content = await analyzeResumeWithAI(resumeText, Deno.env.get('OPENAI_API_KEY')!);
+      console.log('[analyze-resume] OpenAI analysis completed, response length:', content.length);
+      console.log('[analyze-resume] Analysis preview:', content.substring(0, 500));
+    } catch (aiError) {
+      console.error('[analyze-resume] OpenAI analysis error:', aiError);
+      throw new Error(`OpenAI analysis failed: ${aiError.message}`);
+    }
     
     // Process and store the analysis
     console.log('[analyze-resume] Processing analysis content');
     const sections = processAnalysisContent(content);
-    console.log('[analyze-resume] Analysis processed into sections:', Object.keys(sections).length);
+    console.log('[analyze-resume] Analysis processed into sections:', {
+      sectionCount: Object.keys(sections).length,
+      sections: Object.fromEntries(
+        Object.entries(sections).map(([key, value]) => [
+          key,
+          value ? `${value.substring(0, 100)}... (${value.length} chars)` : 'empty'
+        ])
+      )
+    });
     
     await storeAnalysis(supabase, candidateId, sections);
     console.log('[analyze-resume] Analysis stored successfully');
