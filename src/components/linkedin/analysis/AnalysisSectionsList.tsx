@@ -2,9 +2,9 @@ import { AnalysisSection } from "@/components/file-upload/analysis/AnalysisSecti
 import { useAnalysisState } from "@/components/file-upload/analysis/useAnalysisState";
 
 const ANALYSIS_SECTIONS = [
-  { key: 'credibilityStatements', title: 'Results and Achievements' },
-  { key: 'caseStudies', title: 'Case Studies' },
   { key: 'jobAssessment', title: 'Assessment of Current Skills and Experiences' },
+  { key: 'caseStudies', title: 'Case Studies' },
+  { key: 'credibilityStatements', title: 'Results and Achievements' },
   { key: 'motivations', title: 'Motivations' },
   { key: 'businessProblems', title: 'Business Problems They Solve Better Than Most' },
   { key: 'interests', title: 'Interests' },
