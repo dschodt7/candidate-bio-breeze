@@ -37,34 +37,38 @@ export const processAnalysisContent = (content: string) => {
 };
 
 export const storeAnalysis = async (supabase: any, candidateId: string, sections: any) => {
-  console.log('[analyze-resume/database] Storing analysis for candidate:', candidateId);
+  console.log('[analyze-resume/database] Starting analysis storage for candidate:', candidateId);
   
   try {
-    console.log('[analyze-resume/database] Deleting existing analysis');
-    const { error: deleteError } = await supabase
-      .from('resume_analyses')
-      .delete()
-      .eq('candidate_id', candidateId);
+    // Removed the delete operation since Reset button handles this
+    console.log('[analyze-resume/database] Inserting new analysis with sections:', {
+      candidateId,
+      sectionLengths: Object.entries(sections).map(([key, value]) => ({
+        section: key,
+        length: (value as string).length
+      }))
+    });
 
-    if (deleteError) {
-      console.error('[analyze-resume/database] Error deleting existing analysis:', deleteError);
-      throw deleteError;
-    }
-
-    console.log('[analyze-resume/database] Inserting new analysis');
-    const { error: insertError } = await supabase
+    const { data, error: insertError } = await supabase
       .from('resume_analyses')
       .insert({
         candidate_id: candidateId,
         ...sections
-      });
+      })
+      .select()
+      .single();
 
     if (insertError) {
       console.error('[analyze-resume/database] Error storing analysis:', insertError);
       throw insertError;
     }
 
-    console.log('[analyze-resume/database] Analysis stored successfully');
+    console.log('[analyze-resume/database] Analysis stored successfully:', {
+      analysisId: data?.id,
+      timestamp: new Date().toISOString()
+    });
+
+    return data;
   } catch (error) {
     console.error('[analyze-resume/database] Error in database operations:', error);
     throw error;
