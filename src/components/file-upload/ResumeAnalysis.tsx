@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
-import { CheckCircle } from "lucide-react";
+import { CheckCircle, Loader2 } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Accordion,
@@ -82,14 +82,23 @@ export const ResumeAnalysis = () => {
         <AccordionItem value="analysis">
           <AccordionTrigger className="text-sm font-medium">
             <div className="flex items-center gap-2">
-              {hasContent && <CheckCircle className="h-4 w-4 text-green-500" />}
+              {isLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
+              ) : (
+                hasContent && <CheckCircle className="h-4 w-4 text-green-500" />
+              )}
               Resume Job Matching Criteria
             </div>
           </AccordionTrigger>
           <AccordionContent>
             <div className="space-y-4 pt-2">
               {isLoading ? (
-                <p className="text-sm text-muted-foreground">Loading analysis...</p>
+                <div className="flex items-center justify-center py-4">
+                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+                  <span className="ml-2 text-sm text-muted-foreground">
+                    Loading analysis...
+                  </span>
+                </div>
               ) : (
                 ANALYSIS_SECTIONS.map(({ key, title }) => (
                   <AnalysisSection

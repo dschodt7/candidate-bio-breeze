@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
+import { Loader2, Wand2 } from "lucide-react";
 
 interface AnalyzeButtonProps {
   candidateId: string | null;
@@ -63,14 +64,27 @@ export const AnalyzeButton = ({
     }
   };
 
-  // Remove the conditional rendering check
   return (
     <Button 
       onClick={handleAnalyze} 
       disabled={isLoading || isAnalyzing || !candidateId || !linkedInSections?.length}
-      className="w-full mb-4"
+      className="w-full mb-4 relative group"
     >
-      {isAnalyzing ? "Analyzing..." : "Analyze LinkedIn Sections"}
+      <span className="flex items-center justify-center gap-2">
+        {isAnalyzing ? (
+          <>
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Analyzing...
+          </>
+        ) : (
+          <>
+            <Wand2 className="h-4 w-4 transition-transform group-hover:rotate-12" />
+            <span className="group-hover:scale-105 transition-transform">
+              Analyze LinkedIn Sections
+            </span>
+          </>
+        )}
+      </span>
     </Button>
   );
 };
