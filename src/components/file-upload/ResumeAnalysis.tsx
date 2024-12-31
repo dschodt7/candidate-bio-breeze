@@ -12,9 +12,9 @@ import { AnalysisSection } from "./analysis/AnalysisSection";
 import { useAnalysisState } from "./analysis/useAnalysisState";
 
 const ANALYSIS_SECTIONS = [
-  { key: 'credibility_statements', title: 'Credibility Statements' },
+  { key: 'credibility_statements', title: 'Results and Achievements' },
   { key: 'case_studies', title: 'Case Studies' },
-  { key: 'job_assessment', title: 'Complete Assessment of Job' },
+  { key: 'job_assessment', title: 'Assessment of Current Skills and Experiences' },
   { key: 'motivations', title: 'Motivations' },
   { key: 'business_problems', title: 'Business Problems They Solve Better Than Most' },
   { key: 'additional_observations', title: 'Additional Observations' },
@@ -97,7 +97,7 @@ export const ResumeAnalysis = () => {
               ) : (
                 hasContent && <CheckCircle className="h-4 w-4 text-green-500" />
               )}
-              Resume Job Matching Criteria
+              Resume: Leader Discovery Criteria
             </div>
           </AccordionTrigger>
           <AccordionContent>
