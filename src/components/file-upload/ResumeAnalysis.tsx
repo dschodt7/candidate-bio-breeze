@@ -12,9 +12,9 @@ import { AnalysisSection } from "./analysis/AnalysisSection";
 import { useAnalysisState } from "./analysis/useAnalysisState";
 
 const ANALYSIS_SECTIONS = [
-  { key: 'credibility_statements', title: 'Results and Achievements' },
-  { key: 'case_studies', title: 'Case Studies' },
   { key: 'job_assessment', title: 'Assessment of Current Skills and Experiences' },
+  { key: 'case_studies', title: 'Case Studies' },
+  { key: 'credibility_statements', title: 'Results and Achievements' },
   { key: 'motivations', title: 'Motivations' },
   { key: 'business_problems', title: 'Business Problems They Solve Better Than Most' },
   { key: 'additional_observations', title: 'Additional Observations' },
