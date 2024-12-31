@@ -1,10 +1,12 @@
 import { Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
 
 interface FileUploadZoneProps {
   isDragging: boolean;
   isUploading: boolean;
   uploadedFileName: string | null;
+  uploadProgress: number;
   onDragOver: (e: React.DragEvent) => void;
   onDragLeave: () => void;
   onDrop: (e: React.DragEvent) => void;
@@ -15,6 +17,7 @@ export const FileUploadZone = ({
   isDragging,
   isUploading,
   uploadedFileName,
+  uploadProgress,
   onDragOver,
   onDragLeave,
   onDrop,
@@ -78,6 +81,14 @@ export const FileUploadZone = ({
             <span>{isUploading ? "Uploading..." : "Select File"}</span>
           </Button>
         </label>
+        {isUploading && (
+          <div className="w-full max-w-xs mt-4">
+            <Progress value={uploadProgress} className="h-2" />
+            <p className="text-sm text-center text-muted-foreground mt-2">
+              {uploadProgress < 100 ? "Uploading..." : "Processing..."}
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

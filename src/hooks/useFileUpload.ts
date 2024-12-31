@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useSearchParams } from "react-router-dom";
@@ -12,6 +12,8 @@ export const useFileUpload = () => {
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
   const { uploadToStorage, updateCandidateResume } = useSupabaseStorage();
+  const [uploadProgress, setUploadProgress] = useState(0);
+  
   const {
     isDragging,
     setIsDragging,
@@ -59,14 +61,17 @@ export const useFileUpload = () => {
   }, [candidateId, toast, setUploadedFileName]);
 
   const extractText = async (file: File): Promise<string> => {
-    console.log("Extracting text from file:", file.name);
+    console.log("Starting text extraction from file:", file.name);
     try {
       if (file.name.toLowerCase().endsWith('.docx')) {
         const arrayBuffer = await file.arrayBuffer();
         const result = await mammoth.extractRawText({ arrayBuffer });
+        console.log("Successfully extracted text from DOCX, length:", result.value.length);
         return result.value;
       } else {
-        return await file.text();
+        const text = await file.text();
+        console.log("Successfully extracted text from PDF, length:", text.length);
+        return text;
       }
     } catch (error) {
       console.error("Error extracting text:", error);
@@ -88,14 +93,22 @@ export const useFileUpload = () => {
     try {
       setIsUploading(true);
       setFile(uploadedFile);
+      setUploadProgress(0);
       console.log("Starting file upload process for:", uploadedFile.name);
+      toast({
+        title: "Processing",
+        description: "Starting file upload..."
+      });
 
       // Extract text first
       const extractedText = await extractText(uploadedFile);
+      setUploadProgress(30);
       console.log("Text extracted, length:", extractedText.length);
 
       // Upload file to storage
       const filePath = await uploadToStorage(uploadedFile, candidateId);
+      setUploadProgress(60);
+      console.log("File uploaded to storage:", filePath);
       
       // Update candidate record with file info and extracted text
       await supabase
@@ -107,10 +120,13 @@ export const useFileUpload = () => {
         })
         .eq('id', candidateId);
 
+      setUploadProgress(100);
+      console.log("Database updated with file info and text");
+      
       setUploadedFileName(uploadedFile.name);
       toast({
         title: "Success",
-        description: "Resume uploaded successfully"
+        description: "Resume uploaded and processed successfully"
       });
     } catch (error) {
       console.error("Error in upload process:", error);
@@ -121,6 +137,7 @@ export const useFileUpload = () => {
       });
     } finally {
       setIsUploading(false);
+      setUploadProgress(0);
     }
   };
 
@@ -143,6 +160,7 @@ export const useFileUpload = () => {
     isUploading,
     file,
     uploadedFileName,
+    uploadProgress,
     handleDragOver,
     handleDragLeave,
     handleDrop,

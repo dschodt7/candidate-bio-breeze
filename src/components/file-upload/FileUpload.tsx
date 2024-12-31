@@ -18,45 +18,13 @@ export const FileUpload = () => {
     handleDragOver,
     handleDragLeave,
     handleDrop,
-    handleFileInput
+    handleFileInput,
+    uploadProgress
   } = useFileUpload();
 
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
-
-  const extractAndStoreText = async (file: File, candidateId: string) => {
-    try {
-      console.log("Extracting text from file:", file.name);
-      let text = '';
-
-      if (file.name.toLowerCase().endsWith('.docx')) {
-        const arrayBuffer = await file.arrayBuffer();
-        const result = await mammoth.extractRawText({ arrayBuffer });
-        text = result.value;
-      } else {
-        text = await file.text();
-      }
-
-      console.log("Text extracted, length:", text.length);
-
-      const { error: updateError } = await supabase
-        .from('candidates')
-        .update({ resume_text: text })
-        .eq('id', candidateId);
-
-      if (updateError) {
-        console.error("Error storing resume text:", updateError);
-        throw updateError;
-      }
-
-      console.log("Resume text stored successfully");
-      return text;
-    } catch (error) {
-      console.error("Error in text extraction:", error);
-      throw error;
-    }
-  };
 
   const handleAnalyzeResume = async () => {
     const candidateId = searchParams.get('candidate');
@@ -81,6 +49,10 @@ export const FileUpload = () => {
     try {
       setIsAnalyzing(true);
       console.log("Starting resume analysis for candidate:", candidateId);
+      toast({
+        title: "Processing",
+        description: "Starting resume analysis...",
+      });
 
       const { data, error } = await supabase.functions.invoke('analyze-resume', {
         body: { candidateId }
@@ -116,6 +88,7 @@ export const FileUpload = () => {
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
           onFileSelect={handleFileInput}
+          uploadProgress={uploadProgress}
         />
         {uploadedFileName && (
           <>
