@@ -13,6 +13,12 @@ interface AnalysisSectionProps {
   onContentChange: (value: string) => void;
 }
 
+const cleanMarkdownSyntax = (text: string) => {
+  if (!text) return "";
+  // Remove markdown emphasis markers while preserving the text
+  return text.replace(/\*\*/g, '').replace(/\*/g, '');
+};
+
 export const AnalysisSection = ({
   title,
   content,
@@ -22,6 +28,8 @@ export const AnalysisSection = ({
   onSave,
   onContentChange,
 }: AnalysisSectionProps) => {
+  console.log("AnalysisSection rendering with content:", { title, content, isEditing });
+  
   return (
     <div className="space-y-1">
       <div className="flex items-center justify-between">
@@ -54,7 +62,7 @@ export const AnalysisSection = ({
         />
       ) : (
         <p className="text-sm whitespace-pre-wrap">
-          {content || "No data found"}
+          {cleanMarkdownSyntax(content) || "No data found"}
         </p>
       )}
     </div>
