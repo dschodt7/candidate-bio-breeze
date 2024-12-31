@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { FileUploadZone } from "./FileUploadZone";
-import { useFileUpload } from "./useFileUpload";
+import { useFileUpload } from "@/hooks/useFileUpload";
 import { Button } from "@/components/ui/button";
 import { FileSearch } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
