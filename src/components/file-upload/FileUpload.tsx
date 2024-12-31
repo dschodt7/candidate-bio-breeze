@@ -8,6 +8,7 @@ import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/components/ui/use-toast";
 import { ResumeAnalysis } from "./ResumeAnalysis";
+import mammoth from "mammoth";
 
 export const FileUpload = () => {
   const {
@@ -23,6 +24,39 @@ export const FileUpload = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  const extractAndStoreText = async (file: File, candidateId: string) => {
+    try {
+      console.log("Extracting text from file:", file.name);
+      let text = '';
+
+      if (file.name.toLowerCase().endsWith('.docx')) {
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        text = result.value;
+      } else {
+        text = await file.text();
+      }
+
+      console.log("Text extracted, length:", text.length);
+
+      const { error: updateError } = await supabase
+        .from('candidates')
+        .update({ resume_text: text })
+        .eq('id', candidateId);
+
+      if (updateError) {
+        console.error("Error storing resume text:", updateError);
+        throw updateError;
+      }
+
+      console.log("Resume text stored successfully");
+      return text;
+    } catch (error) {
+      console.error("Error in text extraction:", error);
+      throw error;
+    }
+  };
 
   const handleAnalyzeResume = async () => {
     const candidateId = searchParams.get('candidate');

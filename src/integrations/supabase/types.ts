@@ -18,6 +18,7 @@ export type Database = {
           original_filename: string | null
           profile_id: string
           resume_path: string | null
+          resume_text: string | null
           screening_notes: string | null
           updated_at: string
         }
@@ -29,6 +30,7 @@ export type Database = {
           original_filename?: string | null
           profile_id: string
           resume_path?: string | null
+          resume_text?: string | null
           screening_notes?: string | null
           updated_at?: string
         }
@@ -40,6 +42,7 @@ export type Database = {
           original_filename?: string | null
           profile_id?: string
           resume_path?: string | null
+          resume_text?: string | null
           screening_notes?: string | null
           updated_at?: string
         }

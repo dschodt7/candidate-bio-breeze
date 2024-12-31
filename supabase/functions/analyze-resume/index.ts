@@ -24,10 +24,10 @@ serve(async (req) => {
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch candidate data
+    // Fetch candidate data including resume_text
     const { data: candidate, error: candidateError } = await supabase
       .from('candidates')
-      .select('resume_path, original_filename')
+      .select('resume_path, original_filename, resume_text')
       .eq('id', candidateId)
       .single();
 
@@ -39,26 +39,41 @@ serve(async (req) => {
     console.log('Found resume path:', candidate.resume_path);
     console.log('Original filename:', candidate.original_filename);
 
-    // Get resume content from storage
-    const { data: resumeFile, error: storageError } = await supabase
-      .storage
-      .from('resumes')
-      .download(candidate.resume_path);
+    let resumeText = candidate.resume_text;
 
-    if (storageError) throw storageError;
+    // If resume_text is not stored, extract it from the file
+    if (!resumeText) {
+      console.log('No stored text found, extracting from file...');
+      
+      const { data: resumeFile, error: storageError } = await supabase
+        .storage
+        .from('resumes')
+        .download(candidate.resume_path);
 
-    // Extract text based on file type
-    let resumeText = '';
-    const fileExtension = candidate.original_filename?.toLowerCase().split('.').pop();
-    
-    if (fileExtension === 'docx') {
-      console.log('Processing DOCX file');
-      const arrayBuffer = await resumeFile.arrayBuffer();
-      const result = await mammoth.extractRawText({ arrayBuffer });
-      resumeText = result.value;
-    } else {
-      console.log('Processing as text file');
-      resumeText = await resumeFile.text();
+      if (storageError) throw storageError;
+
+      const fileExtension = candidate.original_filename?.toLowerCase().split('.').pop();
+      
+      if (fileExtension === 'docx') {
+        console.log('Processing DOCX file');
+        const arrayBuffer = await resumeFile.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        resumeText = result.value;
+      } else {
+        console.log('Processing as text file');
+        resumeText = await resumeFile.text();
+      }
+
+      // Store the extracted text
+      const { error: updateError } = await supabase
+        .from('candidates')
+        .update({ resume_text: resumeText })
+        .eq('id', candidateId);
+
+      if (updateError) {
+        console.error('Error storing resume text:', updateError);
+        // Continue with analysis even if storage fails
+      }
     }
 
     console.log('Resume text length:', resumeText.length);

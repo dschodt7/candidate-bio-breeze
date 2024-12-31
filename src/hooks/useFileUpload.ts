@@ -5,6 +5,7 @@ import { useSearchParams } from "react-router-dom";
 import { validateFile } from "@/utils/fileValidation";
 import { useFileState } from "@/hooks/useFileState";
 import { useSupabaseStorage } from "@/hooks/useSupabaseStorage";
+import mammoth from "mammoth";
 
 export const useFileUpload = () => {
   const { toast } = useToast();
@@ -57,6 +58,22 @@ export const useFileUpload = () => {
     fetchResumePath();
   }, [candidateId, toast, setUploadedFileName]);
 
+  const extractText = async (file: File): Promise<string> => {
+    console.log("Extracting text from file:", file.name);
+    try {
+      if (file.name.toLowerCase().endsWith('.docx')) {
+        const arrayBuffer = await file.arrayBuffer();
+        const result = await mammoth.extractRawText({ arrayBuffer });
+        return result.value;
+      } else {
+        return await file.text();
+      }
+    } catch (error) {
+      console.error("Error extracting text:", error);
+      throw error;
+    }
+  };
+
   const uploadFile = async (uploadedFile: File) => {
     if (!validateFile(uploadedFile, toast)) return;
     if (!candidateId) {
@@ -73,8 +90,22 @@ export const useFileUpload = () => {
       setFile(uploadedFile);
       console.log("Starting file upload process for:", uploadedFile.name);
 
+      // Extract text first
+      const extractedText = await extractText(uploadedFile);
+      console.log("Text extracted, length:", extractedText.length);
+
+      // Upload file to storage
       const filePath = await uploadToStorage(uploadedFile, candidateId);
-      await updateCandidateResume(candidateId, filePath, uploadedFile.name);
+      
+      // Update candidate record with file info and extracted text
+      await supabase
+        .from('candidates')
+        .update({
+          resume_path: filePath,
+          original_filename: uploadedFile.name,
+          resume_text: extractedText
+        })
+        .eq('id', candidateId);
 
       setUploadedFileName(uploadedFile.name);
       toast({
