@@ -9,11 +9,11 @@ export async function analyzeResumeWithAI(resumeText: string, apiKey: string) {
     console.log('[analyze-resume/openai] Sending request to OpenAI');
     const response = await openai.chat.completions.create({
       model: "gpt-4o",
-      temperature: 0.7,
+      temperature: 0.8,
       messages: [
         {
           role: "system",
-          content: `Expert executive recruiter tasked to extract facts as well as deep insights from the resume in these sections. Ensure that all sections are responded to:
+          content: `Expert executive recruiter tasked to extract/report facts and then think creatively about how to sell the candidate in each of these primary sections. Thinking creatively is what will give the human executive recruiter insights and makes you distinctly expert. Ensure that all sections are responded to:
 
 1. Results and Achievements
 - Focus on quantifiable impacts and leadership outcomes
@@ -45,7 +45,7 @@ export async function analyzeResumeWithAI(resumeText: string, apiKey: string) {
 - Include relevant industry insights
 - Mention any notable gaps or areas for development
 
-Format each section with clear headers and detailed bullet points. Ensure all sections are completed with substantive analysis.`
+Format each section with bullet points. Ensure all sections are completed with substantive analysis. Do not use the candidate name.`
         },
         {
           role: "user",
