@@ -31,7 +31,11 @@ export const processAnalysisContent = (content: string) => {
 
   console.log('[analyze-resume/database] Sections extracted:', {
     totalSections: Object.keys(sections).length,
-    nonEmptySections: Object.values(sections).filter(v => v).length
+    nonEmptySections: Object.values(sections).filter(v => v).length,
+    sectionLengths: Object.entries(sections).map(([key, value]) => ({
+      section: key,
+      length: value.length
+    }))
   });
   return sections;
 };
@@ -40,8 +44,7 @@ export const storeAnalysis = async (supabase: any, candidateId: string, sections
   console.log('[analyze-resume/database] Starting analysis storage for candidate:', candidateId);
   
   try {
-    // Removed the delete operation since Reset button handles this
-    console.log('[analyze-resume/database] Inserting new analysis with sections:', {
+    console.log('[analyze-resume/database] Attempting to insert analysis with sections:', {
       candidateId,
       sectionLengths: Object.entries(sections).map(([key, value]) => ({
         section: key,
@@ -59,18 +62,33 @@ export const storeAnalysis = async (supabase: any, candidateId: string, sections
       .single();
 
     if (insertError) {
-      console.error('[analyze-resume/database] Error storing analysis:', insertError);
+      console.error('[analyze-resume/database] Error storing analysis:', {
+        error: insertError,
+        code: insertError.code,
+        details: insertError.details,
+        hint: insertError.hint
+      });
       throw insertError;
     }
 
     console.log('[analyze-resume/database] Analysis stored successfully:', {
       analysisId: data?.id,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
+      sections: Object.keys(data || {}).filter(key => 
+        key !== 'id' && 
+        key !== 'created_at' && 
+        key !== 'updated_at' && 
+        key !== 'candidate_id'
+      )
     });
 
     return data;
   } catch (error) {
-    console.error('[analyze-resume/database] Error in database operations:', error);
+    console.error('[analyze-resume/database] Error in database operations:', {
+      error,
+      message: error.message,
+      stack: error.stack
+    });
     throw error;
   }
 };
