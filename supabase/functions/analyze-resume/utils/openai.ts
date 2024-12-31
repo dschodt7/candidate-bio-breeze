@@ -1,111 +1,42 @@
-const systemPrompt = `You are an elite executive recruiter with decades of experience analyzing C-suite resumes. Your expertise lies in extracting both explicit and implicit leadership qualities, drawing meaningful connections, and providing deep insights that go beyond surface-level achievements. Analyze this resume as if you were preparing a comprehensive brief for a Fortune 500 board.
+import { Configuration, OpenAIApi } from "https://esm.sh/openai@4.28.0";
 
-For each section, provide rich, detailed analysis with specific examples and thoughtful interpretation:
-
-1. Credibility Statements: 
-   - Extract and analyze CONCRETE achievements that demonstrate executive capability
-   - Highlight quantifiable impacts (numbers, percentages, revenue, team size)
-   - Connect achievements to broader leadership competencies
-   - Identify patterns of success across different roles
-   - Look for unique approaches or innovative solutions
-
-2. Case Studies:
-   - Select 3-4 most significant initiatives that showcase leadership depth
-   - For each case study, analyze:
-     * Strategic context and business challenges
-     * Approach to problem-solving and decision-making
-     * Resource management and stakeholder engagement
-     * Specific actions and leadership style demonstrated
-     * Quantifiable outcomes and broader organizational impact
-     * Timeline and scale of implementation
-     * Unique aspects or innovative approaches
-
-3. Job Assessment:
-   - Map career progression showing increasing scope and complexity
-   - Analyze evolution of leadership responsibilities
-   - Evaluate experience with:
-     * P&L responsibility and financial impact
-     * Team building and organizational development
-     * Strategic planning and execution
-     * Change management and transformation initiatives
-   - Identify unique skills or expertise developed in each role
-   - Note any interesting career decisions or pivotal moments
-
-4. Motivations:
-   - Analyze patterns in:
-     * Career choices and transitions
-     * Types of challenges pursued
-     * Industries and sectors chosen
-     * Scale of organizations
-   - Interpret leadership philosophy and values
-   - Identify driving factors in career decisions
-   - Note any entrepreneurial or innovative tendencies
-
-5. Business Problems:
-   - Identify recurring types of challenges they excel at solving
-   - Analyze their approach to different business situations
-   - Look for patterns in:
-     * Types of transformations led
-     * Scale of problems tackled
-     * Methods of problem-solving
-     * Results achieved
-   - Note any unique or innovative solutions
-
-6. Additional Observations:
-   - Leadership style and executive presence
-   - Industry expertise and market understanding
-   - Strategic thinking and vision
-   - Change management philosophy
-   - Notable skills or capabilities that set them apart
-   - Potential areas for development or unique value proposition
-
-Important Guidelines:
-- Provide extensive, detailed analysis with specific examples
-- Draw meaningful connections between experiences
-- Interpret the significance of achievements in broader context
-- Include both factual analysis and thoughtful interpretation
-- Note both strengths and areas for development
-- Maintain a strategic, executive-level perspective
-- If information seems missing, note what additional details would be valuable
-- Be thorough and analytical while remaining grounded in evidence`;
-
-export const analyzeResumeWithAI = async (resumeText: string, openaiApiKey: string) => {
-  console.log('[analyze-resume/openai] Starting OpenAI analysis, text length:', resumeText.length);
+export async function analyzeResumeWithAI(resumeText: string, apiKey: string) {
+  console.log('[analyze-resume/openai] Starting resume analysis, text length:', resumeText.length);
   
+  const configuration = new Configuration({ apiKey });
+  const openai = new OpenAIApi(configuration);
+
   try {
-    console.log('[analyze-resume/openai] Making API request to OpenAI');
-    const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${openaiApiKey}`,
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        model: 'gpt-4o',
-        messages: [
-          { role: 'system', content: systemPrompt },
-          { role: 'user', content: `Please analyze this executive resume and provide detailed insights based on the actual content. Focus on specific achievements, metrics, and concrete examples:\n\n${resumeText}` }
-        ],
-        temperature: 0.7,
-        max_tokens: 2500,
-      }),
+    const response = await openai.createChatCompletion({
+      model: "gpt-4o",
+      temperature: 0.7,
+      messages: [
+        {
+          role: "system",
+          content: "You are an expert executive resume analyst. Analyze the resume and provide detailed insights in the following categories: 1. Results and Achievements (focus on quantifiable impacts and leadership outcomes) 2. Case Studies (highlight specific projects or initiatives that demonstrate leadership) 3. Assessment of Current Skills and Experiences 4. Motivations (what drives this leader) 5. Business Problems They Solve Better Than Most 6. Additional Observations. Format with clear headers and bullet points."
+        },
+        {
+          role: "user",
+          content: `Please analyze this executive resume and provide detailed insights:\n\n${resumeText}`
+        }
+      ]
     });
 
-    if (!openAIResponse.ok) {
-      const errorData = await openAIResponse.json();
-      console.error('[analyze-resume/openai] OpenAI API error:', errorData);
-      throw new Error(`OpenAI API error: ${errorData.error?.message || openAIResponse.statusText}`);
+    const content = response.data.choices[0].message?.content;
+    console.log('[analyze-resume/openai] Full OpenAI response:', {
+      responseStatus: response.status,
+      contentLength: content?.length,
+      contentPreview: content?.substring(0, 500) + '...',
+      allSections: content?.split(/\d\.\s+/).map(section => section.substring(0, 100) + '...')
+    });
+
+    if (!content) {
+      throw new Error('No content received from OpenAI');
     }
 
-    const openAIData = await openAIResponse.json();
-    console.log('[analyze-resume/openai] Response status:', openAIResponse.status);
-    console.log('[analyze-resume/openai] Response headers:', Object.fromEntries(openAIResponse.headers));
-    console.log('[analyze-resume/openai] Full OpenAI response:', JSON.stringify(openAIData));
-    console.log('[analyze-resume/openai] Content length:', openAIData.choices[0].message.content.length);
-    console.log('[analyze-resume/openai] First 500 chars:', openAIData.choices[0].message.content.substring(0, 500));
-    return openAIData.choices[0].message.content;
+    return content;
   } catch (error) {
     console.error('[analyze-resume/openai] Error in OpenAI analysis:', error);
     throw error;
   }
-};
+}
