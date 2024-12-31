@@ -18,68 +18,81 @@ serve(async (req) => {
 
   try {
     const { candidateId } = await req.json();
-    console.log('Analyzing resume for candidate:', candidateId);
+    console.log('[analyze-resume] Starting analysis for candidate:', candidateId);
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch candidate data including resume_text
+    console.log('[analyze-resume] Fetching candidate data...');
     const { data: candidate, error: candidateError } = await supabase
       .from('candidates')
       .select('resume_path, original_filename, resume_text')
       .eq('id', candidateId)
       .single();
 
-    if (candidateError) throw candidateError;
+    if (candidateError) {
+      console.error('[analyze-resume] Error fetching candidate:', candidateError);
+      throw candidateError;
+    }
+    
     if (!candidate?.resume_path) {
+      console.error('[analyze-resume] No resume found for candidate:', candidateId);
       throw new Error('No resume found for this candidate');
     }
 
-    console.log('Found resume path:', candidate.resume_path);
-    console.log('Original filename:', candidate.original_filename);
+    console.log('[analyze-resume] Found resume:', {
+      path: candidate.resume_path,
+      filename: candidate.original_filename
+    });
 
     let resumeText = candidate.resume_text;
 
-    // If resume_text is not stored, extract it from the file
     if (!resumeText) {
-      console.log('No stored text found, extracting from file...');
+      console.log('[analyze-resume] No stored text found, extracting from file...');
       
       const { data: resumeFile, error: storageError } = await supabase
         .storage
         .from('resumes')
         .download(candidate.resume_path);
 
-      if (storageError) throw storageError;
+      if (storageError) {
+        console.error('[analyze-resume] Storage error:', storageError);
+        throw storageError;
+      }
 
       const fileExtension = candidate.original_filename?.toLowerCase().split('.').pop();
       
       if (fileExtension === 'docx') {
-        console.log('Processing DOCX file');
+        console.log('[analyze-resume] Processing DOCX file');
         const arrayBuffer = await resumeFile.arrayBuffer();
         const result = await mammoth.extractRawText({ arrayBuffer });
         resumeText = result.value;
+        console.log('[analyze-resume] DOCX text extracted, length:', resumeText.length);
       } else {
-        console.log('Processing as text file');
+        console.log('[analyze-resume] Processing as text file');
         resumeText = await resumeFile.text();
+        console.log('[analyze-resume] Text extracted, length:', resumeText.length);
       }
 
-      // Store the extracted text
+      console.log('[analyze-resume] Storing extracted text...');
       const { error: updateError } = await supabase
         .from('candidates')
         .update({ resume_text: resumeText })
         .eq('id', candidateId);
 
       if (updateError) {
-        console.error('Error storing resume text:', updateError);
+        console.error('[analyze-resume] Error storing resume text:', updateError);
         // Continue with analysis even if storage fails
       }
     }
 
-    console.log('Resume text length:', resumeText.length);
     if (resumeText.length === 0) {
+      console.error('[analyze-resume] Empty text extracted from resume');
       throw new Error('Failed to extract text from resume');
     }
+
+    console.log('[analyze-resume] Resume text ready for analysis, length:', resumeText.length);
 
     const systemPrompt = `You are an expert executive recruiter with decades of experience analyzing resumes. Your task is to provide a detailed, insightful analysis of the resume focusing on concrete examples and specific details. For each section, you must extract and analyze actual content from the resume, not make generic statements.
 
@@ -100,7 +113,7 @@ Important:
 
     const userPrompt = `Please analyze this executive resume and provide detailed insights based on the actual content:\n\n${resumeText}`;
 
-    console.log('Sending request to OpenAI');
+    console.log('[analyze-resume] Sending request to OpenAI...');
 
     const openAIResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -120,17 +133,16 @@ Important:
 
     if (!openAIResponse.ok) {
       const errorData = await openAIResponse.json();
-      console.error('OpenAI API error:', errorData);
+      console.error('[analyze-resume] OpenAI API error:', errorData);
       throw new Error(`OpenAI API error: ${errorData.error?.message || openAIResponse.statusText}`);
     }
 
     const openAIData = await openAIResponse.json();
-    console.log('Received OpenAI response');
+    console.log('[analyze-resume] Received OpenAI response');
     
     const content = openAIData.choices[0].message.content;
-    console.log('Raw OpenAI response:', content);
+    console.log('[analyze-resume] Processing OpenAI response...');
 
-    // Parse the response into sections
     const sections = {
       credibility_statements: '',
       case_studies: '',
@@ -140,7 +152,6 @@ Important:
       additional_observations: ''
     };
 
-    // Split the content by numbered sections and parse
     const parts = content.split(/\d\.\s+/);
     if (parts.length > 1) {
       sections.credibility_statements = parts[1]?.split('\n\n')[0]?.trim() || '';
@@ -151,15 +162,20 @@ Important:
       sections.additional_observations = parts[6]?.split('\n\n')[0]?.trim() || '';
     }
 
-    // Delete any existing analysis for this candidate
+    console.log('[analyze-resume] Sections extracted:', Object.keys(sections).length);
+
+    console.log('[analyze-resume] Deleting existing analysis...');
     const { error: deleteError } = await supabase
       .from('resume_analyses')
       .delete()
       .eq('candidate_id', candidateId);
 
-    if (deleteError) throw deleteError;
+    if (deleteError) {
+      console.error('[analyze-resume] Error deleting existing analysis:', deleteError);
+      throw deleteError;
+    }
 
-    // Insert new analysis
+    console.log('[analyze-resume] Storing new analysis...');
     const { error: insertError } = await supabase
       .from('resume_analyses')
       .insert({
@@ -167,9 +183,12 @@ Important:
         ...sections
       });
 
-    if (insertError) throw insertError;
+    if (insertError) {
+      console.error('[analyze-resume] Error storing analysis:', insertError);
+      throw insertError;
+    }
 
-    console.log('Stored analysis results in database');
+    console.log('[analyze-resume] Analysis completed successfully');
 
     return new Response(JSON.stringify({ 
       success: true,
@@ -178,7 +197,7 @@ Important:
       headers: { ...corsHeaders, 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('Error in analyze-resume function:', error);
+    console.error('[analyze-resume] Fatal error:', error);
     return new Response(JSON.stringify({ 
       success: false,
       error: error.message 
