@@ -1,4 +1,4 @@
-import { Upload } from "lucide-react";
+import { Upload, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 
@@ -11,6 +11,7 @@ interface FileUploadZoneProps {
   onDragLeave: () => void;
   onDrop: (e: React.DragEvent) => void;
   onFileSelect: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onReset: () => void;
 }
 
 export const FileUploadZone = ({
@@ -22,6 +23,7 @@ export const FileUploadZone = ({
   onDragLeave,
   onDrop,
   onFileSelect,
+  onReset,
 }: FileUploadZoneProps) => {
   if (uploadedFileName) {
     return (
@@ -33,19 +35,15 @@ export const FileUploadZone = ({
               {uploadedFileName}
             </p>
           </div>
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            className="hidden"
-            onChange={onFileSelect}
-            id="file-upload"
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={onReset}
             disabled={isUploading}
-          />
-          <label htmlFor="file-upload">
-            <Button variant="outline" size="sm" asChild disabled={isUploading}>
-              <span>{isUploading ? "Uploading..." : "Replace File"}</span>
-            </Button>
-          </label>
+          >
+            <RotateCcw className="w-4 h-4 mr-2" />
+            Reset
+          </Button>
         </div>
       </div>
     );

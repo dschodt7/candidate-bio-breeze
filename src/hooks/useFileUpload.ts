@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { useFileState } from "@/hooks/useFileState";
 import { validateFile, extractText } from "@/utils/fileProcessing";
 import { uploadToStorage, updateCandidateResume } from "@/utils/storageUtils";
+import { supabase } from "@/integrations/supabase/client";
 
 interface FileUploadState {
   isDragging: boolean;
@@ -15,6 +16,7 @@ interface FileUploadState {
   handleDragLeave: () => void;
   handleDrop: (e: React.DragEvent) => void;
   handleFileInput: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  handleReset: () => void;
 }
 
 export const useFileUpload = (): FileUploadState => {
@@ -34,6 +36,60 @@ export const useFileUpload = (): FileUploadState => {
     handleDragOver,
     handleDragLeave
   } = useFileState();
+
+  const handleReset = async () => {
+    const candidateId = searchParams.get('candidate');
+    if (!candidateId) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      console.log("Resetting resume and analysis for candidate:", candidateId);
+      
+      // Reset the resume information
+      const { error: updateError } = await supabase
+        .from('candidates')
+        .update({
+          resume_path: null,
+          original_filename: null,
+          resume_text: null
+        })
+        .eq('id', candidateId);
+
+      if (updateError) throw updateError;
+
+      // Delete the analysis
+      const { error: deleteError } = await supabase
+        .from('resume_analyses')
+        .delete()
+        .eq('candidate_id', candidateId);
+
+      if (deleteError) throw deleteError;
+
+      // Reset local state
+      setFile(null);
+      setUploadedFileName(null);
+      setUploadProgress(0);
+
+      console.log("Reset completed successfully");
+      toast({
+        title: "Success",
+        description: "Resume and analysis have been reset",
+      });
+    } catch (error) {
+      console.error("Error resetting resume:", error);
+      toast({
+        title: "Reset Failed",
+        description: "There was an error resetting the resume",
+        variant: "destructive",
+      });
+    }
+  };
 
   const uploadFile = async (uploadedFile: File) => {
     if (!validateFile(uploadedFile, toast)) return;
@@ -111,6 +167,7 @@ export const useFileUpload = (): FileUploadState => {
     handleDragOver,
     handleDragLeave,
     handleDrop,
-    handleFileInput
+    handleFileInput,
+    handleReset
   };
 };
