@@ -1,6 +1,6 @@
 import { useToast } from "@/hooks/use-toast";
 import mammoth from "mammoth";
-import { cleanText } from "./textCleaning";
+import { extractPDFText } from "./pdfProcessing";
 
 export const getFileExtension = (filename: string): string => {
   const parts = filename.toLowerCase().split('.');
@@ -26,31 +26,27 @@ export const validateFile = (file: File, toast: ReturnType<typeof useToast>['toa
 };
 
 export const extractText = async (file: File): Promise<string> => {
-  console.log("Starting text extraction from file:", file.name);
+  console.log("[fileProcessing] Starting text extraction from file:", file.name);
   try {
     const extension = getFileExtension(file.name);
-    console.log("File extension detected:", extension);
+    console.log("[fileProcessing] File extension detected:", extension);
 
     let extractedText = '';
     if (extension === 'docx') {
       const arrayBuffer = await file.arrayBuffer();
       const result = await mammoth.extractRawText({ arrayBuffer });
       extractedText = result.value;
-      console.log("Successfully extracted text from DOCX, length:", extractedText.length);
+      console.log("[fileProcessing] Successfully extracted text from DOCX, length:", extractedText.length);
     } else if (extension === 'pdf') {
-      extractedText = await file.text();
-      console.log("Successfully extracted text from PDF, length:", extractedText.length);
+      extractedText = await extractPDFText(file);
+      console.log("[fileProcessing] Successfully extracted text from PDF, length:", extractedText.length);
     } else {
       throw new Error(`Unsupported file type: ${extension}`);
     }
 
-    // Clean the extracted text
-    const cleanedText = cleanText(extractedText);
-    console.log("Text cleaned, final length:", cleanedText.length);
-    return cleanedText;
-
+    return extractedText;
   } catch (error) {
-    console.error("Error extracting text:", error);
+    console.error("[fileProcessing] Error extracting text:", error);
     throw error;
   }
 };
