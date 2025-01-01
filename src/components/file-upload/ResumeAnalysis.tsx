@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/accordion";
 import { AnalysisSection } from "./analysis/AnalysisSection";
 import { useAnalysisState } from "./analysis/useAnalysisState";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const ANALYSIS_SECTIONS = [
   { key: 'job_assessment', title: 'Assessment of Current Skills and Experiences' },
@@ -109,14 +110,19 @@ export const ResumeAnalysis = () => {
           <AccordionContent>
             <div className="space-y-4 pt-2">
               {isLoading ? (
-                <div className="flex items-center justify-center py-4">
-                  <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
-                  <span className="ml-2 text-sm text-muted-foreground">
-                    Loading analysis...
-                  </span>
+                <div className="space-y-4">
+                  {ANALYSIS_SECTIONS.map(({ title }) => (
+                    <div key={title} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Skeleton className="h-4 w-48" />
+                        <Skeleton className="h-8 w-8" />
+                      </div>
+                      <Skeleton className="h-24 w-full" />
+                    </div>
+                  ))}
                 </div>
               ) : (
-                ANALYSIS_SECTIONS.map(({ key, title }) => (
+                hasContent && ANALYSIS_SECTIONS.map(({ key, title }) => (
                   <AnalysisSection
                     key={key}
                     title={title}
@@ -128,6 +134,13 @@ export const ResumeAnalysis = () => {
                     onContentChange={setEditedContent}
                   />
                 ))
+              )}
+              {!isLoading && !hasContent && (
+                <div className="flex items-center justify-center py-4">
+                  <span className="text-sm text-muted-foreground">
+                    Click "Analyze Resume" to generate insights
+                  </span>
+                </div>
               )}
             </div>
           </AccordionContent>
