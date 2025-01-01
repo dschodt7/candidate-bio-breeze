@@ -1,6 +1,5 @@
 import { useToast } from "@/hooks/use-toast";
 import mammoth from "mammoth";
-import { extractPDFText } from "./pdfProcessing";
 
 export const getFileExtension = (filename: string): string => {
   const parts = filename.toLowerCase().split('.');
@@ -38,7 +37,8 @@ export const extractText = async (file: File): Promise<string> => {
       extractedText = result.value;
       console.log("[fileProcessing] Successfully extracted text from DOCX, length:", extractedText.length);
     } else if (extension === 'pdf') {
-      extractedText = await extractPDFText(file);
+      // For now, use simple text extraction for PDFs
+      extractedText = await file.text();
       console.log("[fileProcessing] Successfully extracted text from PDF, length:", extractedText.length);
     } else {
       throw new Error(`Unsupported file type: ${extension}`);
