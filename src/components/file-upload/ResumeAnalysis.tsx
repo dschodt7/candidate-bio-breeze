@@ -50,6 +50,7 @@ export const ResumeAnalysis = () => {
       return data;
     },
     enabled: !!candidateId,
+    staleTime: 0, // Always fetch fresh data
   });
 
   const {
@@ -78,6 +79,7 @@ export const ResumeAnalysis = () => {
     return <div className="text-sm text-red-500">Error loading analysis</div>;
   }
 
+  // Don't show anything until we have analysis data
   if (!analysis && !isLoading) {
     console.log("[ResumeAnalysis] No analysis data found");
     return null;
