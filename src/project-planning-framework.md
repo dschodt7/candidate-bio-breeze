@@ -65,6 +65,46 @@ Define what success looks like:
 - Error rates
 - User experience improvements
 
+## 8. Prompt Quality Metrics
+Score prompts on:
+1. Clarity (1-5):
+   - Clear objective
+   - Defined scope
+   - Priority indicated
+   - Context provided
+
+2. Completeness (1-5):
+   - All requirements stated
+   - Edge cases mentioned
+   - Dependencies identified
+   - Success criteria defined
+
+3. Structure (1-5):
+   - Logical organization
+   - Numbered steps (if multiple)
+   - Related changes grouped
+   - Priority order clear
+
+## 9. Implementation Effectiveness Metrics
+Track per implementation:
+1. Planning Score (1-5):
+   - Framework adherence
+   - Edge cases coverage
+   - Risk assessment
+   - Rollback strategy
+
+2. Execution Score (1-5):
+   - First-attempt success
+   - Build errors encountered
+   - Iterations needed
+   - Time efficiency
+
+3. Code Quality Score (1-5):
+   - Maintainability
+   - Reusability
+   - Performance
+   - Documentation
+
 ## Example: PDF Processing Enhancement
 
 ### Current State
