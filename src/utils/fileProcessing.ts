@@ -50,7 +50,8 @@ export const extractText = async (file: File): Promise<string> => {
   console.log("[fileProcessing] Starting text extraction from file:", {
     name: file.name,
     type: file.type,
-    size: file.size
+    size: file.size,
+    lastModified: new Date(file.lastModified).toISOString()
   });
   
   try {
@@ -61,17 +62,36 @@ export const extractText = async (file: File): Promise<string> => {
     if (extension === 'docx') {
       console.log("[fileProcessing] Processing DOCX file");
       const arrayBuffer = await file.arrayBuffer();
+      console.log("[fileProcessing] DOCX ArrayBuffer size:", arrayBuffer.byteLength);
+      
       const result = await mammoth.extractRawText({ arrayBuffer });
       extractedText = result.value;
       console.log("[fileProcessing] Raw DOCX text extracted, length:", extractedText.length);
     } else if (extension === 'pdf') {
-      // For PDFs, convert to base64 using browser APIs
-      console.log("[fileProcessing] Converting PDF to base64");
+      console.log("[fileProcessing] Starting PDF conversion to base64");
+      console.time("[fileProcessing] PDF base64 conversion");
+      
       const arrayBuffer = await file.arrayBuffer();
+      console.log("[fileProcessing] PDF ArrayBuffer obtained, size:", arrayBuffer.byteLength);
+      
       const uint8Array = new Uint8Array(arrayBuffer);
-      const base64String = btoa(String.fromCharCode.apply(null, uint8Array));
-      console.log("[fileProcessing] PDF converted to base64, length:", base64String.length);
-      return base64String;
+      console.log("[fileProcessing] Uint8Array created, length:", uint8Array.length);
+      
+      try {
+        console.log("[fileProcessing] Starting string conversion");
+        const base64String = btoa(String.fromCharCode.apply(null, uint8Array));
+        console.log("[fileProcessing] Base64 conversion completed, length:", base64String.length);
+        console.timeEnd("[fileProcessing] PDF base64 conversion");
+        return base64String;
+      } catch (conversionError) {
+        console.error("[fileProcessing] Error during base64 conversion:", {
+          error: conversionError,
+          errorName: conversionError.name,
+          errorMessage: conversionError.message,
+          stackTrace: conversionError.stack
+        });
+        throw new Error(`Base64 conversion failed: ${conversionError.message}`);
+      }
     } else {
       console.log("[fileProcessing] Processing as text file");
       extractedText = await file.text();
@@ -112,7 +132,12 @@ export const extractText = async (file: File): Promise<string> => {
 
     return extractedText;
   } catch (error) {
-    console.error("[fileProcessing] Error extracting text:", error);
+    console.error("[fileProcessing] Error extracting text:", {
+      error,
+      errorName: error.name,
+      errorMessage: error.message,
+      stackTrace: error.stack
+    });
     throw error;
   }
 };
