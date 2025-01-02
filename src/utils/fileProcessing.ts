@@ -96,10 +96,6 @@ export const extractText = async (file: File): Promise<string> => {
         console.error("[fileProcessing] Invalid text content after cleaning:", postCleanIssues);
         throw new Error(`Text validation failed: ${postCleanIssues.join(', ')}`);
       }
-    } else if (extension === 'pdf') {
-      // For PDFs, we'll just return a placeholder as the text will be processed server-side
-      console.log("[fileProcessing] PDF file detected, deferring text extraction to server");
-      return "PDF_PROCESSING_DEFERRED";
     } else {
       console.log("[fileProcessing] Processing as text file");
       extractedText = await file.text();
