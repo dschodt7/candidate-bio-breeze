@@ -72,28 +72,25 @@ export const extractText = async (file: File): Promise<string> => {
     } 
     else if (extension === 'pdf') {
       console.log("[fileProcessing] Processing PDF file");
-      // Upload to storage and process via Edge Function
-      const fileExt = getFileExtension(file.name);
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
       
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('resumes')
-        .upload(fileName, file);
-
-      if (uploadError) {
-        console.error("[fileProcessing] Storage upload error:", uploadError);
-        throw new Error(`Failed to upload PDF: ${uploadError.message}`);
-      }
-
-      console.log("[fileProcessing] PDF uploaded to storage, processing with Edge Function");
+      // Call the process-pdf edge function
+      console.log("[fileProcessing] Calling process-pdf edge function with file:", file.name);
+      
+      const formData = new FormData();
+      formData.append('file', file);
       
       const { data, error } = await supabase.functions.invoke('process-pdf', {
-        body: { fileName }
+        body: { fileName: file.name }
       });
 
       if (error) {
-        console.error("[fileProcessing] Edge Function error:", error);
+        console.error("[fileProcessing] Edge function error:", error);
         throw error;
+      }
+
+      if (!data || !data.text) {
+        console.error("[fileProcessing] No text returned from edge function:", data);
+        throw new Error('No text content returned from PDF processing');
       }
 
       extractedText = data.text;

@@ -14,12 +14,15 @@ serve(async (req) => {
   }
 
   try {
+    console.log("[process-pdf] Starting PDF processing");
     const { fileName } = await req.json();
-    console.log('[process-pdf] Processing file:', fileName);
-
+    
     if (!fileName) {
+      console.error("[process-pdf] No file name provided");
       throw new Error('No file name provided');
     }
+
+    console.log("[process-pdf] Processing file:", fileName);
 
     // Initialize Supabase client
     const supabaseClient = createClient(
@@ -27,7 +30,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    console.log('[process-pdf] Downloading file from storage');
+    console.log("[process-pdf] Downloading file from storage");
     
     // Download file from storage
     const { data: fileData, error: downloadError } = await supabaseClient
@@ -36,26 +39,27 @@ serve(async (req) => {
       .download(fileName);
 
     if (downloadError) {
-      console.error('[process-pdf] Error downloading file:', downloadError);
+      console.error("[process-pdf] Error downloading file:", downloadError);
       throw downloadError;
     }
 
     if (!fileData) {
+      console.error("[process-pdf] No file data received from storage");
       throw new Error('No file data received from storage');
     }
 
-    console.log('[process-pdf] File downloaded, size:', fileData.size);
+    console.log("[process-pdf] File downloaded, size:", fileData.size);
 
     // Convert Blob to ArrayBuffer
     const arrayBuffer = await fileData.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
 
-    console.log('[process-pdf] Starting PDF parsing');
+    console.log("[process-pdf] Starting PDF parsing");
 
     // Parse PDF
     const result = await pdfParse(uint8Array);
 
-    console.log('[process-pdf] PDF parsed successfully:', {
+    console.log("[process-pdf] PDF parsed successfully:", {
       pages: result.numpages,
       info: result.info,
       version: result.version,
@@ -86,7 +90,7 @@ serve(async (req) => {
     );
 
   } catch (error) {
-    console.error('[process-pdf] Error processing PDF:', error);
+    console.error("[process-pdf] Error processing PDF:", error);
     
     return new Response(
       JSON.stringify({
