@@ -15,6 +15,7 @@ export const FileUpload = () => {
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisCompleted, setAnalysisCompleted] = useState(false);
   
   const {
     isDragging,
@@ -50,6 +51,7 @@ export const FileUpload = () => {
 
     try {
       setIsAnalyzing(true);
+      setAnalysisCompleted(false);
       console.log("[FileUpload] Starting resume analysis for candidate:", candidateId);
       toast({
         title: "Processing",
@@ -74,6 +76,7 @@ export const FileUpload = () => {
         queryKey: ['resumeAnalysis', candidateId]
       });
 
+      setAnalysisCompleted(true);
       toast({
         title: "Success",
         description: "Resume analysis completed successfully",
@@ -85,6 +88,7 @@ export const FileUpload = () => {
         description: "There was an error analyzing the resume",
         variant: "destructive",
       });
+      setAnalysisCompleted(false);
     } finally {
       setIsAnalyzing(false);
     }
@@ -114,7 +118,7 @@ export const FileUpload = () => {
               <FileSearch className="w-4 h-4 mr-2" />
               {isAnalyzing ? "Analyzing Resume..." : "Analyze Resume"}
             </Button>
-            <DocxAnalysis />
+            <DocxAnalysis analysisCompleted={analysisCompleted} />
           </>
         )}
       </div>

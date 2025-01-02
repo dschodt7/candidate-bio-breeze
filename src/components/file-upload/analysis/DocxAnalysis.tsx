@@ -21,7 +21,11 @@ const ANALYSIS_SECTIONS = [
   { key: 'additional_observations', title: 'Additional Observations' },
 ];
 
-export const DocxAnalysis = () => {
+interface DocxAnalysisProps {
+  analysisCompleted: boolean;
+}
+
+export const DocxAnalysis = ({ analysisCompleted }: DocxAnalysisProps) => {
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
 
@@ -50,8 +54,8 @@ export const DocxAnalysis = () => {
       });
       return data;
     },
-    enabled: !!candidateId,
-    staleTime: 0, // Always fetch fresh data
+    enabled: !!candidateId && analysisCompleted,
+    staleTime: 0,
   });
 
   const {
@@ -62,7 +66,6 @@ export const DocxAnalysis = () => {
     setEditedContent
   } = useAnalysisState(candidateId, analysis);
 
-  // Validate if analysis has actual content
   const hasValidContent = (analysis: any) => {
     return analysis && Object.values(analysis).some(value => 
       value && 
@@ -77,20 +80,19 @@ export const DocxAnalysis = () => {
     isLoading,
     error,
     candidateId,
-    hasValidContent: hasValidContent(analysis)
+    hasValidContent: hasValidContent(analysis),
+    analysisCompleted
   });
+
+  // Don't show anything if analysis hasn't been initiated
+  if (!analysisCompleted) {
+    console.log("[DocxAnalysis] Analysis not yet completed");
+    return null;
+  }
 
   if (error) {
     console.error("[DocxAnalysis] Error in component:", error);
     return <div className="text-sm text-red-500">Error loading analysis</div>;
-  }
-
-  // Don't show anything until we have valid analysis data
-  if (!analysis || !hasValidContent(analysis)) {
-    if (!isLoading) {
-      console.log("[DocxAnalysis] No valid analysis data found");
-      return null;
-    }
   }
 
   return (
