@@ -2,9 +2,8 @@ import { useToast } from "@/hooks/use-toast";
 import mammoth from "mammoth";
 import { cleanText, validateTextContent } from "./textCleaning";
 import { supabase } from "@/integrations/supabase/client";
-import * as pdfParse from 'pdf-parse';
 
-const MAX_PDF_SIZE = 10 * 1024 * 1024; // 10MB
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 export const getFileExtension = (filename: string): string => {
   const parts = filename.toLowerCase().split('.');
@@ -35,7 +34,7 @@ export const validateFile = (file: File, toast: ReturnType<typeof useToast>['toa
     return false;
   }
 
-  if (file.size > MAX_PDF_SIZE) {
+  if (file.size > MAX_FILE_SIZE) {
     console.error("[fileProcessing] File too large:", file.size);
     toast({
       title: "File too large",
@@ -73,74 +72,51 @@ export const extractText = async (file: File): Promise<string> => {
     } 
     else if (extension === 'pdf') {
       console.log("[fileProcessing] Processing PDF file");
-      const arrayBuffer = await file.arrayBuffer();
-      const pdfData = new Uint8Array(arrayBuffer);
+      // Upload to storage and process via Edge Function
+      const fileExt = getFileExtension(file.name);
+      const fileName = `${crypto.randomUUID()}.${fileExt}`;
       
-      console.log("[fileProcessing] PDF data size:", pdfData.length);
-      
-      try {
-        const result = await pdfParse(pdfData);
-        console.log("[fileProcessing] PDF parse result:", {
-          pages: result.numpages,
-          info: result.info,
-          version: result.version,
-          metadata: result.metadata,
-          textLength: result.text.length
-        });
-        
-        if (!result.text || result.text.trim().length === 0) {
-          console.error("[fileProcessing] PDF contains no extractable text");
-          throw new Error("No text could be extracted from this PDF. It may be image-based or corrupted.");
-        }
-        
-        extractedText = result.text;
-      } catch (pdfError) {
-        console.error("[fileProcessing] PDF parsing error:", pdfError);
-        throw new Error(`Failed to parse PDF: ${pdfError.message}`);
+      const { data: uploadData, error: uploadError } = await supabase.storage
+        .from('resumes')
+        .upload(fileName, file);
+
+      if (uploadError) {
+        console.error("[fileProcessing] Storage upload error:", uploadError);
+        throw new Error(`Failed to upload PDF: ${uploadError.message}`);
       }
+
+      console.log("[fileProcessing] PDF uploaded to storage, processing with Edge Function");
+      
+      const { data, error } = await supabase.functions.invoke('process-pdf', {
+        body: { fileName }
+      });
+
+      if (error) {
+        console.error("[fileProcessing] Edge Function error:", error);
+        throw error;
+      }
+
+      extractedText = data.text;
+      console.log("[fileProcessing] PDF text extracted via Edge Function, length:", extractedText.length);
     } else {
       console.error("[fileProcessing] Unsupported file type:", extension);
       throw new Error(`Unsupported file type: ${extension}`);
     }
 
-    // Validate raw extracted text
-    const { isValid: isPreCleanValid, issues: preCleanIssues } = validateTextContent(extractedText);
-    console.log("[fileProcessing] Pre-cleaning validation:", {
-      isValid: isPreCleanValid,
-      issues: preCleanIssues,
-      textLength: extractedText.length,
-      preview: extractedText.substring(0, 200)
-    });
+    // Validate extracted text
+    const { isValid, issues } = validateTextContent(extractedText);
+    console.log("[fileProcessing] Text validation:", { isValid, issues });
 
-    if (!isPreCleanValid) {
-      console.warn("[fileProcessing] Issues found in raw text:", preCleanIssues);
+    if (!isValid) {
+      console.error("[fileProcessing] Invalid text content:", issues);
+      throw new Error(`Text validation failed: ${issues.join(', ')}`);
     }
 
-    // Clean the extracted text
+    // Clean the text
     extractedText = cleanText(extractedText);
-
-    // Validate cleaned text
-    const { isValid: isPostCleanValid, issues: postCleanIssues } = validateTextContent(extractedText);
-    console.log("[fileProcessing] Post-cleaning validation:", {
-      isValid: isPostCleanValid,
-      issues: postCleanIssues,
-      textLength: extractedText.length,
-      preview: extractedText.substring(0, 200)
-    });
-
-    if (!isPostCleanValid) {
-      console.error("[fileProcessing] Invalid text content after cleaning:", postCleanIssues);
-      throw new Error(`Text validation failed: ${postCleanIssues.join(', ')}`);
-    }
-
     return extractedText;
   } catch (error) {
-    console.error("[fileProcessing] Error extracting text:", {
-      error,
-      errorName: error.name,
-      errorMessage: error.message,
-      stackTrace: error.stack
-    });
+    console.error("[fileProcessing] Error extracting text:", error);
     throw error;
   }
 };
