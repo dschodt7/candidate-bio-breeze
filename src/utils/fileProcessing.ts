@@ -8,7 +8,12 @@ export const getFileExtension = (filename: string): string => {
 };
 
 export const validateFile = (file: File, toast: ReturnType<typeof useToast>['toast']) => {
-  console.log("[fileProcessing] Validating file:", file.name);
+  console.log("[fileProcessing] Validating file:", {
+    name: file.name,
+    type: file.type,
+    size: file.size,
+    extension: getFileExtension(file.name)
+  });
   
   const allowedTypes = [
     'application/pdf',
@@ -40,7 +45,12 @@ export const validateFile = (file: File, toast: ReturnType<typeof useToast>['toa
 };
 
 export const extractText = async (file: File): Promise<string> => {
-  console.log("[fileProcessing] Starting text extraction from file:", file.name);
+  console.log("[fileProcessing] Starting text extraction from file:", {
+    name: file.name,
+    type: file.type,
+    size: file.size
+  });
+  
   try {
     const extension = getFileExtension(file.name);
     console.log("[fileProcessing] File extension detected:", extension);
@@ -55,22 +65,29 @@ export const extractText = async (file: File): Promise<string> => {
     } else if (extension === 'pdf') {
       console.log("[fileProcessing] Processing PDF file");
       const text = await file.text();
-      console.log("[fileProcessing] Raw PDF text extracted, length:", text.length);
+      console.log("[fileProcessing] Raw PDF text extracted, length:", text.length, "Preview:", text.substring(0, 200));
       
       if (!validateTextContent(text)) {
+        console.error("[fileProcessing] PDF content validation failed");
         throw new Error("Invalid or corrupted PDF content");
       }
       
       extractedText = text;
     } else {
+      console.error("[fileProcessing] Unsupported file type:", extension);
       throw new Error(`Unsupported file type: ${extension}`);
     }
 
     // Clean the extracted text
     const cleanedText = cleanText(extractedText);
-    console.log("[fileProcessing] Text cleaned, final length:", cleanedText.length);
+    console.log("[fileProcessing] Text cleaned, final stats:", {
+      originalLength: extractedText.length,
+      cleanedLength: cleanedText.length,
+      preview: cleanedText.substring(0, 200)
+    });
 
     if (!validateTextContent(cleanedText)) {
+      console.error("[fileProcessing] Text cleaning resulted in invalid content");
       throw new Error("Text cleaning resulted in invalid content");
     }
 
