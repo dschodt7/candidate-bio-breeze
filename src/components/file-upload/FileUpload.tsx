@@ -50,6 +50,23 @@ export const FileUpload = () => {
     }
 
     try {
+      // First, let's check if the text extraction worked
+      const { data: candidate, error: fetchError } = await supabase
+        .from('candidates')
+        .select('resume_text')
+        .eq('id', candidateId)
+        .single();
+
+      if (fetchError) {
+        console.error("Error fetching candidate resume text:", fetchError);
+      } else {
+        console.log("Candidate resume text status:", {
+          hasText: !!candidate?.resume_text,
+          textLength: candidate?.resume_text?.length,
+          preview: candidate?.resume_text?.substring(0, 100)
+        });
+      }
+
       setIsAnalyzing(true);
       setAnalysisCompleted(false);
       console.log("[FileUpload] Starting resume analysis for candidate:", candidateId);
@@ -85,8 +102,8 @@ export const FileUpload = () => {
       console.error("[FileUpload] Error analyzing resume:", error);
       toast({
         title: "Analysis Failed",
-        description: "There was an error analyzing the resume",
-        variant: "destructive",
+        description: error.message || "There was an error analyzing the resume",
+        variant: "destructive"
       });
       setAnalysisCompleted(false);
     } finally {
