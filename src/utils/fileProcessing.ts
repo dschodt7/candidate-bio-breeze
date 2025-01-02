@@ -1,6 +1,9 @@
 import { useToast } from "@/hooks/use-toast";
 import mammoth from "mammoth";
+import * as pdfParse from 'pdf-parse';
 import { cleanText, validateTextContent } from "./textCleaning";
+
+const MAX_PDF_SIZE = 10 * 1024 * 1024; // 10MB
 
 export const getFileExtension = (filename: string): string => {
   const parts = filename.toLowerCase().split('.');
@@ -31,7 +34,7 @@ export const validateFile = (file: File, toast: ReturnType<typeof useToast>['toa
     return false;
   }
 
-  if (file.size > 10 * 1024 * 1024) { // 10MB limit
+  if (file.size > MAX_PDF_SIZE) {
     console.error("[fileProcessing] File too large:", file.size);
     toast({
       title: "File too large",
@@ -64,31 +67,61 @@ export const extractText = async (file: File): Promise<string> => {
       console.log("[fileProcessing] Raw DOCX text extracted, length:", extractedText.length);
     } else if (extension === 'pdf') {
       console.log("[fileProcessing] Processing PDF file");
-      const text = await file.text();
-      console.log("[fileProcessing] Raw PDF text extracted, length:", text.length, "Preview:", text.substring(0, 200));
+      const arrayBuffer = await file.arrayBuffer();
+      const pdfData = new Uint8Array(arrayBuffer);
       
-      if (!validateTextContent(text)) {
-        console.error("[fileProcessing] PDF content validation failed");
-        throw new Error("Invalid or corrupted PDF content");
-      }
+      // Validation Checkpoint 1: PDF Data
+      console.log("[fileProcessing] PDF data stats:", {
+        size: pdfData.length,
+        firstBytes: Array.from(pdfData.slice(0, 4)).map(b => b.toString(16)).join(' ')
+      });
+
+      const result = await pdfParse(pdfData);
       
-      extractedText = text;
+      // Validation Checkpoint 2: Raw PDF Text
+      console.log("[fileProcessing] Raw PDF extraction results:", {
+        textLength: result.text.length,
+        preview: result.text.substring(0, 200),
+        metadata: {
+          pages: result.numpages,
+          info: result.info
+        }
+      });
+
+      extractedText = result.text;
     } else {
-      console.error("[fileProcessing] Unsupported file type:", extension);
-      throw new Error(`Unsupported file type: ${extension}`);
+      console.log("[fileProcessing] Processing as text file");
+      extractedText = await file.text();
     }
 
-    // Clean the extracted text
+    // Validation Checkpoint 3: Pre-Cleaning
+    const { isValid: isPreCleanValid, issues: preCleanIssues } = validateTextContent(extractedText);
+    console.log("[fileProcessing] Pre-cleaning validation:", {
+      isValid: isPreCleanValid,
+      issues: preCleanIssues,
+      textLength: extractedText.length,
+      preview: extractedText.substring(0, 200)
+    });
+
+    if (!isPreCleanValid) {
+      console.error("[fileProcessing] Invalid text content before cleaning:", preCleanIssues);
+    }
+
+    // Clean the text
     const cleanedText = cleanText(extractedText);
-    console.log("[fileProcessing] Text cleaned, final stats:", {
-      originalLength: extractedText.length,
-      cleanedLength: cleanedText.length,
+
+    // Validation Checkpoint 4: Post-Cleaning
+    const { isValid: isPostCleanValid, issues: postCleanIssues } = validateTextContent(cleanedText);
+    console.log("[fileProcessing] Post-cleaning validation:", {
+      isValid: isPostCleanValid,
+      issues: postCleanIssues,
+      textLength: cleanedText.length,
       preview: cleanedText.substring(0, 200)
     });
 
-    if (!validateTextContent(cleanedText)) {
-      console.error("[fileProcessing] Text cleaning resulted in invalid content");
-      throw new Error("Text cleaning resulted in invalid content");
+    if (!isPostCleanValid) {
+      console.error("[fileProcessing] Invalid text content after cleaning:", postCleanIssues);
+      throw new Error(`Text validation failed: ${postCleanIssues.join(', ')}`);
     }
 
     return cleanedText;
