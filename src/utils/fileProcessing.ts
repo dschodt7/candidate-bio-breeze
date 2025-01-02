@@ -1,6 +1,5 @@
 import { useToast } from "@/hooks/use-toast";
 import mammoth from "mammoth";
-import * as pdfParse from 'pdf-parse';
 import { cleanText, validateTextContent } from "./textCleaning";
 
 const MAX_PDF_SIZE = 10 * 1024 * 1024; // 10MB
@@ -66,65 +65,49 @@ export const extractText = async (file: File): Promise<string> => {
       extractedText = result.value;
       console.log("[fileProcessing] Raw DOCX text extracted, length:", extractedText.length);
     } else if (extension === 'pdf') {
-      console.log("[fileProcessing] Processing PDF file");
+      // For PDFs, we'll just get the raw data and let the Edge Function handle the parsing
+      console.log("[fileProcessing] Preparing PDF for server-side processing");
       const arrayBuffer = await file.arrayBuffer();
-      const pdfData = new Uint8Array(arrayBuffer);
-      
-      // Validation Checkpoint 1: PDF Data
-      console.log("[fileProcessing] PDF data stats:", {
-        size: pdfData.length,
-        firstBytes: Array.from(pdfData.slice(0, 4)).map(b => b.toString(16)).join(' ')
-      });
-
-      const result = await pdfParse(pdfData);
-      
-      // Validation Checkpoint 2: Raw PDF Text
-      console.log("[fileProcessing] Raw PDF extraction results:", {
-        textLength: result.text.length,
-        preview: result.text.substring(0, 200),
-        metadata: {
-          pages: result.numpages,
-          info: result.info
-        }
-      });
-
-      extractedText = result.text;
+      return Buffer.from(arrayBuffer).toString('base64');
     } else {
       console.log("[fileProcessing] Processing as text file");
       extractedText = await file.text();
     }
 
-    // Validation Checkpoint 3: Pre-Cleaning
-    const { isValid: isPreCleanValid, issues: preCleanIssues } = validateTextContent(extractedText);
-    console.log("[fileProcessing] Pre-cleaning validation:", {
-      isValid: isPreCleanValid,
-      issues: preCleanIssues,
-      textLength: extractedText.length,
-      preview: extractedText.substring(0, 200)
-    });
+    // Only clean and validate if it's not a PDF (PDFs will be processed server-side)
+    if (extension !== 'pdf') {
+      // Validation checkpoint: Pre-Cleaning
+      const { isValid: isPreCleanValid, issues: preCleanIssues } = validateTextContent(extractedText);
+      console.log("[fileProcessing] Pre-cleaning validation:", {
+        isValid: isPreCleanValid,
+        issues: preCleanIssues,
+        textLength: extractedText.length,
+        preview: extractedText.substring(0, 200)
+      });
 
-    if (!isPreCleanValid) {
-      console.error("[fileProcessing] Invalid text content before cleaning:", preCleanIssues);
+      if (!isPreCleanValid) {
+        console.error("[fileProcessing] Invalid text content before cleaning:", preCleanIssues);
+      }
+
+      // Clean the text
+      extractedText = cleanText(extractedText);
+
+      // Validation checkpoint: Post-Cleaning
+      const { isValid: isPostCleanValid, issues: postCleanIssues } = validateTextContent(extractedText);
+      console.log("[fileProcessing] Post-cleaning validation:", {
+        isValid: isPostCleanValid,
+        issues: postCleanIssues,
+        textLength: extractedText.length,
+        preview: extractedText.substring(0, 200)
+      });
+
+      if (!isPostCleanValid) {
+        console.error("[fileProcessing] Invalid text content after cleaning:", postCleanIssues);
+        throw new Error(`Text validation failed: ${postCleanIssues.join(', ')}`);
+      }
     }
 
-    // Clean the text
-    const cleanedText = cleanText(extractedText);
-
-    // Validation Checkpoint 4: Post-Cleaning
-    const { isValid: isPostCleanValid, issues: postCleanIssues } = validateTextContent(cleanedText);
-    console.log("[fileProcessing] Post-cleaning validation:", {
-      isValid: isPostCleanValid,
-      issues: postCleanIssues,
-      textLength: cleanedText.length,
-      preview: cleanedText.substring(0, 200)
-    });
-
-    if (!isPostCleanValid) {
-      console.error("[fileProcessing] Invalid text content after cleaning:", postCleanIssues);
-      throw new Error(`Text validation failed: ${postCleanIssues.join(', ')}`);
-    }
-
-    return cleanedText;
+    return extractedText;
   } catch (error) {
     console.error("[fileProcessing] Error extracting text:", error);
     throw error;
