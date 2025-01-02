@@ -7,7 +7,7 @@ import { FileSearch } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
-import { ResumeAnalysis } from "./ResumeAnalysis";
+import { DocxAnalysis } from "./analysis/DocxAnalysis";
 import { useQueryClient } from "@tanstack/react-query";
 
 export const FileUpload = () => {
@@ -114,7 +114,7 @@ export const FileUpload = () => {
               <FileSearch className="w-4 h-4 mr-2" />
               {isAnalyzing ? "Analyzing Resume..." : "Analyze Resume"}
             </Button>
-            <ResumeAnalysis />
+            <DocxAnalysis />
           </>
         )}
       </div>
