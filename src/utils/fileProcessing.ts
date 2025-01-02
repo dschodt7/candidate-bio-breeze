@@ -65,10 +65,13 @@ export const extractText = async (file: File): Promise<string> => {
       extractedText = result.value;
       console.log("[fileProcessing] Raw DOCX text extracted, length:", extractedText.length);
     } else if (extension === 'pdf') {
-      // For PDFs, we'll just get the raw data and let the Edge Function handle the parsing
-      console.log("[fileProcessing] Preparing PDF for server-side processing");
+      // For PDFs, convert to base64 using browser APIs
+      console.log("[fileProcessing] Converting PDF to base64");
       const arrayBuffer = await file.arrayBuffer();
-      return Buffer.from(arrayBuffer).toString('base64');
+      const uint8Array = new Uint8Array(arrayBuffer);
+      const base64String = btoa(String.fromCharCode.apply(null, uint8Array));
+      console.log("[fileProcessing] PDF converted to base64, length:", base64String.length);
+      return base64String;
     } else {
       console.log("[fileProcessing] Processing as text file");
       extractedText = await file.text();
