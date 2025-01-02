@@ -2,8 +2,7 @@ import { useState } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { useFileState } from "@/hooks/useFileState";
-import { validateFile, extractText } from "@/utils/fileProcessing";
-import { uploadToStorage, updateCandidateResume } from "@/utils/storageUtils";
+import { validateFile, extractText, uploadToStorage } from "@/utils/fileProcessing";
 import { supabase } from "@/integrations/supabase/client";
 
 interface FileUploadState {
@@ -95,7 +94,7 @@ export const useFileUpload = (): FileUploadState => {
     }
   };
 
-  const uploadFile = async (uploadedFile: File) => {
+  const processFile = async (uploadedFile: File) => {
     if (!validateFile(uploadedFile, toast)) return;
     
     const candidateId = searchParams.get('candidate');
@@ -114,26 +113,40 @@ export const useFileUpload = (): FileUploadState => {
       setUploadProgress(0);
       console.log("Starting file upload process for:", uploadedFile.name);
 
-      // Extract and clean text
-      setUploadProgress(10);
-      const cleanedText = await extractText(uploadedFile);
-      setUploadProgress(30);
-      console.log("Text extracted and cleaned, length:", cleanedText.length);
-
       // Upload file to storage
+      setUploadProgress(20);
       const filePath = await uploadToStorage(uploadedFile, candidateId);
-      setUploadProgress(60);
+      setUploadProgress(50);
       console.log("File uploaded to storage:", filePath);
-      
+
+      // Extract text if it's a DOCX file
+      let resumeText = null;
+      if (uploadedFile.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        setUploadProgress(70);
+        resumeText = await extractText(uploadedFile);
+        console.log("Text extracted from DOCX, length:", resumeText?.length);
+      }
+
       // Update candidate record
-      await updateCandidateResume(candidateId, filePath, uploadedFile.name, cleanedText);
-      setUploadProgress(100);
-      console.log("Database updated with file info and cleaned text");
+      setUploadProgress(90);
+      const { error: updateError } = await supabase
+        .from('candidates')
+        .update({
+          resume_path: filePath,
+          original_filename: uploadedFile.name,
+          resume_text: resumeText
+        })
+        .eq('id', candidateId);
+
+      if (updateError) throw updateError;
       
+      setUploadProgress(100);
       setUploadedFileName(uploadedFile.name);
+      console.log("Upload process completed successfully");
+      
       toast({
         title: "Success",
-        description: "Resume uploaded and processed successfully"
+        description: "Resume uploaded successfully"
       });
     } catch (error) {
       console.error("Error in upload process:", error);
@@ -142,6 +155,8 @@ export const useFileUpload = (): FileUploadState => {
         description: error.message || "There was an error uploading your file",
         variant: "destructive"
       });
+      setFile(null);
+      setUploadedFileName(null);
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
@@ -152,13 +167,13 @@ export const useFileUpload = (): FileUploadState => {
     e.preventDefault();
     setIsDragging(false);
     const droppedFile = e.dataTransfer.files[0];
-    await uploadFile(droppedFile);
+    await processFile(droppedFile);
   };
 
   const handleFileInput = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
-      await uploadFile(selectedFile);
+      await processFile(selectedFile);
     }
   };
 

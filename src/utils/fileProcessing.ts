@@ -1,6 +1,7 @@
 import { useToast } from "@/hooks/use-toast";
 import mammoth from "mammoth";
 import { cleanText, validateTextContent } from "./textCleaning";
+import { supabase } from "@/integrations/supabase/client";
 
 const MAX_PDF_SIZE = 10 * 1024 * 1024; // 10MB
 
@@ -67,39 +68,8 @@ export const extractText = async (file: File): Promise<string> => {
       const result = await mammoth.extractRawText({ arrayBuffer });
       extractedText = result.value;
       console.log("[fileProcessing] Raw DOCX text extracted, length:", extractedText.length);
-    } else if (extension === 'pdf') {
-      console.log("[fileProcessing] Starting PDF conversion to base64");
-      console.time("[fileProcessing] PDF base64 conversion");
-      
-      const arrayBuffer = await file.arrayBuffer();
-      console.log("[fileProcessing] PDF ArrayBuffer obtained, size:", arrayBuffer.byteLength);
-      
-      const uint8Array = new Uint8Array(arrayBuffer);
-      console.log("[fileProcessing] Uint8Array created, length:", uint8Array.length);
-      
-      try {
-        console.log("[fileProcessing] Starting string conversion");
-        const base64String = btoa(String.fromCharCode.apply(null, uint8Array));
-        console.log("[fileProcessing] Base64 conversion completed, length:", base64String.length);
-        console.timeEnd("[fileProcessing] PDF base64 conversion");
-        return base64String;
-      } catch (conversionError) {
-        console.error("[fileProcessing] Error during base64 conversion:", {
-          error: conversionError,
-          errorName: conversionError.name,
-          errorMessage: conversionError.message,
-          stackTrace: conversionError.stack
-        });
-        throw new Error(`Base64 conversion failed: ${conversionError.message}`);
-      }
-    } else {
-      console.log("[fileProcessing] Processing as text file");
-      extractedText = await file.text();
-    }
 
-    // Only clean and validate if it's not a PDF (PDFs will be processed server-side)
-    if (extension !== 'pdf') {
-      // Validation checkpoint: Pre-Cleaning
+      // Clean and validate DOCX text
       const { isValid: isPreCleanValid, issues: preCleanIssues } = validateTextContent(extractedText);
       console.log("[fileProcessing] Pre-cleaning validation:", {
         isValid: isPreCleanValid,
@@ -112,10 +82,8 @@ export const extractText = async (file: File): Promise<string> => {
         console.error("[fileProcessing] Invalid text content before cleaning:", preCleanIssues);
       }
 
-      // Clean the text
       extractedText = cleanText(extractedText);
 
-      // Validation checkpoint: Post-Cleaning
       const { isValid: isPostCleanValid, issues: postCleanIssues } = validateTextContent(extractedText);
       console.log("[fileProcessing] Post-cleaning validation:", {
         isValid: isPostCleanValid,
@@ -128,6 +96,13 @@ export const extractText = async (file: File): Promise<string> => {
         console.error("[fileProcessing] Invalid text content after cleaning:", postCleanIssues);
         throw new Error(`Text validation failed: ${postCleanIssues.join(', ')}`);
       }
+    } else if (extension === 'pdf') {
+      // For PDFs, we'll just return a placeholder as the text will be processed server-side
+      console.log("[fileProcessing] PDF file detected, deferring text extraction to server");
+      return "PDF_PROCESSING_DEFERRED";
+    } else {
+      console.log("[fileProcessing] Processing as text file");
+      extractedText = await file.text();
     }
 
     return extractedText;
@@ -138,6 +113,41 @@ export const extractText = async (file: File): Promise<string> => {
       errorMessage: error.message,
       stackTrace: error.stack
     });
+    throw error;
+  }
+};
+
+export const uploadToStorage = async (file: File, candidateId: string): Promise<string> => {
+  console.log("[fileProcessing] Starting file upload to storage for candidate:", candidateId);
+  
+  try {
+    const fileExt = getFileExtension(file.name);
+    const sanitizedFileName = file.name.replace(/[^\x00-\x7F]/g, '');
+    const fileName = `${crypto.randomUUID()}.${fileExt}`;
+    
+    console.log("[fileProcessing] Uploading file:", {
+      originalName: file.name,
+      sanitizedName: sanitizedFileName,
+      storagePath: fileName,
+      size: file.size
+    });
+
+    const { data, error: uploadError } = await supabase.storage
+      .from('resumes')
+      .upload(fileName, file, {
+        contentType: file.type,
+        upsert: false
+      });
+
+    if (uploadError) {
+      console.error("[fileProcessing] Storage upload error:", uploadError);
+      throw uploadError;
+    }
+
+    console.log("[fileProcessing] File uploaded successfully:", data);
+    return fileName;
+  } catch (error) {
+    console.error("[fileProcessing] Error in storage upload:", error);
     throw error;
   }
 };
