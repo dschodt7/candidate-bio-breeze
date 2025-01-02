@@ -1,7 +1,7 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
-import * as pdfjs from "https://cdn.jsdelivr.net/npm/pdfjs-dist@4.0.379/build/pdf.min.mjs";
+import * as pdfParse from 'npm:pdf-parse';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -53,27 +53,18 @@ serve(async (req) => {
 
     // Convert Blob to ArrayBuffer
     const arrayBuffer = await fileData.arrayBuffer();
+    const pdfData = new Uint8Array(arrayBuffer);
     
-    // Load and process PDF
+    // Process PDF with pdf-parse
     console.log('[process-pdf] Starting PDF text extraction');
-    const pdf = await pdfjs.getDocument({ data: arrayBuffer }).promise;
+    const result = await pdfParse(pdfData);
     
-    let extractedText = '';
-    for (let i = 1; i <= pdf.numPages; i++) {
-      const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      const pageText = content.items
-        .map((item: any) => item.str)
-        .join(' ');
-      extractedText += pageText + '\n';
-    }
-
-    console.log('[process-pdf] Text extraction completed, length:', extractedText.length);
+    console.log('[process-pdf] Text extraction completed, length:', result.text.length);
 
     // Update candidate record with extracted text
     const { error: updateError } = await supabase
       .from('candidates')
-      .update({ resume_text: extractedText })
+      .update({ resume_text: result.text })
       .eq('id', candidateId);
 
     if (updateError) {
@@ -87,7 +78,12 @@ serve(async (req) => {
       JSON.stringify({
         success: true,
         message: 'PDF processed successfully',
-        textLength: extractedText.length
+        textLength: result.text.length,
+        metadata: {
+          pages: result.numpages,
+          info: result.info,
+          version: result.version
+        }
       }),
       { 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
