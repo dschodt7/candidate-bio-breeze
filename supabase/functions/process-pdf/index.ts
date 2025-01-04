@@ -54,16 +54,18 @@ serve(async (req) => {
     const arrayBuffer = await fileData.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
 
-    console.log("[process-pdf] Starting PDF parsing");
+    console.log("[process-pdf] Starting PDF parsing with options");
 
-    // Parse PDF
-    const result = await pdfParse(uint8Array);
+    // Parse PDF with options
+    const result = await pdfParse(uint8Array, {
+      max: 0,  // no page limit
+      pagerender: false  // disable rendering
+    });
 
     console.log("[process-pdf] PDF parsed successfully:", {
       pages: result.numpages,
-      info: result.info,
-      version: result.version,
-      textLength: result.text.length
+      textLength: result.text?.length || 0,
+      hasContent: Boolean(result.text?.trim())
     });
 
     // Basic validation
