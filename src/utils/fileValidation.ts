@@ -1,8 +1,8 @@
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 
 export const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB in bytes
 
-export const validateFile = (file: File, toast: ReturnType<typeof useToast>['toast']) => {
+export const validateFile = (file: File) => {
   console.log("[fileValidation] Validating file:", {
     name: file.name,
     type: file.type,
