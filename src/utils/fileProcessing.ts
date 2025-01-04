@@ -217,6 +217,13 @@ export const extractText = async (file: File): Promise<string> => {
   }
 };
 
+const getFileExtension = (filename: string): string => {
+  console.log("[fileProcessing] Getting file extension for:", filename);
+  const extension = filename.split('.').pop()?.toLowerCase() || '';
+  console.log("[fileProcessing] File extension detected:", extension);
+  return extension;
+};
+
 export const uploadToStorage = async (file: File, candidateId: string): Promise<string> => {
   console.log("[fileProcessing] Starting file upload to storage for candidate:", candidateId);
   
