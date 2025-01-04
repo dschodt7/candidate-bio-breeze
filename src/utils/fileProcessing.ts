@@ -1,9 +1,7 @@
-import { toast } from "@/hooks/use-toast";
 import mammoth from "mammoth";
 import { cleanText, validateTextContent } from "./textCleaning";
+import { validateFile } from "./fileValidation";
 import { supabase } from "@/integrations/supabase/client";
-
-const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
 interface ExtractionError extends Error {
   type: 'PDF_PARSING' | 'DOCX_PARSING' | 'VALIDATION' | 'FILE_SIZE' | 'UNKNOWN';
@@ -11,7 +9,7 @@ interface ExtractionError extends Error {
 }
 
 class TextExtractionError extends Error implements ExtractionError {
-  type: 'PDF_PARSING' | 'DOCX_PARSING' | 'VALIDATION' | 'FILE_SIZE' | 'UNKNOWN';
+  type: ExtractionError['type'];
   details?: unknown;
 
   constructor(message: string, type: ExtractionError['type'], details?: unknown) {
@@ -21,43 +19,6 @@ class TextExtractionError extends Error implements ExtractionError {
     this.name = 'TextExtractionError';
   }
 }
-
-export const validateFile = (file: File) => {
-  console.log("[fileProcessing] Validating file:", {
-    name: file.name,
-    type: file.type,
-    size: file.size
-  });
-
-  const allowedTypes = [
-    'application/pdf',
-    'application/msword',
-    'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-  ];
-
-  if (!allowedTypes.includes(file.type)) {
-    console.error("[fileProcessing] Invalid file type:", file.type);
-    toast({
-      title: "Invalid file type",
-      description: "Please upload a PDF or Word document",
-      variant: "destructive"
-    });
-    return false;
-  }
-
-  if (file.size > MAX_FILE_SIZE) {
-    console.error("[fileProcessing] File too large:", file.size);
-    toast({
-      title: "File too large",
-      description: "Please upload a file smaller than 10MB",
-      variant: "destructive"
-    });
-    return false;
-  }
-
-  console.log("[fileProcessing] File validation successful");
-  return true;
-};
 
 export const extractTextFromPDF = async (file: File): Promise<string> => {
   console.log("[fileProcessing] Starting PDF text extraction for:", file.name);
@@ -177,11 +138,11 @@ export const extractText = async (file: File): Promise<string> => {
   });
   
   try {
-    if (file.size > MAX_FILE_SIZE) {
+    if (!validateFile(file)) {
       throw new TextExtractionError(
-        `File size exceeds maximum allowed size of ${MAX_FILE_SIZE} bytes`,
-        'FILE_SIZE',
-        { fileSize: file.size, maxSize: MAX_FILE_SIZE }
+        'File validation failed',
+        'VALIDATION',
+        { fileSize: file.size }
       );
     }
 
@@ -242,14 +203,11 @@ const getFileExtension = (filename: string): string => {
 export const uploadToStorage = async (file: File, candidateId: string): Promise<string> => {
   console.log("[fileProcessing] Starting file upload to storage for candidate:", candidateId);
   
-  // Add upload start toast message
-  toast({
-    title: "Uploading Document",
-    description: "Please wait while we upload your file...",
-    duration: 3000
-  });
-  
   try {
+    if (!validateFile(file)) {
+      throw new Error('File validation failed');
+    }
+
     const fileExt = getFileExtension(file.name);
     const sanitizedFileName = file.name.replace(/[^\x00-\x7F]/g, '');
     const fileName = `${crypto.randomUUID()}.${fileExt}`;
