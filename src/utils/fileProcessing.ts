@@ -22,7 +22,7 @@ class TextExtractionError extends Error implements ExtractionError {
   }
 }
 
-export const validateFile = (file: File, toast: ReturnType<typeof useToast>['toast']) => {
+export const validateFile = (file: File) => {
   console.log("[fileProcessing] Validating file:", {
     name: file.name,
     type: file.type,
