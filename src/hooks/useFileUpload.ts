@@ -120,12 +120,35 @@ export const useFileUpload = (): FileUploadState => {
       setUploadProgress(50);
       console.log("File uploaded to storage:", filePath);
 
-      // Extract text if it's a DOCX file
+      // Extract text based on file type
       let resumeText = null;
       if (uploadedFile.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
         setUploadProgress(70);
         resumeText = await extractText(uploadedFile);
         console.log("Text extracted from DOCX, length:", resumeText?.length);
+      } else if (uploadedFile.type === 'application/pdf') {
+        setUploadProgress(70);
+        console.log("[useFileUpload] Processing PDF file:", filePath);
+        const { data, error } = await supabase.functions.invoke('process-pdf', {
+          body: { fileName: filePath }
+        });
+
+        if (error) {
+          console.error("[useFileUpload] PDF processing error:", error);
+          throw error;
+        }
+        if (!data?.text) {
+          console.error("[useFileUpload] No text extracted from PDF");
+          throw new Error('No text extracted from PDF');
+        }
+        if (data.text.length > 15000) {
+          console.error("[useFileUpload] PDF text too long:", data.text.length);
+          throw new Error('PDF text exceeds maximum length of 15,000 characters');
+        }
+
+        resumeText = data.text;
+        console.log("[useFileUpload] PDF text extracted successfully, length:", resumeText.length);
+        setUploadProgress(90);
       }
 
       // Update candidate record
