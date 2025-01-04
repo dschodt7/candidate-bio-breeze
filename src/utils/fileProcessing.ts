@@ -106,6 +106,18 @@ export const extractTextFromPDF = async (file: File): Promise<string> => {
     }
 
     console.log("[fileProcessing] PDF text extracted successfully, length:", data.text.length);
+    
+    // Validate with PDF-specific rules
+    const { isValid, issues } = validateTextContent(data.text, 'PDF');
+    
+    if (!isValid) {
+      throw new TextExtractionError(
+        `PDF validation failed: ${issues.join(', ')}`,
+        'PDF_PARSING',
+        { issues, textLength: data.text.length }
+      );
+    }
+
     return data.text;
   } catch (error) {
     console.error("[fileProcessing] Error in PDF text extraction:", error);
@@ -131,11 +143,14 @@ export const extractTextFromDOCX = async (file: File): Promise<string> => {
     const extractedText = result.value;
     console.log("[fileProcessing] Raw DOCX text extracted, length:", extractedText.length);
 
-    if (!extractedText || extractedText.trim().length === 0) {
+    // Validate with DOCX-specific rules
+    const { isValid, issues } = validateTextContent(extractedText, 'DOCX');
+    
+    if (!isValid) {
       throw new TextExtractionError(
-        'No text content found in DOCX file',
+        `DOCX validation failed: ${issues.join(', ')}`,
         'DOCX_PARSING',
-        { fileSize: arrayBuffer.byteLength }
+        { issues, textLength: extractedText.length }
       );
     }
     
@@ -188,7 +203,7 @@ export const extractText = async (file: File): Promise<string> => {
     }
 
     // Validate extracted text
-    const { isValid, issues } = validateTextContent(extractedText);
+    const { isValid, issues } = validateTextContent(extractedText, fileExtension === 'docx' ? 'DOCX' : 'PDF');
     console.log("[fileProcessing] Text validation:", { isValid, issues });
 
     if (!isValid) {

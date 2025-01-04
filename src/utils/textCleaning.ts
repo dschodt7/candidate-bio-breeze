@@ -1,11 +1,24 @@
 const MAX_RESUME_LENGTH = 15000;
-const MIN_CONTENT_RATIO = 0.3;
-const MAX_CONSECUTIVE_NEWLINES = 3;
+
+// Format-specific validation thresholds
+const ValidationThresholds = {
+  DOCX: {
+    // Higher threshold for DOCX as mammoth conversion often adds extra spacing
+    maxConsecutiveNewlines: 6,
+    // Lower ratio for DOCX due to formatting characters
+    minContentRatio: 0.3
+  },
+  PDF: {
+    // Stricter for PDF as they have less formatting
+    maxConsecutiveNewlines: 3,
+    // Higher ratio for PDF as they have less formatting characters
+    minContentRatio: 0.4
+  }
+};
 
 export const cleanText = (text: string): string => {
   console.log("[textCleaning] Starting text cleaning, original length:", text.length);
   
-  // Step 1: Remove basic problematic characters
   let cleaned = text
     .replace(/\u0000/g, '') // Remove null bytes
     .replace(/[\uFFFD\uFFFE\uFFFF]/g, '') // Remove replacement characters
@@ -36,20 +49,18 @@ export const cleanText = (text: string): string => {
     .trim();
 
   console.log("[textCleaning] Format cleaning complete, length:", cleaned.length);
-
-  // Step 4: Enforce maximum length
-  if (cleaned.length > MAX_RESUME_LENGTH) {
-    console.log(`[textCleaning] Text exceeds ${MAX_RESUME_LENGTH} characters, truncating...`);
-    cleaned = cleaned.slice(0, MAX_RESUME_LENGTH);
-  }
-
+    
   console.log("[textCleaning] Final cleaned text length:", cleaned.length);
   return cleaned;
 };
 
-export const validateTextContent = (text: string): { isValid: boolean; issues: string[] } => {
+export const validateTextContent = (
+  text: string, 
+  format: 'DOCX' | 'PDF'
+): { isValid: boolean; issues: string[] } => {
+  console.log(`[textCleaning] Starting ${format} validation, text length:`, text.length);
   const issues: string[] = [];
-  console.log("[textCleaning] Starting content validation");
+  const thresholds = ValidationThresholds[format];
 
   if (!text || text.trim().length === 0) {
     console.log("[textCleaning] Validation failed: Empty text");
@@ -57,50 +68,70 @@ export const validateTextContent = (text: string): { isValid: boolean; issues: s
     return { isValid: false, issues };
   }
 
+  // DOCX-specific pre-cleaning
+  const processedText = format === 'DOCX' 
+    ? text.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n')
+    : text;
+
   if (text.length > MAX_RESUME_LENGTH * 2) {
     console.log("[textCleaning] Validation failed: Text too long");
     issues.push(`Text exceeds maximum length of ${MAX_RESUME_LENGTH * 2} characters`);
   }
 
-  // Check meaningful content ratio
-  const meaningfulContent = text.replace(/[^a-zA-Z0-9]/g, '').length;
-  const meaningfulContentRatio = meaningfulContent / text.length;
-  console.log("[textCleaning] Content ratio analysis:", {
-    totalLength: text.length,
+  // Check consecutive newlines with format-specific threshold
+  const maxConsecutiveNewlines = Math.max(
+    ...processedText.split(/[^\n]+/).map(nl => nl.length)
+  );
+  console.log(`[textCleaning] Max consecutive newlines:`, maxConsecutiveNewlines);
+
+  if (maxConsecutiveNewlines > thresholds.maxConsecutiveNewlines) {
+    console.log(`[textCleaning] Validation failed: Too many consecutive newlines (${maxConsecutiveNewlines})`);
+    issues.push(
+      `Format validation failed: Found ${maxConsecutiveNewlines} consecutive blank lines ` +
+      `(maximum allowed for ${format}: ${thresholds.maxConsecutiveNewlines})`
+    );
+  }
+
+  // Check meaningful content ratio with format-specific threshold
+  const meaningfulContent = processedText.replace(/[^a-zA-Z0-9]/g, '').length;
+  const meaningfulContentRatio = meaningfulContent / processedText.length;
+  console.log(`[textCleaning] Content ratio analysis:`, {
+    totalLength: processedText.length,
     meaningfulContent,
     ratio: meaningfulContentRatio
   });
 
-  if (meaningfulContentRatio < MIN_CONTENT_RATIO) {
-    console.log("[textCleaning] Validation failed: Low content ratio:", meaningfulContentRatio);
-    issues.push("Text contains too many special characters or formatting artifacts");
+  if (meaningfulContentRatio < thresholds.minContentRatio) {
+    console.log(`[textCleaning] Validation failed: Low content ratio (${meaningfulContentRatio.toFixed(2)})`);
+    issues.push(
+      `Content validation failed: Text contains ${((1 - meaningfulContentRatio) * 100).toFixed(1)}% ` +
+      `special characters (maximum allowed: ${((1 - thresholds.minContentRatio) * 100).toFixed(1)}%)`
+    );
   }
 
-  // Check for excessive newlines
-  const maxConsecutiveNewlines = Math.max(
-    ...text.split(/[^\n]+/).map(nl => nl.length)
-  );
-  if (maxConsecutiveNewlines > MAX_CONSECUTIVE_NEWLINES) {
-    console.log("[textCleaning] Validation failed: Excessive consecutive newlines:", maxConsecutiveNewlines);
-    issues.push("Text contains excessive blank lines");
-  }
+  // Check for PDF artifacts if it's a PDF
+  if (format === 'PDF') {
+    const pdfArtifactPatterns = [
+      /\/Type\s*\/\w+/,
+      /\/Pages\s*\[\s*\d+\s*\d+\s*R\s*\]/,
+      /\/MediaBox\s*\[\s*\d+\s*\d+\s*\d+\s*\d+\s*\]/
+    ];
 
-  // Check for common PDF artifacts
-  const pdfArtifactPatterns = [
-    /\/Type\s*\/\w+/,
-    /\/Pages\s*\[\s*\d+\s*\d+\s*R\s*\]/,
-    /\/MediaBox\s*\[\s*\d+\s*\d+\s*\d+\s*\d+\s*\]/
-  ];
-
-  for (const pattern of pdfArtifactPatterns) {
-    if (pattern.test(text)) {
-      console.log("[textCleaning] Validation failed: Contains PDF artifacts");
-      issues.push("Text contains PDF structural artifacts");
-      break;
+    for (const pattern of pdfArtifactPatterns) {
+      if (pattern.test(processedText)) {
+        console.log("[textCleaning] Validation failed: Contains PDF artifacts");
+        issues.push("Text contains PDF structural artifacts");
+        break;
+      }
     }
   }
 
-  const isValid = issues.length === 0;
-  console.log("[textCleaning] Validation complete:", { isValid, issueCount: issues.length });
-  return { isValid, issues };
+  console.log(`[textCleaning] Validation complete:`, {
+    format,
+    isValid: issues.length === 0,
+    issueCount: issues.length,
+    issues
+  });
+
+  return { isValid: issues.length === 0, issues };
 };
