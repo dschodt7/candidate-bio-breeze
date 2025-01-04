@@ -47,6 +47,66 @@ export const validateFile = (file: File, toast: ReturnType<typeof useToast>['toa
   return true;
 };
 
+export const extractTextFromPDF = async (file: File): Promise<string> => {
+  console.log("[fileProcessing] Starting PDF text extraction for:", file.name);
+  
+  try {
+    // First upload the file to storage for processing
+    const fileName = `${crypto.randomUUID()}.pdf`;
+    console.log("[fileProcessing] Uploading PDF for processing:", fileName);
+    
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('resumes')
+      .upload(fileName, file);
+
+    if (uploadError) {
+      console.error("[fileProcessing] Storage upload error:", uploadError);
+      throw new Error(`Failed to upload PDF: ${uploadError.message}`);
+    }
+
+    console.log("[fileProcessing] PDF uploaded successfully, calling process-pdf function");
+    
+    // Call the process-pdf edge function
+    const { data, error } = await supabase.functions.invoke('process-pdf', {
+      body: { fileName }
+    });
+
+    if (error) {
+      console.error("[fileProcessing] Edge function error:", error);
+      throw error;
+    }
+
+    if (!data || !data.text) {
+      console.error("[fileProcessing] No text returned from edge function:", data);
+      throw new Error('No text content returned from PDF processing');
+    }
+
+    console.log("[fileProcessing] PDF text extracted successfully, length:", data.text.length);
+    return data.text;
+  } catch (error) {
+    console.error("[fileProcessing] Error in PDF text extraction:", error);
+    throw error;
+  }
+};
+
+export const extractTextFromDOCX = async (file: File): Promise<string> => {
+  console.log("[fileProcessing] Starting DOCX text extraction for:", file.name);
+  
+  try {
+    const arrayBuffer = await file.arrayBuffer();
+    console.log("[fileProcessing] DOCX ArrayBuffer size:", arrayBuffer.byteLength);
+    
+    const result = await mammoth.extractRawText({ arrayBuffer });
+    const extractedText = result.value;
+    console.log("[fileProcessing] Raw DOCX text extracted, length:", extractedText.length);
+    
+    return extractedText;
+  } catch (error) {
+    console.error("[fileProcessing] Error in DOCX text extraction:", error);
+    throw error;
+  }
+};
+
 export const extractText = async (file: File): Promise<string> => {
   console.log("[fileProcessing] Starting text extraction from file:", {
     name: file.name,
@@ -62,51 +122,10 @@ export const extractText = async (file: File): Promise<string> => {
     let extractedText = '';
     
     if (extension === 'docx') {
-      console.log("[fileProcessing] Processing DOCX file");
-      const arrayBuffer = await file.arrayBuffer();
-      console.log("[fileProcessing] DOCX ArrayBuffer size:", arrayBuffer.byteLength);
-      
-      const result = await mammoth.extractRawText({ arrayBuffer });
-      extractedText = result.value;
-      console.log("[fileProcessing] Raw DOCX text extracted, length:", extractedText.length);
+      extractedText = await extractTextFromDOCX(file);
     } 
     else if (extension === 'pdf') {
-      console.log("[fileProcessing] Processing PDF file");
-      
-      // First upload the file to storage
-      const fileExt = getFileExtension(file.name);
-      const fileName = `${crypto.randomUUID()}.${fileExt}`;
-      
-      console.log("[fileProcessing] Uploading PDF to storage:", fileName);
-      
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('resumes')
-        .upload(fileName, file);
-
-      if (uploadError) {
-        console.error("[fileProcessing] Storage upload error:", uploadError);
-        throw new Error(`Failed to upload PDF: ${uploadError.message}`);
-      }
-
-      console.log("[fileProcessing] PDF uploaded successfully, calling process-pdf function");
-      
-      // Now call the process-pdf edge function with the stored file name
-      const { data, error } = await supabase.functions.invoke('process-pdf', {
-        body: { fileName }
-      });
-
-      if (error) {
-        console.error("[fileProcessing] Edge function error:", error);
-        throw error;
-      }
-
-      if (!data || !data.text) {
-        console.error("[fileProcessing] No text returned from edge function:", data);
-        throw new Error('No text content returned from PDF processing');
-      }
-
-      extractedText = data.text;
-      console.log("[fileProcessing] PDF text extracted via Edge Function, length:", extractedText.length);
+      extractedText = await extractTextFromPDF(file);
     } else {
       console.error("[fileProcessing] Unsupported file type:", extension);
       throw new Error(`Unsupported file type: ${extension}`);
