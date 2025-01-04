@@ -1,4 +1,4 @@
-import { useToast } from "@/hooks/use-toast";
+import { toast } from "@/hooks/use-toast";
 import mammoth from "mammoth";
 import { cleanText, validateTextContent } from "./textCleaning";
 import { supabase } from "@/integrations/supabase/client";
@@ -241,6 +241,13 @@ const getFileExtension = (filename: string): string => {
 
 export const uploadToStorage = async (file: File, candidateId: string): Promise<string> => {
   console.log("[fileProcessing] Starting file upload to storage for candidate:", candidateId);
+  
+  // Add upload start toast message
+  toast({
+    title: "Uploading Document",
+    description: "Please wait while we upload your file...",
+    duration: 3000
+  });
   
   try {
     const fileExt = getFileExtension(file.name);
