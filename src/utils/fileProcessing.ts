@@ -4,8 +4,6 @@ import { TextExtractionError } from "./file/types";
 import { validateFile } from "./fileValidation";
 import { supabase } from "@/integrations/supabase/client";
 
-export { extractTextFromPDF, extractTextFromDOCX, TextExtractionError };
-
 export const extractText = async (file: File): Promise<string> => {
   console.log("[fileProcessing] Starting text extraction from file:", {
     name: file.name,
