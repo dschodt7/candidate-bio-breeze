@@ -5,19 +5,30 @@ import { supabase } from "@/integrations/supabase/client";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
-export const getFileExtension = (filename: string): string => {
-  const parts = filename.toLowerCase().split('.');
-  return parts[parts.length - 1];
-};
+interface ExtractionError extends Error {
+  type: 'PDF_PARSING' | 'DOCX_PARSING' | 'VALIDATION' | 'FILE_SIZE' | 'UNKNOWN';
+  details?: unknown;
+}
+
+class TextExtractionError extends Error implements ExtractionError {
+  type: 'PDF_PARSING' | 'DOCX_PARSING' | 'VALIDATION' | 'FILE_SIZE' | 'UNKNOWN';
+  details?: unknown;
+
+  constructor(message: string, type: ExtractionError['type'], details?: unknown) {
+    super(message);
+    this.type = type;
+    this.details = details;
+    this.name = 'TextExtractionError';
+  }
+}
 
 export const validateFile = (file: File, toast: ReturnType<typeof useToast>['toast']) => {
   console.log("[fileProcessing] Validating file:", {
     name: file.name,
     type: file.type,
-    size: file.size,
-    extension: getFileExtension(file.name)
+    size: file.size
   });
-  
+
   const allowedTypes = [
     'application/pdf',
     'application/msword',
@@ -44,6 +55,7 @@ export const validateFile = (file: File, toast: ReturnType<typeof useToast>['toa
     return false;
   }
 
+  console.log("[fileProcessing] File validation successful");
   return true;
 };
 
@@ -61,7 +73,11 @@ export const extractTextFromPDF = async (file: File): Promise<string> => {
 
     if (uploadError) {
       console.error("[fileProcessing] Storage upload error:", uploadError);
-      throw new Error(`Failed to upload PDF: ${uploadError.message}`);
+      throw new TextExtractionError(
+        `Failed to upload PDF: ${uploadError.message}`,
+        'PDF_PARSING',
+        uploadError
+      );
     }
 
     console.log("[fileProcessing] PDF uploaded successfully, calling process-pdf function");
@@ -73,19 +89,34 @@ export const extractTextFromPDF = async (file: File): Promise<string> => {
 
     if (error) {
       console.error("[fileProcessing] Edge function error:", error);
-      throw error;
+      throw new TextExtractionError(
+        `PDF processing failed: ${error.message}`,
+        'PDF_PARSING',
+        error
+      );
     }
 
     if (!data || !data.text) {
       console.error("[fileProcessing] No text returned from edge function:", data);
-      throw new Error('No text content returned from PDF processing');
+      throw new TextExtractionError(
+        'No text content returned from PDF processing',
+        'PDF_PARSING',
+        { data }
+      );
     }
 
     console.log("[fileProcessing] PDF text extracted successfully, length:", data.text.length);
     return data.text;
   } catch (error) {
     console.error("[fileProcessing] Error in PDF text extraction:", error);
-    throw error;
+    if (error instanceof TextExtractionError) {
+      throw error;
+    }
+    throw new TextExtractionError(
+      'Failed to extract text from PDF',
+      'PDF_PARSING',
+      error
+    );
   }
 };
 
@@ -99,11 +130,26 @@ export const extractTextFromDOCX = async (file: File): Promise<string> => {
     const result = await mammoth.extractRawText({ arrayBuffer });
     const extractedText = result.value;
     console.log("[fileProcessing] Raw DOCX text extracted, length:", extractedText.length);
+
+    if (!extractedText || extractedText.trim().length === 0) {
+      throw new TextExtractionError(
+        'No text content found in DOCX file',
+        'DOCX_PARSING',
+        { fileSize: arrayBuffer.byteLength }
+      );
+    }
     
     return extractedText;
   } catch (error) {
     console.error("[fileProcessing] Error in DOCX text extraction:", error);
-    throw error;
+    if (error instanceof TextExtractionError) {
+      throw error;
+    }
+    throw new TextExtractionError(
+      'Failed to extract text from DOCX',
+      'DOCX_PARSING',
+      error
+    );
   }
 };
 
@@ -116,19 +162,29 @@ export const extractText = async (file: File): Promise<string> => {
   });
   
   try {
-    const extension = getFileExtension(file.name);
-    console.log("[fileProcessing] File extension detected:", extension);
+    if (file.size > MAX_FILE_SIZE) {
+      throw new TextExtractionError(
+        `File size exceeds maximum allowed size of ${MAX_FILE_SIZE} bytes`,
+        'FILE_SIZE',
+        { fileSize: file.size, maxSize: MAX_FILE_SIZE }
+      );
+    }
 
     let extractedText = '';
-    
-    if (extension === 'docx') {
+    const fileExtension = file.name.toLowerCase().split('.').pop();
+    console.log("[fileProcessing] File extension detected:", fileExtension);
+
+    if (fileExtension === 'docx') {
       extractedText = await extractTextFromDOCX(file);
     } 
-    else if (extension === 'pdf') {
+    else if (fileExtension === 'pdf') {
       extractedText = await extractTextFromPDF(file);
     } else {
-      console.error("[fileProcessing] Unsupported file type:", extension);
-      throw new Error(`Unsupported file type: ${extension}`);
+      throw new TextExtractionError(
+        `Unsupported file type: ${fileExtension}`,
+        'UNKNOWN',
+        { fileExtension }
+      );
     }
 
     // Validate extracted text
@@ -136,16 +192,28 @@ export const extractText = async (file: File): Promise<string> => {
     console.log("[fileProcessing] Text validation:", { isValid, issues });
 
     if (!isValid) {
-      console.error("[fileProcessing] Invalid text content:", issues);
-      throw new Error(`Text validation failed: ${issues.join(', ')}`);
+      throw new TextExtractionError(
+        `Text validation failed: ${issues.join(', ')}`,
+        'VALIDATION',
+        { issues }
+      );
     }
 
     // Clean the text
     extractedText = cleanText(extractedText);
+    console.log("[fileProcessing] Final text length after cleaning:", extractedText.length);
+    
     return extractedText;
   } catch (error) {
     console.error("[fileProcessing] Error extracting text:", error);
-    throw error;
+    if (error instanceof TextExtractionError) {
+      throw error;
+    }
+    throw new TextExtractionError(
+      'Unexpected error during text extraction',
+      'UNKNOWN',
+      error
+    );
   }
 };
 
