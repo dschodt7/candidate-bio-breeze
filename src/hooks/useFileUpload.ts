@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { useToast } from "@/components/ui/use-toast";
+import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { useFileState } from "@/hooks/useFileState";
-import { validateFile, extractText, uploadToStorage } from "@/utils/fileProcessing";
+import { validateFile } from "@/utils/fileValidation";
+import { extractText, uploadToStorage } from "@/utils/fileProcessing";
 import { supabase } from "@/integrations/supabase/client";
 
 interface FileUploadState {
@@ -95,7 +96,7 @@ export const useFileUpload = (): FileUploadState => {
   };
 
   const processFile = async (uploadedFile: File) => {
-    if (!validateFile(uploadedFile, toast)) return;
+    if (!validateFile(uploadedFile)) return;
     
     const candidateId = searchParams.get('candidate');
     if (!candidateId) {
