@@ -3,7 +3,7 @@ import { Loader2, Wand2 } from "lucide-react";
 import { BaseSectionWrapper } from "@/components/executive-summary/base/BaseSectionWrapper";
 import { BaseSectionContent } from "@/components/executive-summary/base/BaseSectionContent";
 import { useScreeningAnalysis } from "./hooks/useScreeningAnalysis";
-import { ScreeningAnalysisProps, ScreeningAnalysisSection } from "./types/screening-analysis";
+import { ScreeningAnalysisSection, ScreeningAnalysisProps } from "./types/screening-analysis";
 
 const ANALYSIS_SECTIONS: ScreeningAnalysisSection[] = [
   {
@@ -33,7 +33,11 @@ const ANALYSIS_SECTIONS: ScreeningAnalysisSection[] = [
   },
 ];
 
-export const ScreeningAnalysis = ({ notes, isNotesSubmitted, candidateId }: ScreeningAnalysisProps) => {
+export const ScreeningAnalysis = ({ 
+  notes, 
+  isNotesSubmitted, 
+  candidateId 
+}: ScreeningAnalysisProps) => {
   const {
     analysis,
     isLoadingAnalysis,
@@ -44,17 +48,13 @@ export const ScreeningAnalysis = ({ notes, isNotesSubmitted, candidateId }: Scre
     updateSection,
   } = useScreeningAnalysis(candidateId);
 
-  const handleAnalyze = () => {
-    if (!notes.trim()) return;
-    analyzeNotes(notes);
-  };
-
+  // Don't show anything if notes aren't submitted
   if (!isNotesSubmitted) return null;
 
   return (
     <div className="space-y-4 mt-4">
       <Button
-        onClick={handleAnalyze}
+        onClick={() => analyzeNotes(notes)}
         disabled={isAnalyzing || !notes.trim()}
         className="w-full relative group"
       >
