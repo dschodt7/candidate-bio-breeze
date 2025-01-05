@@ -3,7 +3,7 @@ import { CandidateList } from "@/components/candidates/CandidateList";
 import { useCandidates } from "@/hooks/useCandidates";
 
 const CandidatesPanel = () => {
-  const { handleCandidateClick, candidates } = useCandidates();
+  const { handleCandidateClick, candidates, deleteCandidate, isDeleting } = useCandidates();
   
   return (
     <>
@@ -13,6 +13,8 @@ const CandidatesPanel = () => {
           <CandidateList 
             candidates={candidates}
             onCandidateClick={handleCandidateClick}
+            onDeleteCandidate={deleteCandidate}
+            isDeleting={isDeleting}
           />
         </div>
       </ResizablePanel>

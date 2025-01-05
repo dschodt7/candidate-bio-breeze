@@ -16,6 +16,7 @@ export const useCandidates = () => {
   const navigate = useNavigate();
   const [candidates, setCandidates] = useState<Candidate[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchCandidates = async () => {
     try {
@@ -39,6 +40,84 @@ export const useCandidates = () => {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const deleteCandidate = async (candidateId: string) => {
+    try {
+      setIsDeleting(true);
+      console.log("[CandidateDelete] Starting deletion for candidate:", candidateId);
+
+      // 1. Delete executive summaries
+      console.log("[CandidateDelete] Deleting executive summaries");
+      const { error: summaryError } = await supabase
+        .from("executive_summaries")
+        .delete()
+        .eq("candidate_id", candidateId);
+
+      if (summaryError) throw new Error("Failed to delete executive summaries");
+
+      // 2. Delete LinkedIn sections
+      console.log("[CandidateDelete] Deleting LinkedIn sections");
+      const { error: linkedinError } = await supabase
+        .from("linkedin_sections")
+        .delete()
+        .eq("candidate_id", candidateId);
+
+      if (linkedinError) throw new Error("Failed to delete LinkedIn sections");
+
+      // 3. Delete resume analyses
+      console.log("[CandidateDelete] Deleting resume analyses");
+      const { error: analysisError } = await supabase
+        .from("resume_analyses")
+        .delete()
+        .eq("candidate_id", candidateId);
+
+      if (analysisError) throw new Error("Failed to delete resume analyses");
+
+      // 4. Delete storage file if exists
+      const candidate = candidates.find(c => c.id === candidateId);
+      if (candidate?.resume_path) {
+        console.log("[CandidateDelete] Deleting resume file:", candidate.resume_path);
+        const { error: storageError } = await supabase.storage
+          .from("resumes")
+          .remove([candidate.resume_path]);
+
+        if (storageError) throw new Error("Failed to delete resume file");
+      }
+
+      // 5. Finally delete candidate
+      console.log("[CandidateDelete] Deleting candidate record");
+      const { error: candidateError } = await supabase
+        .from("candidates")
+        .delete()
+        .eq("id", candidateId);
+
+      if (candidateError) throw new Error("Failed to delete candidate record");
+
+      // Update local state
+      setCandidates(prev => prev.filter(c => c.id !== candidateId));
+      
+      toast({
+        title: "Success",
+        description: "Candidate deleted successfully",
+      });
+
+      // Navigate to root if we're on the deleted candidate's page
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("candidate") === candidateId) {
+        navigate("/");
+      }
+
+    } catch (error) {
+      console.error("[CandidateDelete] Error during deletion:", error);
+      toast({
+        title: "Deletion failed",
+        description: error instanceof Error ? error.message : "Could not delete candidate",
+        variant: "destructive",
+      });
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -109,6 +188,8 @@ export const useCandidates = () => {
   return {
     candidates,
     loading,
-    handleCandidateClick
+    isDeleting,
+    handleCandidateClick,
+    deleteCandidate
   };
 };
