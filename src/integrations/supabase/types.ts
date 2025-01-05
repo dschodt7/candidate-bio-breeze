@@ -212,6 +212,53 @@ export type Database = {
           },
         ]
       }
+      screening_analyses: {
+        Row: {
+          availability_timeline: string | null
+          candidate_id: string
+          compensation_expectations: string | null
+          created_at: string
+          current_challenges: string | null
+          executive_summary_notes: string | null
+          id: string
+          raw_notes: string | null
+          updated_at: string
+          work_arrangements: string | null
+        }
+        Insert: {
+          availability_timeline?: string | null
+          candidate_id: string
+          compensation_expectations?: string | null
+          created_at?: string
+          current_challenges?: string | null
+          executive_summary_notes?: string | null
+          id?: string
+          raw_notes?: string | null
+          updated_at?: string
+          work_arrangements?: string | null
+        }
+        Update: {
+          availability_timeline?: string | null
+          candidate_id?: string
+          compensation_expectations?: string | null
+          created_at?: string
+          current_challenges?: string | null
+          executive_summary_notes?: string | null
+          id?: string
+          raw_notes?: string | null
+          updated_at?: string
+          work_arrangements?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "screening_analyses_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: true
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
