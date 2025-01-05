@@ -7,6 +7,7 @@ import { Check, RotateCw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { ScreeningAnalysis } from "./screening/ScreeningAnalysis";
 
 export const NotesInput = () => {
   const [notes, setNotes] = useState("");
@@ -131,6 +132,13 @@ export const NotesInput = () => {
             </Button>
           )}
         </div>
+        {candidateId && (
+          <ScreeningAnalysis
+            notes={notes}
+            isNotesSubmitted={isSubmitted}
+            candidateId={candidateId}
+          />
+        )}
       </div>
     </Card>
   );
