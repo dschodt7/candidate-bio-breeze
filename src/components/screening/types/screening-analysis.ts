@@ -1,6 +1,6 @@
 export interface ScreeningAnalysisSection {
-  title: string;
   key: keyof ScreeningAnalysisData;
+  title: string;
   helpText: string;
 }
 
