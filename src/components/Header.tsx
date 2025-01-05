@@ -103,8 +103,8 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 px-6 py-4 flex justify-between items-center">
-      <h1 className="text-2xl font-bold">Executive Career Catalyst</h1>
+    <header className="bg-gradient-to-r from-white to-gray-50 border-b border-gray-200 backdrop-blur-sm shadow-sm px-6 py-4 flex justify-between items-center">
+      <h1 className="text-2xl font-bold text-gray-800">Executive Career Catalyst</h1>
       <ProfileMenu
         firstName={firstName}
         onSignOut={handleSignOut}
