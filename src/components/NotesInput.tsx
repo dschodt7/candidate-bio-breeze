@@ -108,7 +108,7 @@ export const NotesInput = () => {
   return (
     <Card className="p-6 animate-fadeIn">
       <div className="space-y-4">
-        <Label htmlFor="screening-notes">Screening Notes</Label>
+        <Label htmlFor="screening-notes">Leader Discovery Criteria</Label>
         <Textarea
           id="screening-notes"
           placeholder="Enter your screening notes here..."
