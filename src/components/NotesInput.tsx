@@ -3,8 +3,8 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Check, RotateCw } from "lucide-react";
-import { useToast } from "@/components/ui/use-toast";
+import { Check, RotateCw, Loader2 } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { ScreeningAnalysis } from "@/components/screening/ScreeningAnalysis";
@@ -12,6 +12,7 @@ import { ScreeningAnalysis } from "@/components/screening/ScreeningAnalysis";
 export const NotesInput = () => {
   const [notes, setNotes] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
@@ -33,7 +34,6 @@ export const NotesInput = () => {
         console.log("Fetched notes:", data.screening_notes);
         if (data.screening_notes) {
           setNotes(data.screening_notes);
-          // Only set submitted state if notes exist and are not empty
           setIsSubmitted(data.screening_notes.trim().length > 0);
         } else {
           setNotes("");
@@ -96,14 +96,50 @@ export const NotesInput = () => {
     }
   };
 
-  const handleReset = () => {
-    setNotes("");
-    setIsSubmitted(false);
-    console.log("Notes reset");
-    toast({
-      title: "Reset",
-      description: "Notes have been reset",
-    });
+  const handleReset = async () => {
+    if (!candidateId) return;
+    
+    setIsResetting(true);
+    console.log("Starting reset process for candidate:", candidateId);
+
+    try {
+      // First, delete the analysis
+      console.log("Deleting screening analysis...");
+      const { error: analysisError } = await supabase
+        .from('screening_analyses')
+        .delete()
+        .eq('candidate_id', candidateId);
+
+      if (analysisError) throw analysisError;
+
+      // Then, clear the notes
+      console.log("Clearing screening notes...");
+      const { error: notesError } = await supabase
+        .from('candidates')
+        .update({ screening_notes: null })
+        .eq('id', candidateId);
+
+      if (notesError) throw notesError;
+
+      // Only clear UI state after successful database operations
+      setNotes("");
+      setIsSubmitted(false);
+      console.log("Reset completed successfully");
+      
+      toast({
+        title: "Reset Complete",
+        description: "Notes and analysis have been cleared",
+      });
+    } catch (error) {
+      console.error("Error during reset:", error);
+      toast({
+        title: "Reset Failed",
+        description: "Failed to reset notes and analysis",
+        variant: "destructive",
+      });
+    } finally {
+      setIsResetting(false);
+    }
   };
 
   return (
@@ -126,9 +162,18 @@ export const NotesInput = () => {
             {isSubmitted ? "Submitted" : "Submit"}
           </Button>
           {isSubmitted && (
-            <Button variant="outline" onClick={handleReset} className="gap-2">
-              <RotateCw className="h-4 w-4" />
-              Reset
+            <Button 
+              variant="outline" 
+              onClick={handleReset} 
+              className="gap-2"
+              disabled={isResetting}
+            >
+              {isResetting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <RotateCw className="h-4 w-4" />
+              )}
+              {isResetting ? "Resetting..." : "Reset"}
             </Button>
           )}
         </div>
