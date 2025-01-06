@@ -17,3 +17,18 @@ export interface ScreeningAnalysisProps {
   isNotesSubmitted: boolean;
   candidateId: string | null;
 }
+
+export interface AnalyzeButtonProps {
+  onAnalyze: () => void;
+  isAnalyzing: boolean;
+  isDisabled: boolean;
+}
+
+export interface AnalysisSectionsListProps {
+  analysis: ScreeningAnalysisData | null;
+  isLoading: boolean;
+  editingSection: string | null;
+  setEditingSection: (section: string | null) => void;
+  onUpdateSection: (sectionKey: keyof ScreeningAnalysisData, content: string) => void;
+  hasContent: boolean;
+}
