@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
 import { useToast } from "@/components/ui/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 interface Candidate {
   id: string;
@@ -14,15 +14,12 @@ interface Candidate {
 export const useCandidate = () => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
-  const [candidate, setCandidate] = useState<Candidate | null>(null);
+  const candidateId = searchParams.get('candidate');
 
-  useEffect(() => {
-    const fetchCandidate = async () => {
-      const candidateId = searchParams.get('candidate');
-      if (!candidateId) {
-        setCandidate(null);
-        return;
-      }
+  const { data: candidate } = useQuery({
+    queryKey: ['candidate', candidateId],
+    queryFn: async () => {
+      if (!candidateId) return null;
 
       try {
         console.log("Fetching candidate details for ID:", candidateId);
@@ -35,7 +32,7 @@ export const useCandidate = () => {
         if (error) throw error;
 
         console.log("Fetched candidate details:", data);
-        setCandidate(data);
+        return data;
       } catch (error) {
         console.error("Error fetching candidate:", error);
         toast({
@@ -43,11 +40,13 @@ export const useCandidate = () => {
           description: "Failed to load candidate details",
           variant: "destructive",
         });
+        throw error;
       }
-    };
-
-    fetchCandidate();
-  }, [searchParams, toast]);
+    },
+    enabled: !!candidateId,
+    staleTime: 0, // Always fetch fresh data
+    retry: 1, // Minimal retry for better UX
+  });
 
   const getCandidateName = () => {
     if (!candidate) return "Select a Candidate";
