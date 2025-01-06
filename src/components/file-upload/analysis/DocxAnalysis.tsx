@@ -21,11 +21,7 @@ const ANALYSIS_SECTIONS = [
   { key: 'additional_observations', title: 'Additional Observations' },
 ];
 
-interface DocxAnalysisProps {
-  analysisCompleted: boolean;
-}
-
-export const DocxAnalysis = ({ analysisCompleted }: DocxAnalysisProps) => {
+export const DocxAnalysis = () => {
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
 
@@ -54,7 +50,7 @@ export const DocxAnalysis = ({ analysisCompleted }: DocxAnalysisProps) => {
       });
       return data;
     },
-    enabled: !!candidateId && analysisCompleted,
+    enabled: !!candidateId,
     staleTime: 0,
   });
 
@@ -80,15 +76,8 @@ export const DocxAnalysis = ({ analysisCompleted }: DocxAnalysisProps) => {
     isLoading,
     error,
     candidateId,
-    hasValidContent: hasValidContent(analysis),
-    analysisCompleted
+    hasValidContent: hasValidContent(analysis)
   });
-
-  // Don't show anything if analysis hasn't been initiated
-  if (!analysisCompleted) {
-    console.log("[DocxAnalysis] Analysis not yet completed");
-    return null;
-  }
 
   if (error) {
     console.error("[DocxAnalysis] Error in component:", error);
