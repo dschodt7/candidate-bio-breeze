@@ -24,8 +24,8 @@ export const uploadToStorage = async (file: File, candidateId: string): Promise<
     const sanitizedFileName = file.name.replace(/[^\x00-\x7F]/g, '');
     const fileExt = sanitizedFileName.split('.').pop()?.toLowerCase() || '';
     
-    // Include candidateId in the file path for proper scoping
-    const filePath = `${candidateId}/${crypto.randomUUID()}.${fileExt}`;
+    // Updated file path to include candidate-specific directory
+    const filePath = `candidates/${candidateId}/${crypto.randomUUID()}.${fileExt}`;
     
     console.log("[fileStorage] Uploading file:", {
       originalName: file.name,
