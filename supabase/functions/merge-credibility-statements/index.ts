@@ -14,16 +14,16 @@ serve(async (req) => {
 
   try {
     const { candidateId } = await req.json();
-    console.log('Processing credibility statements for candidate:', candidateId);
+    console.log('Processing job assessment statements for candidate:', candidateId);
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
     const supabase = createClient(supabaseUrl, supabaseKey);
 
-    // Fetch resume analysis
+    // Fetch resume analysis - now using job_assessment
     const { data: resumeAnalysis, error: resumeError } = await supabase
       .from('resume_analyses')
-      .select('credibility_statements')
+      .select('job_assessment')
       .eq('candidate_id', candidateId)
       .maybeSingle();
 
@@ -45,15 +45,15 @@ serve(async (req) => {
       throw linkedinError;
     }
 
-    const resumeCredibility = resumeAnalysis?.credibility_statements || '';
-    const linkedinCredibility = linkedinAnalysis?.analysis?.credibilityStatements || '';
+    const resumeJobAssessment = resumeAnalysis?.job_assessment || '';
+    const linkedinJobAssessment = linkedinAnalysis?.analysis?.jobAssessment || '';
 
-    console.log('Resume credibility:', resumeCredibility);
-    console.log('LinkedIn credibility:', linkedinCredibility);
+    console.log('Resume job assessment:', resumeJobAssessment);
+    console.log('LinkedIn job assessment:', linkedinJobAssessment);
 
-    const systemPrompt = `You are an expert executive recruiter assistant specializing in analyzing and merging candidate credibility statements. Your task is to:
+    const systemPrompt = `You are an expert executive recruiter assistant specializing in analyzing and merging candidate job assessments. Your task is to:
 
-1. Analyze credibility statements from both resume and LinkedIn sources
+1. Analyze job assessment statements from both resume and LinkedIn sources
 2. Create a merged set of statements that:
    - Emphasizes concrete metrics and quantifiable achievements
    - Highlights significant career milestones
@@ -78,15 +78,15 @@ Return a JSON object with:
   }
 }`;
 
-    const userPrompt = `Please analyze and merge these credibility statements:
+    const userPrompt = `Please analyze and merge these job assessment statements:
 
 Resume Statements:
-${resumeCredibility}
+${resumeJobAssessment}
 
 LinkedIn Statements:
-${linkedinCredibility}
+${linkedinJobAssessment}
 
-Create a cohesive set of credibility statements and analyze each source's contribution.`;
+Create a cohesive set of job assessment statements and analyze each source's contribution.`;
 
     console.log('Sending request to OpenAI');
 
