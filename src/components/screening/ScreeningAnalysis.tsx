@@ -1,11 +1,12 @@
 import { Button } from "@/components/ui/button";
-import { Loader2, Wand2, CheckCircle } from "lucide-react";
+import { Loader2, Wand2, CheckCircle, Pencil, Check } from "lucide-react";
 import {
   Accordion,
   AccordionContent,
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
+import { Textarea } from "@/components/ui/textarea";
 import { useScreeningAnalysis } from "./hooks/useScreeningAnalysis";
 import { ScreeningAnalysisSection, ScreeningAnalysisProps } from "./types/screening-analysis";
 
@@ -37,6 +38,77 @@ const ANALYSIS_SECTIONS: ScreeningAnalysisSection[] = [
   },
 ];
 
+const EditButton = ({
+  isEditing,
+  onEdit,
+  onSave,
+}: {
+  isEditing: boolean;
+  onEdit: () => void;
+  onSave: () => void;
+}) => (
+  <Button
+    variant="ghost"
+    size="sm"
+    onClick={isEditing ? onSave : onEdit}
+    className="h-8 px-2"
+  >
+    {isEditing ? (
+      <Check className="h-4 w-4" />
+    ) : (
+      <Pencil className="h-4 w-4" />
+    )}
+  </Button>
+);
+
+const AnalysisSectionsList = ({
+  analysis,
+  isLoading,
+  editingSection,
+  setEditingSection,
+  updateSection,
+}: {
+  analysis: any;
+  isLoading: boolean;
+  editingSection: string | null;
+  setEditingSection: (section: string | null) => void;
+  updateSection: (key: string, content: string) => Promise<void>;
+}) => {
+  if (isLoading) {
+    return <p className="text-sm text-muted-foreground">Loading analysis...</p>;
+  }
+
+  return (
+    <div className="space-y-4 pt-2">
+      {ANALYSIS_SECTIONS.map((section) => (
+        <div key={section.key} className="space-y-1">
+          <div className="flex items-center justify-between">
+            <h4 className="text-sm font-medium text-muted-foreground">
+              {section.title}
+            </h4>
+            <EditButton
+              isEditing={editingSection === section.key}
+              onEdit={() => setEditingSection(section.key)}
+              onSave={() => setEditingSection(null)}
+            />
+          </div>
+          {editingSection === section.key ? (
+            <Textarea
+              value={analysis?.[section.key] || ''}
+              onChange={(e) => updateSection(section.key, e.target.value)}
+              className="min-h-[100px]"
+            />
+          ) : (
+            <p className="text-sm whitespace-pre-wrap">
+              {analysis?.[section.key] || "No data found"}
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export const ScreeningAnalysis = ({ 
   notes, 
   isNotesSubmitted, 
@@ -52,10 +124,8 @@ export const ScreeningAnalysis = ({
     updateSection,
   } = useScreeningAnalysis(candidateId);
 
-  // Don't show anything if notes aren't submitted
   if (!isNotesSubmitted) return null;
 
-  // Check if we have any content in the analysis
   const hasContent = analysis && Object.values(analysis).some(value => value && value !== "");
 
   return (
@@ -91,43 +161,13 @@ export const ScreeningAnalysis = ({
             </div>
           </AccordionTrigger>
           <AccordionContent>
-            {/* We'll update this content in the next step */}
-            <div className="space-y-4 pt-2">
-              {ANALYSIS_SECTIONS.map((section) => (
-                <BaseSectionWrapper
-                  key={section.key}
-                  config={{
-                    key: section.key,
-                    title: section.title,
-                    helpText: section.helpText,
-                  }}
-                  sourceAvailability={{
-                    hasResume: false,
-                    hasLinkedIn: false,
-                    hasScreening: true,
-                  }}
-                >
-                  <BaseSectionContent
-                    value={analysis?.[section.key] || ""}
-                    isSubmitted={!!analysis?.[section.key]}
-                    isEditing={editingSection === section.key}
-                    isLoading={isLoadingAnalysis}
-                    onChange={(value) => {
-                      if (analysis) {
-                        updateSection(section.key, value);
-                      }
-                    }}
-                    onSubmit={() => {
-                      if (analysis?.[section.key]) {
-                        setEditingSection(null);
-                      }
-                    }}
-                    onEdit={() => setEditingSection(section.key)}
-                    onReset={() => updateSection(section.key, "")}
-                  />
-                </BaseSectionWrapper>
-              ))}
-            </div>
+            <AnalysisSectionsList
+              analysis={analysis}
+              isLoading={isLoadingAnalysis}
+              editingSection={editingSection}
+              setEditingSection={setEditingSection}
+              updateSection={updateSection}
+            />
           </AccordionContent>
         </AccordionItem>
       </Accordion>
