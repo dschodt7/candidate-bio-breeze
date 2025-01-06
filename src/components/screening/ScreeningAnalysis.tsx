@@ -1,9 +1,37 @@
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { CheckCircle } from "lucide-react";
-import { AnalyzeButton } from "./analysis/AnalyzeButton";
-import { AnalysisSectionsList } from "./analysis/AnalysisSectionsList";
+import { Button } from "@/components/ui/button";
+import { Loader2, Wand2 } from "lucide-react";
+import { BaseSectionWrapper } from "@/components/executive-summary/base/BaseSectionWrapper";
+import { BaseSectionContent } from "@/components/executive-summary/base/BaseSectionContent";
 import { useScreeningAnalysis } from "./hooks/useScreeningAnalysis";
-import { ScreeningAnalysisProps } from "./types/screening-analysis";
+import { ScreeningAnalysisSection, ScreeningAnalysisProps } from "./types/screening-analysis";
+
+const ANALYSIS_SECTIONS: ScreeningAnalysisSection[] = [
+  {
+    key: "compensation_expectations",
+    title: "Compensation Expectations",
+    helpText: "Candidate's salary requirements and compensation expectations",
+  },
+  {
+    key: "work_arrangements",
+    title: "Work Arrangements",
+    helpText: "Preferred working arrangements, including remote/hybrid preferences",
+  },
+  {
+    key: "availability_timeline",
+    title: "Availability Timeline",
+    helpText: "Expected start date and notice period details",
+  },
+  {
+    key: "current_challenges",
+    title: "Current Challenges",
+    helpText: "Key challenges in current role and desired changes",
+  },
+  {
+    key: "executive_summary_notes",
+    title: "Executive Summary Notes",
+    helpText: "Key insights and observations from the screening discussion",
+  },
+];
 
 export const ScreeningAnalysis = ({ 
   notes, 
@@ -23,50 +51,64 @@ export const ScreeningAnalysis = ({
   // Don't show anything if notes aren't submitted
   if (!isNotesSubmitted) return null;
 
-  // Check if any section has content
-  const hasContent = analysis && Object.values(analysis).some(value => 
-    value && 
-    typeof value === 'string' && 
-    value.trim() !== "" && 
-    value !== "No data found"
-  );
-
-  console.log("[ScreeningAnalysis] Rendering with:", {
-    hasContent,
-    isLoadingAnalysis,
-    isAnalyzing,
-    editingSection,
-    analysisKeys: analysis ? Object.keys(analysis) : []
-  });
-
   return (
     <div className="space-y-4 mt-4">
-      <AnalyzeButton
-        onAnalyze={() => analyzeNotes(notes)}
-        isAnalyzing={isAnalyzing}
-        isDisabled={isLoadingAnalysis || isAnalyzing || !notes.trim()}
-      />
+      <Button
+        onClick={() => analyzeNotes(notes)}
+        disabled={isAnalyzing || !notes.trim()}
+        className="w-full relative group"
+      >
+        <span className="flex items-center justify-center gap-2">
+          {isAnalyzing ? (
+            <>
+              <Loader2 className="h-4 w-4 animate-spin" />
+              Analyzing...
+            </>
+          ) : (
+            <>
+              <Wand2 className="h-4 w-4 transition-transform group-hover:rotate-12" />
+              <span className="group-hover:scale-105 transition-transform">
+                Analyze Screening Notes
+              </span>
+            </>
+          )}
+        </span>
+      </Button>
 
-      <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="analysis">
-          <AccordionTrigger className="text-sm font-medium">
-            <div className="flex items-center gap-2">
-              {hasContent && <CheckCircle className="h-4 w-4 text-green-500" />}
-              Screening: Leader Discovery Criteria
-            </div>
-          </AccordionTrigger>
-          <AccordionContent>
-            <AnalysisSectionsList
-              analysis={analysis}
-              isLoading={isLoadingAnalysis}
-              editingSection={editingSection}
-              setEditingSection={setEditingSection}
-              onUpdateSection={updateSection}
-              hasContent={hasContent}
-            />
-          </AccordionContent>
-        </AccordionItem>
-      </Accordion>
+      {ANALYSIS_SECTIONS.map((section) => (
+        <BaseSectionWrapper
+          key={section.key}
+          config={{
+            key: section.key,
+            title: section.title,
+            helpText: section.helpText,
+          }}
+          sourceAvailability={{
+            hasResume: false,
+            hasLinkedIn: false,
+            hasScreening: true,
+          }}
+        >
+          <BaseSectionContent
+            value={analysis?.[section.key] || ""}
+            isSubmitted={!!analysis?.[section.key]}
+            isEditing={editingSection === section.key}
+            isLoading={isLoadingAnalysis}
+            onChange={(value) => {
+              if (analysis) {
+                updateSection(section.key, value);
+              }
+            }}
+            onSubmit={() => {
+              if (analysis?.[section.key]) {
+                setEditingSection(null);
+              }
+            }}
+            onEdit={() => setEditingSection(section.key)}
+            onReset={() => updateSection(section.key, "")}
+          />
+        </BaseSectionWrapper>
+      ))}
     </div>
   );
 };
