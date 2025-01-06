@@ -12,7 +12,7 @@ export const ExecutiveSummaryForm = () => {
       <h3 className="text-lg font-medium mb-6">Executive Summary Components</h3>
       <div className="space-y-8">
         <div>
-          <h4 className="text-base font-medium mb-4">Executive Lens, Brass Tax Job Matching Criteria</h4>
+          <h4 className="text-base font-medium mb-4">Leader Discovery Criteria</h4>
           <div className="pl-4">
             <ErrorBoundary>
               <CredibilitySection candidateId={candidateId} />
