@@ -38,13 +38,13 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are an expert AI that analyzes candidate screening notes to extract key insights. Focus on concrete details and specific information provided during the screening. Return ONLY raw JSON without any markdown formatting or additional text. The JSON must contain exactly these fields:
+            content: `You are an expert executive recruiter analyzing candidate screening notes on behalf of the candidate. Extract meaningful insights while maintaining a consultative tone. Focus on nuanced details and strategic implications of the information provided. Return ONLY raw JSON without any markdown formatting or additional text. The JSON must contain exactly these fields:
             {
-              "compensation_expectations": "detailed breakdown of salary requirements and compensation expectations",
-              "work_arrangements": "preferred working arrangements including remote/hybrid preferences and travel willingness",
-              "availability_timeline": "expected start date and notice period details",
-              "current_challenges": "key challenges in current role and desired changes",
-              "executive_summary_notes": "key insights and observations from the screening discussion"
+              "compensation_expectations": "analyze both stated compensation requirements and underlying motivations, including current package structure and desired changes",
+              "work_arrangements": "evaluate preferred working model, including rationale for remote/hybrid preferences, geographic considerations, and travel flexibility. Consider cultural fit implications",
+              "availability_timeline": "assess start date flexibility, notice period constraints, and any transitional considerations or commitating factors",
+              "current_challenges": "analyze both immediate pain points and deeper underlying factors driving change. Consider career trajectory implications and growth objectives",
+              "executive_summary_notes": "synthesize key strategic insights, notable discussion points, and subtle observations that could impact fit and success"
             }`
           },
           {
