@@ -1,7 +1,11 @@
 import { Button } from "@/components/ui/button";
-import { Loader2, Wand2 } from "lucide-react";
-import { BaseSectionWrapper } from "@/components/executive-summary/base/BaseSectionWrapper";
-import { BaseSectionContent } from "@/components/executive-summary/base/BaseSectionContent";
+import { Loader2, Wand2, CheckCircle } from "lucide-react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { useScreeningAnalysis } from "./hooks/useScreeningAnalysis";
 import { ScreeningAnalysisSection, ScreeningAnalysisProps } from "./types/screening-analysis";
 
@@ -51,6 +55,9 @@ export const ScreeningAnalysis = ({
   // Don't show anything if notes aren't submitted
   if (!isNotesSubmitted) return null;
 
+  // Check if we have any content in the analysis
+  const hasContent = analysis && Object.values(analysis).some(value => value && value !== "");
+
   return (
     <div className="space-y-4 mt-4">
       <Button
@@ -75,40 +82,55 @@ export const ScreeningAnalysis = ({
         </span>
       </Button>
 
-      {ANALYSIS_SECTIONS.map((section) => (
-        <BaseSectionWrapper
-          key={section.key}
-          config={{
-            key: section.key,
-            title: section.title,
-            helpText: section.helpText,
-          }}
-          sourceAvailability={{
-            hasResume: false,
-            hasLinkedIn: false,
-            hasScreening: true,
-          }}
-        >
-          <BaseSectionContent
-            value={analysis?.[section.key] || ""}
-            isSubmitted={!!analysis?.[section.key]}
-            isEditing={editingSection === section.key}
-            isLoading={isLoadingAnalysis}
-            onChange={(value) => {
-              if (analysis) {
-                updateSection(section.key, value);
-              }
-            }}
-            onSubmit={() => {
-              if (analysis?.[section.key]) {
-                setEditingSection(null);
-              }
-            }}
-            onEdit={() => setEditingSection(section.key)}
-            onReset={() => updateSection(section.key, "")}
-          />
-        </BaseSectionWrapper>
-      ))}
+      <Accordion type="single" collapsible className="w-full">
+        <AccordionItem value="analysis">
+          <AccordionTrigger className="text-sm font-medium">
+            <div className="flex items-center gap-2">
+              {hasContent && <CheckCircle className="h-4 w-4 text-green-500" />}
+              Screening: Leader Discovery Criteria
+            </div>
+          </AccordionTrigger>
+          <AccordionContent>
+            {/* We'll update this content in the next step */}
+            <div className="space-y-4 pt-2">
+              {ANALYSIS_SECTIONS.map((section) => (
+                <BaseSectionWrapper
+                  key={section.key}
+                  config={{
+                    key: section.key,
+                    title: section.title,
+                    helpText: section.helpText,
+                  }}
+                  sourceAvailability={{
+                    hasResume: false,
+                    hasLinkedIn: false,
+                    hasScreening: true,
+                  }}
+                >
+                  <BaseSectionContent
+                    value={analysis?.[section.key] || ""}
+                    isSubmitted={!!analysis?.[section.key]}
+                    isEditing={editingSection === section.key}
+                    isLoading={isLoadingAnalysis}
+                    onChange={(value) => {
+                      if (analysis) {
+                        updateSection(section.key, value);
+                      }
+                    }}
+                    onSubmit={() => {
+                      if (analysis?.[section.key]) {
+                        setEditingSection(null);
+                      }
+                    }}
+                    onEdit={() => setEditingSection(section.key)}
+                    onReset={() => updateSection(section.key, "")}
+                  />
+                </BaseSectionWrapper>
+              ))}
+            </div>
+          </AccordionContent>
+        </AccordionItem>
+      </Accordion>
     </div>
   );
 };
