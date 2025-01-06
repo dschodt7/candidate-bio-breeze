@@ -21,7 +21,7 @@ export const useScreeningAnalysis = (candidateId: string | null) => {
         .from('screening_analyses')
         .select('*')
         .eq('candidate_id', candidateId)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
       return data;
@@ -70,6 +70,25 @@ export const useScreeningAnalysis = (candidateId: string | null) => {
     try {
       setIsAnalyzing(true);
       console.log("Starting screening notes analysis for candidate:", candidateId);
+
+      // First, ensure a record exists
+      const { data: existing } = await supabase
+        .from('screening_analyses')
+        .select('id')
+        .eq('candidate_id', candidateId)
+        .maybeSingle();
+
+      if (!existing) {
+        console.log("Creating initial screening analysis record");
+        const { error: insertError } = await supabase
+          .from('screening_analyses')
+          .insert({
+            candidate_id: candidateId,
+            raw_notes: notes
+          });
+        
+        if (insertError) throw insertError;
+      }
 
       const { error } = await supabase.functions.invoke('analyze-screening-notes', {
         body: { candidateId, notes }
