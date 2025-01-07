@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { CredibilitySection } from "@/components/executive-summary/v3/CredibilitySection";
+import { ResultsAchievementsSection } from "@/components/executive-summary/v3/ResultsAchievementsSection";
 import { useSearchParams } from "react-router-dom";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
@@ -16,6 +17,9 @@ export const ExecutiveSummaryForm = () => {
           <div className="pl-4">
             <ErrorBoundary>
               <CredibilitySection candidateId={candidateId} />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <ResultsAchievementsSection candidateId={candidateId} />
             </ErrorBoundary>
           </div>
         </div>
