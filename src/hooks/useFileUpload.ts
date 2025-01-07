@@ -26,10 +26,12 @@ export const useFileUpload = (): FileUploadState => {
   const candidateId = searchParams.get('candidate');
   const queryClient = useQueryClient();
   const [uploadProgress, setUploadProgress] = useState(0);
-  
+
   const { data: fileData } = useQuery({
     queryKey: ['candidateFile', candidateId],
     queryFn: async () => {
+      if (!candidateId) return null;
+      
       const { data, error } = await supabase
         .from('candidates')
         .select('resume_path, original_filename')
@@ -39,9 +41,10 @@ export const useFileUpload = (): FileUploadState => {
       if (error) throw error;
       return data;
     },
-    enabled: !!candidateId
+    enabled: !!candidateId,
+    initialData: null
   });
-
+  
   const {
     isDragging,
     setIsDragging,
