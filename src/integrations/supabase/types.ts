@@ -58,6 +58,7 @@ export type Database = {
       }
       executive_summaries: {
         Row: {
+          business_problems: string | null
           candidate_id: string
           case_studies: string | null
           created_at: string
@@ -65,10 +66,12 @@ export type Database = {
           credibility_submitted: boolean
           id: string
           linkedin_about: string | null
+          linkedin_business_problems_source: Json | null
           linkedin_case_source: Json | null
           linkedin_credibility_source: Json | null
           linkedin_results_source: Json | null
           results_achievements: string | null
+          resume_business_problems_source: Json | null
           resume_case_source: Json | null
           resume_credibility_source: Json | null
           resume_results_source: Json | null
@@ -76,6 +79,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          business_problems?: string | null
           candidate_id: string
           case_studies?: string | null
           created_at?: string
@@ -83,10 +87,12 @@ export type Database = {
           credibility_submitted?: boolean
           id?: string
           linkedin_about?: string | null
+          linkedin_business_problems_source?: Json | null
           linkedin_case_source?: Json | null
           linkedin_credibility_source?: Json | null
           linkedin_results_source?: Json | null
           results_achievements?: string | null
+          resume_business_problems_source?: Json | null
           resume_case_source?: Json | null
           resume_credibility_source?: Json | null
           resume_results_source?: Json | null
@@ -94,6 +100,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          business_problems?: string | null
           candidate_id?: string
           case_studies?: string | null
           created_at?: string
@@ -101,10 +108,12 @@ export type Database = {
           credibility_submitted?: boolean
           id?: string
           linkedin_about?: string | null
+          linkedin_business_problems_source?: Json | null
           linkedin_case_source?: Json | null
           linkedin_credibility_source?: Json | null
           linkedin_results_source?: Json | null
           results_achievements?: string | null
+          resume_business_problems_source?: Json | null
           resume_case_source?: Json | null
           resume_credibility_source?: Json | null
           resume_results_source?: Json | null
