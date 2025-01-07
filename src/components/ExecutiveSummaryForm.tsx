@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { CredibilitySection } from "@/components/executive-summary/v3/CredibilitySection";
 import { ResultsAchievementsSection } from "@/components/executive-summary/v3/ResultsAchievementsSection";
 import { CaseStudiesSection } from "@/components/executive-summary/v3/CaseStudiesSection";
+import { BusinessProblemsSection } from "@/components/executive-summary/v3/BusinessProblemsSection";
 import { useSearchParams } from "react-router-dom";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
@@ -24,6 +25,9 @@ export const ExecutiveSummaryForm = () => {
             </ErrorBoundary>
             <ErrorBoundary>
               <CaseStudiesSection candidateId={candidateId} />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <BusinessProblemsSection candidateId={candidateId} />
             </ErrorBoundary>
           </div>
         </div>
