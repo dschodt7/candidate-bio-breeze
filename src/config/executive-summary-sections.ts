@@ -15,3 +15,11 @@ export const RESULTS_SECTION: ExecutiveSummarySectionConfig = {
   requiresAICompile: true,
   showSourceAnalysis: true,
 };
+
+export const CASE_STUDIES_SECTION: ExecutiveSummarySectionConfig = {
+  key: "case_studies",
+  title: "Case Studies",
+  helpText: "Highlight specific examples that demonstrate leadership approach, strategic thinking, and execution capabilities. Focus on complex challenges and measurable outcomes.",
+  requiresAICompile: true,
+  showSourceAnalysis: true,
+};

@@ -59,14 +59,17 @@ export type Database = {
       executive_summaries: {
         Row: {
           candidate_id: string
+          case_studies: string | null
           created_at: string
           credibility_statement: string | null
           credibility_submitted: boolean
           id: string
           linkedin_about: string | null
+          linkedin_case_source: Json | null
           linkedin_credibility_source: Json | null
           linkedin_results_source: Json | null
           results_achievements: string | null
+          resume_case_source: Json | null
           resume_credibility_source: Json | null
           resume_results_source: Json | null
           sensory_criteria: Json
@@ -74,14 +77,17 @@ export type Database = {
         }
         Insert: {
           candidate_id: string
+          case_studies?: string | null
           created_at?: string
           credibility_statement?: string | null
           credibility_submitted?: boolean
           id?: string
           linkedin_about?: string | null
+          linkedin_case_source?: Json | null
           linkedin_credibility_source?: Json | null
           linkedin_results_source?: Json | null
           results_achievements?: string | null
+          resume_case_source?: Json | null
           resume_credibility_source?: Json | null
           resume_results_source?: Json | null
           sensory_criteria?: Json
@@ -89,14 +95,17 @@ export type Database = {
         }
         Update: {
           candidate_id?: string
+          case_studies?: string | null
           created_at?: string
           credibility_statement?: string | null
           credibility_submitted?: boolean
           id?: string
           linkedin_about?: string | null
+          linkedin_case_source?: Json | null
           linkedin_credibility_source?: Json | null
           linkedin_results_source?: Json | null
           results_achievements?: string | null
+          resume_case_source?: Json | null
           resume_credibility_source?: Json | null
           resume_results_source?: Json | null
           sensory_criteria?: Json
