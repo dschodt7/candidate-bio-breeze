@@ -65,7 +65,10 @@ export type Database = {
           id: string
           linkedin_about: string | null
           linkedin_credibility_source: Json | null
+          linkedin_results_source: Json | null
+          results_achievements: string | null
           resume_credibility_source: Json | null
+          resume_results_source: Json | null
           sensory_criteria: Json
           updated_at: string
         }
@@ -77,7 +80,10 @@ export type Database = {
           id?: string
           linkedin_about?: string | null
           linkedin_credibility_source?: Json | null
+          linkedin_results_source?: Json | null
+          results_achievements?: string | null
           resume_credibility_source?: Json | null
+          resume_results_source?: Json | null
           sensory_criteria?: Json
           updated_at?: string
         }
@@ -89,7 +95,10 @@ export type Database = {
           id?: string
           linkedin_about?: string | null
           linkedin_credibility_source?: Json | null
+          linkedin_results_source?: Json | null
+          results_achievements?: string | null
           resume_credibility_source?: Json | null
+          resume_results_source?: Json | null
           sensory_criteria?: Json
           updated_at?: string
         }
