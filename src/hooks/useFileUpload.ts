@@ -5,6 +5,7 @@ import { useFileState } from "@/hooks/useFileState";
 import { validateFile } from "@/utils/fileValidation";
 import { extractText, uploadToStorage } from "@/utils/fileProcessing";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface FileUploadState {
   isDragging: boolean;
@@ -22,8 +23,25 @@ interface FileUploadState {
 export const useFileUpload = (): FileUploadState => {
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
+  const candidateId = searchParams.get('candidate');
+  const queryClient = useQueryClient();
   const [uploadProgress, setUploadProgress] = useState(0);
   
+  const { data: fileData } = useQuery({
+    queryKey: ['candidateFile', candidateId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('candidates')
+        .select('resume_path, original_filename')
+        .eq('id', candidateId)
+        .single();
+        
+      if (error) throw error;
+      return data;
+    },
+    enabled: !!candidateId
+  });
+
   const {
     isDragging,
     setIsDragging,
@@ -31,14 +49,11 @@ export const useFileUpload = (): FileUploadState => {
     setFile,
     isUploading,
     setIsUploading,
-    uploadedFileName,
-    setUploadedFileName,
     handleDragOver,
     handleDragLeave
   } = useFileState();
 
   const handleReset = async () => {
-    const candidateId = searchParams.get('candidate');
     if (!candidateId) {
       toast({
         title: "Error",
@@ -49,20 +64,15 @@ export const useFileUpload = (): FileUploadState => {
     }
 
     try {
-      console.log("Resetting resume and analysis for candidate:", candidateId);
-      
       // Delete the analysis first
-      console.log("Deleting resume analysis");
       const { error: deleteAnalysisError } = await supabase
         .from('resume_analyses')
         .delete()
         .eq('candidate_id', candidateId);
 
       if (deleteAnalysisError) throw deleteAnalysisError;
-      console.log("Resume analysis deleted successfully");
 
       // Reset the resume information
-      console.log("Resetting resume information");
       const { error: updateError } = await supabase
         .from('candidates')
         .update({
@@ -73,14 +83,16 @@ export const useFileUpload = (): FileUploadState => {
         .eq('id', candidateId);
 
       if (updateError) throw updateError;
-      console.log("Resume information reset successfully");
 
       // Reset local state
       setFile(null);
-      setUploadedFileName(null);
       setUploadProgress(0);
+      
+      // Invalidate queries
+      await queryClient.invalidateQueries({
+        queryKey: ['candidateFile', candidateId]
+      });
 
-      console.log("Reset completed successfully");
       toast({
         title: "Success",
         description: "Resume and analysis have been reset",
@@ -98,7 +110,6 @@ export const useFileUpload = (): FileUploadState => {
   const processFile = async (uploadedFile: File) => {
     if (!validateFile(uploadedFile)) return;
     
-    const candidateId = searchParams.get('candidate');
     if (!candidateId) {
       toast({
         title: "Error",
@@ -112,42 +123,32 @@ export const useFileUpload = (): FileUploadState => {
       setIsUploading(true);
       setFile(uploadedFile);
       setUploadProgress(0);
-      console.log("Starting file upload process for:", uploadedFile.name);
 
       // Upload file to storage
       setUploadProgress(20);
       const filePath = await uploadToStorage(uploadedFile, candidateId);
       setUploadProgress(50);
-      console.log("File uploaded to storage:", filePath);
 
       // Extract text based on file type
       let resumeText = null;
       if (uploadedFile.type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
         setUploadProgress(70);
         resumeText = await extractText(uploadedFile);
-        console.log("Text extracted from DOCX, length:", resumeText?.length);
       } else if (uploadedFile.type === 'application/pdf') {
         setUploadProgress(70);
-        console.log("[useFileUpload] Processing PDF file:", filePath);
         const { data, error } = await supabase.functions.invoke('process-pdf', {
           body: { fileName: filePath }
         });
 
-        if (error) {
-          console.error("[useFileUpload] PDF processing error:", error);
-          throw error;
-        }
+        if (error) throw error;
         if (!data?.text) {
-          console.error("[useFileUpload] No text extracted from PDF");
           throw new Error('No text extracted from PDF');
         }
         if (data.text.length > 15000) {
-          console.error("[useFileUpload] PDF text too long:", data.text.length);
           throw new Error('PDF text exceeds maximum length of 15,000 characters');
         }
 
         resumeText = data.text;
-        console.log("[useFileUpload] PDF text extracted successfully, length:", resumeText.length);
         setUploadProgress(90);
       }
 
@@ -165,8 +166,11 @@ export const useFileUpload = (): FileUploadState => {
       if (updateError) throw updateError;
       
       setUploadProgress(100);
-      setUploadedFileName(uploadedFile.name);
-      console.log("Upload process completed successfully");
+      
+      // Invalidate the query to refresh the UI
+      await queryClient.invalidateQueries({
+        queryKey: ['candidateFile', candidateId]
+      });
       
       toast({
         title: "Success",
@@ -180,7 +184,6 @@ export const useFileUpload = (): FileUploadState => {
         variant: "destructive"
       });
       setFile(null);
-      setUploadedFileName(null);
     } finally {
       setIsUploading(false);
       setUploadProgress(0);
@@ -205,7 +208,7 @@ export const useFileUpload = (): FileUploadState => {
     isDragging,
     isUploading,
     file,
-    uploadedFileName,
+    uploadedFileName: fileData?.original_filename || null,
     uploadProgress,
     handleDragOver,
     handleDragLeave,
