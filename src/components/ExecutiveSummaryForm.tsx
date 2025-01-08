@@ -3,6 +3,7 @@ import { CredibilitySection } from "@/components/executive-summary/v3/Credibilit
 import { ResultsAchievementsSection } from "@/components/executive-summary/v3/ResultsAchievementsSection";
 import { CaseStudiesSection } from "@/components/executive-summary/v3/CaseStudiesSection";
 import { BusinessProblemsSection } from "@/components/executive-summary/v3/BusinessProblemsSection";
+import { MotivationsSection } from "@/components/executive-summary/v3/MotivationsSection";
 import { useSearchParams } from "react-router-dom";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
@@ -28,6 +29,9 @@ export const ExecutiveSummaryForm = () => {
             </ErrorBoundary>
             <ErrorBoundary>
               <BusinessProblemsSection candidateId={candidateId} />
+            </ErrorBoundary>
+            <ErrorBoundary>
+              <MotivationsSection candidateId={candidateId} />
             </ErrorBoundary>
           </div>
         </div>
