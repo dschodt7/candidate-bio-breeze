@@ -14,7 +14,7 @@ export const ChatMessage = ({ role, content }: ChatMessageProps) => {
       )}
     >
       <div className="flex-1 space-y-2">
-        <div className="prose-sm prose-slate w-full break-words">
+        <div className="prose-sm prose-slate w-full break-words whitespace-pre-line">
           {content}
         </div>
       </div>

@@ -17,6 +17,15 @@ Focus areas:
 - Board placement
 - Succession planning
 
+Important formatting instructions:
+1. Do not use Markdown syntax like ** for emphasis
+2. When using numbered lists:
+   - Start each item on a new line
+   - Add a space after the number and period
+   - Add a blank line between items
+3. Use clear paragraph breaks for readability
+4. Keep responses concise and well-structured
+
 Provide clear, actionable insights while maintaining confidentiality and professional standards.`
 
 serve(async (req) => {
@@ -44,7 +53,19 @@ serve(async (req) => {
     })
 
     const data = await response.json()
-    const reply = data.choices[0].message.content
+    let reply = data.choices[0].message.content
+
+    // Format the response
+    reply = reply
+      // Remove Markdown emphasis
+      .replace(/\*\*/g, '')
+      // Ensure proper spacing for numbered lists
+      .replace(/(\d+\.)\s*/g, '\n$1 ')
+      // Add extra line break between list items
+      .replace(/\n(\d+\.)/g, '\n\n$1')
+      // Normalize paragraph spacing
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
 
     return new Response(
       JSON.stringify({ reply }),
