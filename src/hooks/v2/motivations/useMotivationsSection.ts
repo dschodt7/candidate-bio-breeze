@@ -2,17 +2,16 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
+import { useMotivationsDatabase } from "./database/useMotivationsDatabase";
+import { useMotivationsMerge } from "./merge/useMotivationsMerge";
 
 export const useMotivationsSection = () => {
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
-  const { toast } = useToast();
   
   const [isEditing, setIsEditing] = useState(false);
   const [value, setValue] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isMerging, setIsMerging] = useState(false);
 
   // Enhanced logging for data fetching
   const { data: executiveSummary, isLoading } = useQuery({
@@ -29,11 +28,6 @@ export const useMotivationsSection = () => {
 
       if (error) {
         console.error("[useMotivationsSection] Error fetching summary:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load motivations data",
-          variant: "destructive",
-        });
         throw error;
       }
 
@@ -53,141 +47,23 @@ export const useMotivationsSection = () => {
     enabled: !!candidateId
   });
 
+  const { submitToDatabase, resetInDatabase } = useMotivationsDatabase(candidateId);
+  const { isMerging, handleMerge } = useMotivationsMerge(candidateId, setValue, setIsEditing);
+
   const handleSubmit = async () => {
-    if (!candidateId || !value.trim()) {
-      console.log("[useMotivationsSection] Submit blocked - missing candidateId or value");
-      return;
-    }
-    
-    console.log("[useMotivationsSection] Submitting motivations");
-    
-    try {
-      const { error } = await supabase
-        .from('executive_summaries')
-        .upsert({
-          candidate_id: candidateId,
-          motivations: value,
-        }, {
-          onConflict: 'candidate_id',
-          update: {
-            motivations: value,
-          }
-        });
-
-      if (error) throw error;
-
-      console.log("[useMotivationsSection] Motivations submitted successfully");
+    const success = await submitToDatabase(value);
+    if (success) {
       setIsSubmitted(true);
       setIsEditing(false);
-      toast({
-        title: "Success",
-        description: "Motivations saved successfully",
-      });
-    } catch (error) {
-      console.error("[useMotivationsSection] Error saving motivations:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save motivations",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleMerge = async () => {
-    if (!candidateId) {
-      console.log("[useMotivationsSection] Merge blocked - missing candidateId");
-      return;
-    }
-    
-    console.log("[useMotivationsSection] Starting merge operation");
-    setIsMerging(true);
-    
-    try {
-      const { data, error } = await supabase.functions.invoke('merge-motivations', {
-        body: { candidateId }
-      });
-
-      if (error) throw error;
-
-      console.log("[useMotivationsSection] Merge response:", {
-        hasContent: !!data?.mergedContent,
-        sourceBreakdown: data?.sourceBreakdown
-      });
-
-      if (data?.mergedContent) {
-        setValue(data.mergedContent);
-        
-        // Use upsert for saving merged content
-        const { error: updateError } = await supabase
-          .from('executive_summaries')
-          .upsert({
-            candidate_id: candidateId,
-            motivations: data.mergedContent,
-            resume_motivations_source: data.sourceBreakdown.resume,
-            linkedin_motivations_source: data.sourceBreakdown.linkedin,
-          }, {
-            onConflict: 'candidate_id',
-            update: {
-              motivations: data.mergedContent,
-              resume_motivations_source: data.sourceBreakdown.resume,
-              linkedin_motivations_source: data.sourceBreakdown.linkedin,
-            }
-          });
-
-        if (updateError) throw updateError;
-
-        toast({
-          title: "Success",
-          description: "Motivations compiled successfully",
-        });
-      }
-    } catch (error) {
-      console.error("[useMotivationsSection] Merge operation failed:", error);
-      toast({
-        title: "Error",
-        description: "Failed to compile motivations",
-        variant: "destructive",
-      });
-    } finally {
-      setIsMerging(false);
     }
   };
 
   const handleReset = async () => {
-    if (!candidateId) {
-      console.log("[useMotivationsSection] Reset blocked - missing candidateId");
-      return;
-    }
-    
-    console.log("[useMotivationsSection] Resetting motivations");
-    
-    try {
-      const { error } = await supabase
-        .from('executive_summaries')
-        .update({
-          motivations: null,
-          resume_motivations_source: null,
-          linkedin_motivations_source: null,
-        })
-        .eq('candidate_id', candidateId);
-
-      if (error) throw error;
-
-      console.log("[useMotivationsSection] Motivations reset successful");
+    const success = await resetInDatabase();
+    if (success) {
       setValue("");
       setIsSubmitted(false);
       setIsEditing(false);
-      toast({
-        title: "Success",
-        description: "Motivations reset successfully",
-      });
-    } catch (error) {
-      console.error("[useMotivationsSection] Reset operation failed:", error);
-      toast({
-        title: "Error",
-        description: "Failed to reset motivations",
-        variant: "destructive",
-      });
     }
   };
 
