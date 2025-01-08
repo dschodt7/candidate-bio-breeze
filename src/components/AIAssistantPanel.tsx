@@ -5,7 +5,7 @@ import { ChatInput } from "@/components/chat/ChatInput";
 import { useState, useEffect, useRef } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { UserRound } from "lucide-react";
+import { Bot } from "lucide-react";
 
 interface Message {
   role: "assistant" | "user";
@@ -61,7 +61,7 @@ const AIAssistantPanel = () => {
       <div className="flex h-full flex-col bg-background">
         <div className="border-b p-4">
           <div className="flex items-center gap-2">
-            <UserRound className="h-6 w-6" />
+            <Bot className="h-6 w-6" />
             <h2 className="text-lg font-semibold">ERICC, Your AI Assistant</h2>
           </div>
         </div>
