@@ -18,6 +18,15 @@ export const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
     setInput("");
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      if (input.trim() && !isLoading) {
+        handleSubmit(e);
+      }
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit} className="relative">
       <div className="relative rounded-lg border bg-background">
@@ -25,6 +34,7 @@ export const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
           placeholder="Ask me anything about executive recruiting..."
           value={input}
           onChange={(e) => setInput(e.target.value)}
+          onKeyDown={handleKeyDown}
           className="min-h-[52px] w-full resize-none overflow-hidden rounded-lg pr-12"
           rows={1}
         />
