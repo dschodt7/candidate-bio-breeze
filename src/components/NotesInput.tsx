@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Check, RotateCw, Loader2 } from "lucide-react";
+import { Check, RotateCw, Loader2, Pencil } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -13,6 +13,7 @@ export const NotesInput = () => {
   const [notes, setNotes] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
@@ -82,6 +83,7 @@ export const NotesInput = () => {
 
       console.log("Notes submitted successfully");
       setIsSubmitted(true);
+      setIsEditing(false);
       toast({
         title: "Success",
         description: "Notes submitted successfully",
@@ -124,6 +126,7 @@ export const NotesInput = () => {
       // Only clear UI state after successful database operations
       setNotes("");
       setIsSubmitted(false);
+      setIsEditing(false);
       console.log("Reset completed successfully");
       
       toast({
@@ -157,15 +160,29 @@ export const NotesInput = () => {
           value={notes}
           onChange={(e) => {
             setNotes(e.target.value);
-            setIsSubmitted(false);
+            if (!isEditing) {
+              setIsSubmitted(false);
+            }
           }}
           className="min-h-[200px] resize-none"
+          disabled={isSubmitted && !isEditing}
         />
         <div className="flex justify-end gap-2">
-          <Button onClick={handleSubmit} className="gap-2">
-            {isSubmitted && <Check className="h-4 w-4 text-green-500" />}
-            {isSubmitted ? "Submitted" : "Submit"}
-          </Button>
+          {isSubmitted && !isEditing ? (
+            <Button
+              variant="outline"
+              onClick={() => setIsEditing(true)}
+              className="gap-2"
+            >
+              <Pencil className="h-4 w-4" />
+              Edit
+            </Button>
+          ) : (
+            <Button onClick={handleSubmit} className="gap-2">
+              {isSubmitted && <Check className="h-4 w-4 text-green-500" />}
+              {isSubmitted ? "Update" : "Submit"}
+            </Button>
+          )}
           {isSubmitted && (
             <Button 
               variant="outline" 
