@@ -30,10 +30,10 @@ serve(async (req) => {
 
     if (resumeError) throw resumeError;
 
-    // Fetch LinkedIn about section
+    // Fetch LinkedIn analysis (only the analyzed motivations)
     const { data: linkedinSection, error: linkedinError } = await supabaseClient
       .from('linkedin_sections')
-      .select('content, analysis')
+      .select('analysis')
       .eq('candidate_id', candidateId)
       .eq('section_type', 'about')
       .maybeSingle();
@@ -57,13 +57,10 @@ serve(async (req) => {
           },
           {
             role: "user",
-            content: `Please analyze and merge the following sources to create a comprehensive motivations summary:
+            content: `Please analyze and merge the following analyzed motivations to create a comprehensive motivations summary:
 
             Resume Analysis:
             ${resumeAnalysis?.motivations || "No resume data available"}
-
-            LinkedIn Content:
-            ${linkedinSection?.content || "No LinkedIn data available"}
 
             LinkedIn Analysis:
             ${linkedinSection?.analysis?.motivations || "No LinkedIn analysis available"}
@@ -86,10 +83,10 @@ serve(async (req) => {
         confidence: "medium",
         uniqueValue: "Provides structured career progression insights"
       } : null,
-      linkedin: linkedinSection?.content ? {
-        relevance: "medium",
-        confidence: "medium",
-        uniqueValue: "Offers personal narrative and aspirational context"
+      linkedin: linkedinSection?.analysis?.motivations ? {
+        relevance: "high",
+        confidence: "high",
+        uniqueValue: "Offers analyzed motivational insights"
       } : null
     };
 
