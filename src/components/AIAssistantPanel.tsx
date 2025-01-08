@@ -60,9 +60,9 @@ const AIAssistantPanel = () => {
     <ResizablePanel defaultSize={25} minSize={20} className="p-0">
       <div className="flex h-full flex-col bg-background">
         <div className="border-b p-4">
-          <div className="flex items-center gap-2">
-            <UserRound className="h-6 w-6" />
+          <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold">ERICC, Your AI Assistant</h2>
+            <UserRound className="h-6 w-6" />
           </div>
         </div>
         
