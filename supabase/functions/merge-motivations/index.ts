@@ -30,7 +30,7 @@ serve(async (req) => {
 
     if (resumeError) throw resumeError;
 
-    // Fetch LinkedIn analysis (only the analyzed motivations)
+    // Fetch LinkedIn analysis
     const { data: linkedinSection, error: linkedinError } = await supabaseClient
       .from('linkedin_sections')
       .select('analysis')
@@ -76,18 +76,22 @@ serve(async (req) => {
     const openAIData = await openAIResponse.json();
     const mergedContent = openAIData.choices[0].message.content;
 
-    // Prepare source analysis
+    // Updated source analysis - always return objects with the three required fields
     const sourceBreakdown = {
-      resume: resumeAnalysis?.motivations ? {
-        relevance: "high",
-        confidence: "medium",
-        uniqueValue: "Provides structured career progression insights"
-      } : null,
-      linkedin: linkedinSection?.analysis?.motivations ? {
-        relevance: "high",
-        confidence: "high",
-        uniqueValue: "Offers analyzed motivational insights"
-      } : null
+      resume: {
+        relevance: resumeAnalysis?.motivations ? "high" : "low",
+        confidence: resumeAnalysis?.motivations ? "medium" : "low",
+        uniqueValue: resumeAnalysis?.motivations 
+          ? "Provides structured career progression insights"
+          : "No resume data available"
+      },
+      linkedin: {
+        relevance: linkedinSection?.analysis?.motivations ? "high" : "low",
+        confidence: linkedinSection?.analysis?.motivations ? "high" : "low",
+        uniqueValue: linkedinSection?.analysis?.motivations
+          ? "Offers analyzed motivational insights"
+          : "No LinkedIn data available"
+      }
     };
 
     console.log("[merge-motivations] Successfully merged content for candidate:", candidateId);
