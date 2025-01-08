@@ -47,12 +47,12 @@ export const CandidateStatusChecklist = () => {
       icon: FileText,
     },
     {
-      label: "Screening Notes",
+      label: "Leader Discovery Screening",
       isComplete: !!candidate?.screening_notes,
       icon: NotepadText,
     },
     {
-      label: "Executive Summary Complete",
+      label: "Leader Discovery Complete",
       isComplete: !!executiveSummary?.credibility_submitted,
       icon: FileCheck,
       subItems: [
