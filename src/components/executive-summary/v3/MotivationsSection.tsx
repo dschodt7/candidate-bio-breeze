@@ -18,6 +18,15 @@ export const MotivationsSection = ({ candidateId }: { candidateId: string | null
     handleReset,
   } = useMotivationsSection();
 
+  console.log("[MotivationsSection] Rendering with:", {
+    hasValue: !!value,
+    isSubmitted,
+    isEditing,
+    isLoading,
+    isMerging,
+    hasExecutiveSummary: !!executiveSummary
+  });
+
   const sourceAvailability = {
     hasResume: !!executiveSummary?.resume_motivations_source,
     hasLinkedIn: !!executiveSummary?.linkedin_motivations_source,

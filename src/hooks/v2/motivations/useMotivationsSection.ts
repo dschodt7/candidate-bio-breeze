@@ -14,12 +14,12 @@ export const useMotivationsSection = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isMerging, setIsMerging] = useState(false);
 
-  // Fetch existing data
+  // Enhanced logging for data fetching
   const { data: executiveSummary, isLoading } = useQuery({
     queryKey: ['executiveSummary', candidateId],
     queryFn: async () => {
       if (!candidateId) return null;
-      console.log("[useMotivationsSection] Fetching executive summary for:", candidateId);
+      console.log("[useMotivationsSection] Fetching executive summary for candidate:", candidateId);
       
       const { data, error } = await supabase
         .from('executive_summaries')
@@ -29,8 +29,19 @@ export const useMotivationsSection = () => {
 
       if (error) {
         console.error("[useMotivationsSection] Error fetching summary:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load motivations data",
+          variant: "destructive",
+        });
         throw error;
       }
+
+      console.log("[useMotivationsSection] Fetched data:", {
+        hasMotivations: !!data?.motivations,
+        hasResumeSource: !!data?.resume_motivations_source,
+        hasLinkedInSource: !!data?.linkedin_motivations_source
+      });
 
       if (data?.motivations) {
         setValue(data.motivations);
@@ -43,7 +54,10 @@ export const useMotivationsSection = () => {
   });
 
   const handleSubmit = async () => {
-    if (!candidateId || !value.trim()) return;
+    if (!candidateId || !value.trim()) {
+      console.log("[useMotivationsSection] Submit blocked - missing candidateId or value");
+      return;
+    }
     
     console.log("[useMotivationsSection] Submitting motivations");
     
@@ -57,6 +71,7 @@ export const useMotivationsSection = () => {
 
       if (error) throw error;
 
+      console.log("[useMotivationsSection] Motivations submitted successfully");
       setIsSubmitted(true);
       setIsEditing(false);
       toast({
@@ -74,7 +89,10 @@ export const useMotivationsSection = () => {
   };
 
   const handleMerge = async () => {
-    if (!candidateId) return;
+    if (!candidateId) {
+      console.log("[useMotivationsSection] Merge blocked - missing candidateId");
+      return;
+    }
     
     console.log("[useMotivationsSection] Starting merge operation");
     setIsMerging(true);
@@ -85,6 +103,11 @@ export const useMotivationsSection = () => {
       });
 
       if (error) throw error;
+
+      console.log("[useMotivationsSection] Merge response:", {
+        hasContent: !!data?.mergedContent,
+        sourceBreakdown: data?.sourceBreakdown
+      });
 
       if (data?.mergedContent) {
         setValue(data.mergedContent);
@@ -117,7 +140,10 @@ export const useMotivationsSection = () => {
   };
 
   const handleReset = async () => {
-    if (!candidateId) return;
+    if (!candidateId) {
+      console.log("[useMotivationsSection] Reset blocked - missing candidateId");
+      return;
+    }
     
     console.log("[useMotivationsSection] Resetting motivations");
     
@@ -133,6 +159,7 @@ export const useMotivationsSection = () => {
 
       if (error) throw error;
 
+      console.log("[useMotivationsSection] Motivations reset successful");
       setValue("");
       setIsSubmitted(false);
       setIsEditing(false);
