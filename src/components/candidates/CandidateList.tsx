@@ -4,6 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
+import { useSearchParams } from "react-router-dom";
 
 interface CandidateListProps {
   candidates: { id: string; name: string; linkedin_url: string | null }[];
@@ -21,6 +22,8 @@ export const CandidateList = ({
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [newCandidateName, setNewCandidateName] = useState("");
   const [candidateToDelete, setCandidateToDelete] = useState<string | null>(null);
+  const [searchParams] = useSearchParams();
+  const selectedCandidateId = searchParams.get('candidate');
 
   const handleNewCandidate = () => {
     onCandidateClick({ name: newCandidateName, linkedin_url: null });
@@ -40,7 +43,7 @@ export const CandidateList = ({
       {candidates.map((candidate) => (
         <div key={candidate.id} className="group relative">
           <Button
-            variant="ghost"
+            variant={candidate.id === selectedCandidateId ? "secondary" : "ghost"}
             className="w-full justify-start text-left pr-12"
             onClick={() => onCandidateClick(candidate)}
           >
