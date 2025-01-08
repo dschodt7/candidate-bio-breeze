@@ -148,7 +148,12 @@ export const NotesInput = () => {
         <Label htmlFor="screening-notes">Leader Discovery Screening</Label>
         <Textarea
           id="screening-notes"
-          placeholder="Enter your screening notes here..."
+          placeholder="Areas Analyzed:
+1. Compensation expectations
+2. Work arrangements
+3. Availability timeline
+4. Current challenges
+5. Executive summary notes"
           value={notes}
           onChange={(e) => {
             setNotes(e.target.value);
