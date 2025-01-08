@@ -31,3 +31,11 @@ export const BUSINESS_PROBLEMS_SECTION: ExecutiveSummarySectionConfig = {
   requiresAICompile: true,
   showSourceAnalysis: true,
 };
+
+export const MOTIVATIONS_SECTION: ExecutiveSummarySectionConfig = {
+  key: "motivations",
+  title: "Motivations",
+  helpText: "Highlight key career drivers, professional aspirations, and leadership philosophy. Focus on values, growth goals, and change management approach.",
+  requiresAICompile: true,
+  showSourceAnalysis: true,
+};

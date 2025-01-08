@@ -69,11 +69,14 @@ export type Database = {
           linkedin_business_problems_source: Json | null
           linkedin_case_source: Json | null
           linkedin_credibility_source: Json | null
+          linkedin_motivations_source: Json | null
           linkedin_results_source: Json | null
+          motivations: string | null
           results_achievements: string | null
           resume_business_problems_source: Json | null
           resume_case_source: Json | null
           resume_credibility_source: Json | null
+          resume_motivations_source: Json | null
           resume_results_source: Json | null
           sensory_criteria: Json
           updated_at: string
@@ -90,11 +93,14 @@ export type Database = {
           linkedin_business_problems_source?: Json | null
           linkedin_case_source?: Json | null
           linkedin_credibility_source?: Json | null
+          linkedin_motivations_source?: Json | null
           linkedin_results_source?: Json | null
+          motivations?: string | null
           results_achievements?: string | null
           resume_business_problems_source?: Json | null
           resume_case_source?: Json | null
           resume_credibility_source?: Json | null
+          resume_motivations_source?: Json | null
           resume_results_source?: Json | null
           sensory_criteria?: Json
           updated_at?: string
@@ -111,11 +117,14 @@ export type Database = {
           linkedin_business_problems_source?: Json | null
           linkedin_case_source?: Json | null
           linkedin_credibility_source?: Json | null
+          linkedin_motivations_source?: Json | null
           linkedin_results_source?: Json | null
+          motivations?: string | null
           results_achievements?: string | null
           resume_business_problems_source?: Json | null
           resume_case_source?: Json | null
           resume_credibility_source?: Json | null
+          resume_motivations_source?: Json | null
           resume_results_source?: Json | null
           sensory_criteria?: Json
           updated_at?: string
