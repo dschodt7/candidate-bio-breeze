@@ -57,7 +57,7 @@ export const CandidateStatusChecklist = () => {
       icon: FileCheck,
       subItems: [
         {
-          label: "Credibility Statements",
+          label: "Criteria Merged",
           isComplete: !!executiveSummary?.credibility_submitted,
         }
       ],
