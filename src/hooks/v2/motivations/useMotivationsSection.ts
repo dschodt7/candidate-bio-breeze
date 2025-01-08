@@ -68,10 +68,7 @@ export const useMotivationsSection = () => {
           candidate_id: candidateId,
           motivations: value,
         }, {
-          onConflict: 'candidate_id',
-          update: {
-            motivations: value,
-          }
+          onConflict: 'candidate_id'
         });
 
       if (error) throw error;
@@ -117,7 +114,6 @@ export const useMotivationsSection = () => {
       if (data?.mergedContent) {
         setValue(data.mergedContent);
         
-        // Use upsert for saving merged content
         const { error: updateError } = await supabase
           .from('executive_summaries')
           .upsert({
@@ -126,12 +122,7 @@ export const useMotivationsSection = () => {
             resume_motivations_source: data.sourceBreakdown.resume,
             linkedin_motivations_source: data.sourceBreakdown.linkedin,
           }, {
-            onConflict: 'candidate_id',
-            update: {
-              motivations: data.mergedContent,
-              resume_motivations_source: data.sourceBreakdown.resume,
-              linkedin_motivations_source: data.sourceBreakdown.linkedin,
-            }
+            onConflict: 'candidate_id'
           });
 
         if (updateError) throw updateError;
