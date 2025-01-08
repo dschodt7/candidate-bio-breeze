@@ -57,8 +57,8 @@ serve(async (req) => {
 
     // Format the response
     reply = reply
-      // Remove Markdown emphasis
-      .replace(/\*\*/g, '')
+      // Remove all Markdown emphasis markers (*, **, _, __, `)
+      .replace(/[\*_`]{1,2}([^\*_`]+)[\*_`]{1,2}/g, '$1')
       // Ensure proper spacing for numbered lists
       .replace(/(\d+\.)\s*/g, '\n$1 ')
       // Add extra line break between list items
