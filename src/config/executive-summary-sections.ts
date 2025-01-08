@@ -26,7 +26,7 @@ export const CASE_STUDIES_SECTION: ExecutiveSummarySectionConfig = {
 
 export const BUSINESS_PROBLEMS_SECTION: ExecutiveSummarySectionConfig = {
   key: "business_problems",
-  title: "Business Problems They Solve Better Than Most",
+  title: "Business Problems They Solve...",
   helpText: "Highlight unique approaches to complex organizational challenges, innovative solutions, and patterns in problem-solving methodology. Focus on strategic-level business problems.",
   requiresAICompile: true,
   showSourceAnalysis: true,
