@@ -47,7 +47,7 @@ export const CandidateStatusChecklist = () => {
       icon: FileText,
     },
     {
-      label: "Leader Discovery Screening",
+      label: "Screening Notes Analyzed",
       isComplete: !!candidate?.screening_notes,
       icon: NotepadText,
     },
