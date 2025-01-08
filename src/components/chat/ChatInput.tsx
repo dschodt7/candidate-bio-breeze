@@ -19,20 +19,26 @@ export const ChatInput = ({ onSend, isLoading }: ChatInputProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex items-end gap-2">
-      <Textarea
-        placeholder="Ask me anything about executive recruiting..."
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-        className="min-h-[80px] flex-1 resize-none"
-      />
-      <Button 
-        type="submit" 
-        size="icon" 
-        disabled={isLoading || !input.trim()}
-      >
-        <SendHorizontal className="h-4 w-4" />
-      </Button>
+    <form onSubmit={handleSubmit} className="relative">
+      <div className="relative rounded-lg border bg-background">
+        <Textarea
+          placeholder="Ask me anything about executive recruiting..."
+          value={input}
+          onChange={(e) => setInput(e.target.value)}
+          className="min-h-[52px] w-full resize-none overflow-hidden rounded-lg pr-12"
+          rows={1}
+        />
+        <div className="absolute bottom-1.5 right-1.5">
+          <Button 
+            type="submit" 
+            size="icon"
+            className="h-8 w-8"
+            disabled={isLoading || !input.trim()}
+          >
+            <SendHorizontal className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
     </form>
   );
 };
