@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
-export const useMotivationsSection = () => {
+export const useMotivationsSection = (candidateId: string | null) => {
   const { toast } = useToast();
   const [value, setValue] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -17,17 +17,22 @@ export const useMotivationsSection = () => {
     isEditing,
     isLoading,
     isMerging,
-    hasExecutiveSummary: !!executiveSummary
+    hasExecutiveSummary: !!executiveSummary,
+    candidateId
   });
 
   const handleSubmit = async () => {
-    if (!value.trim()) {
-      console.log("[useMotivationsSection] Submit blocked - empty value");
+    if (!candidateId) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
       return;
     }
 
     try {
-      console.log("[useMotivationsSection] Submitting motivations");
+      console.log("[useMotivationsSection] Submitting motivations for candidate:", candidateId);
       const { error } = await supabase
         .from('executive_summaries')
         .update({
@@ -56,8 +61,17 @@ export const useMotivationsSection = () => {
   };
 
   const handleReset = async () => {
+    if (!candidateId) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
-      console.log("[useMotivationsSection] Resetting motivations");
+      console.log("[useMotivationsSection] Resetting motivations for candidate:", candidateId);
       const { error } = await supabase
         .from('executive_summaries')
         .update({
@@ -89,9 +103,18 @@ export const useMotivationsSection = () => {
   };
 
   const handleMerge = async () => {
+    if (!candidateId) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsMerging(true);
     try {
-      console.log("[useMotivationsSection] Starting merge operation");
+      console.log("[useMotivationsSection] Starting merge operation for candidate:", candidateId);
       const { data, error } = await supabase.functions.invoke('merge-motivations', {
         body: { candidateId }
       });
