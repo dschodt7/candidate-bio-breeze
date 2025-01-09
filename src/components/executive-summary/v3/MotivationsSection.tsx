@@ -16,7 +16,7 @@ export const MotivationsSection = ({ candidateId }: { candidateId: string | null
     handleSubmit,
     handleMerge,
     handleReset,
-  } = useMotivationsSection();
+  } = useMotivationsSection(candidateId);
 
   console.log("[MotivationsSection] Rendering with:", {
     hasValue: !!value,
