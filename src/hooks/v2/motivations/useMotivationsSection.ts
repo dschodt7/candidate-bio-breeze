@@ -67,6 +67,7 @@ export const useMotivationsSection = () => {
         .upsert({
           candidate_id: candidateId,
           motivations: value,
+          motivations_submitted: true
         }, {
           onConflict: 'candidate_id'
         });
@@ -159,6 +160,7 @@ export const useMotivationsSection = () => {
           motivations: null,
           resume_motivations_source: null,
           linkedin_motivations_source: null,
+          motivations_submitted: false
         })
         .eq('candidate_id', candidateId);
 
