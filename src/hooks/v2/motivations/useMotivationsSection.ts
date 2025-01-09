@@ -13,24 +13,22 @@ export const useMotivationsSection = () => {
   const [value, setValue] = useState("");
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isMerging, setIsMerging] = useState(false);
-  const [hasResume, setHasResume] = useState(false);
-  const [hasLinkedIn, setHasLinkedIn] = useState(false);
 
-  // Direct data fetching like Case Studies
+  // Enhanced logging for data fetching
   const { data: executiveSummary, isLoading } = useQuery({
-    queryKey: ['motivationsSection', candidateId],
+    queryKey: ['executiveSummary', candidateId],
     queryFn: async () => {
       if (!candidateId) return null;
-      console.log("[useMotivationsSection] Fetching motivations for candidate:", candidateId);
+      console.log("[useMotivationsSection] Fetching executive summary for candidate:", candidateId);
       
       const { data, error } = await supabase
         .from('executive_summaries')
-        .select('motivations, motivations_submitted, resume_motivations_source, linkedin_motivations_source')
+        .select('*')
         .eq('candidate_id', candidateId)
         .maybeSingle();
 
       if (error) {
-        console.error("[useMotivationsSection] Error fetching motivations:", error);
+        console.error("[useMotivationsSection] Error fetching summary:", error);
         toast({
           title: "Error",
           description: "Failed to load motivations data",
@@ -41,16 +39,13 @@ export const useMotivationsSection = () => {
 
       console.log("[useMotivationsSection] Fetched data:", {
         hasMotivations: !!data?.motivations,
-        isSubmitted: !!data?.motivations_submitted,
         hasResumeSource: !!data?.resume_motivations_source,
         hasLinkedInSource: !!data?.linkedin_motivations_source
       });
 
-      if (data) {
-        setValue(data.motivations || "");
-        setIsSubmitted(!!data.motivations_submitted);
-        setHasResume(!!data.resume_motivations_source);
-        setHasLinkedIn(!!data.linkedin_motivations_source);
+      if (data?.motivations) {
+        setValue(data.motivations);
+        setIsSubmitted(true);
       }
 
       return data;
@@ -195,9 +190,6 @@ export const useMotivationsSection = () => {
     isEditing,
     isLoading,
     isMerging,
-    hasResume,
-    hasLinkedIn,
-    hasScreening: false,
     executiveSummary,
     setValue,
     setIsEditing,
