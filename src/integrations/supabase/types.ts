@@ -59,10 +59,8 @@ export type Database = {
       executive_summaries: {
         Row: {
           business_problems: string | null
-          business_problems_submitted: boolean
           candidate_id: string
           case_studies: string | null
-          case_studies_submitted: boolean
           created_at: string
           credibility_statement: string | null
           credibility_submitted: boolean
@@ -74,9 +72,7 @@ export type Database = {
           linkedin_motivations_source: Json | null
           linkedin_results_source: Json | null
           motivations: string | null
-          motivations_submitted: boolean
           results_achievements: string | null
-          results_submitted: boolean
           resume_business_problems_source: Json | null
           resume_case_source: Json | null
           resume_credibility_source: Json | null
@@ -87,10 +83,8 @@ export type Database = {
         }
         Insert: {
           business_problems?: string | null
-          business_problems_submitted?: boolean
           candidate_id: string
           case_studies?: string | null
-          case_studies_submitted?: boolean
           created_at?: string
           credibility_statement?: string | null
           credibility_submitted?: boolean
@@ -102,9 +96,7 @@ export type Database = {
           linkedin_motivations_source?: Json | null
           linkedin_results_source?: Json | null
           motivations?: string | null
-          motivations_submitted?: boolean
           results_achievements?: string | null
-          results_submitted?: boolean
           resume_business_problems_source?: Json | null
           resume_case_source?: Json | null
           resume_credibility_source?: Json | null
@@ -115,10 +107,8 @@ export type Database = {
         }
         Update: {
           business_problems?: string | null
-          business_problems_submitted?: boolean
           candidate_id?: string
           case_studies?: string | null
-          case_studies_submitted?: boolean
           created_at?: string
           credibility_statement?: string | null
           credibility_submitted?: boolean
@@ -130,9 +120,7 @@ export type Database = {
           linkedin_motivations_source?: Json | null
           linkedin_results_source?: Json | null
           motivations?: string | null
-          motivations_submitted?: boolean
           results_achievements?: string | null
-          results_submitted?: boolean
           resume_business_problems_source?: Json | null
           resume_case_source?: Json | null
           resume_credibility_source?: Json | null

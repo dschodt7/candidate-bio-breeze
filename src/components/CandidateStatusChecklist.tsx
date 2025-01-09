@@ -35,14 +35,6 @@ export const CandidateStatusChecklist = () => {
     enabled: !!candidate?.id,
   });
 
-  // Check if all sections are submitted
-  const allSectionsSubmitted = executiveSummary && 
-    executiveSummary.credibility_submitted &&
-    executiveSummary.results_submitted &&
-    executiveSummary.case_studies_submitted &&
-    executiveSummary.business_problems_submitted &&
-    executiveSummary.motivations_submitted;
-
   const checklistItems = [
     {
       label: "LinkedIn Profile Analyzed",
@@ -61,12 +53,12 @@ export const CandidateStatusChecklist = () => {
     },
     {
       label: "Leader Discovery Complete",
-      isComplete: !!allSectionsSubmitted,
+      isComplete: !!executiveSummary?.credibility_submitted,
       icon: FileCheck,
       subItems: [
         {
           label: "Criteria Merged",
-          isComplete: !!allSectionsSubmitted,
+          isComplete: !!executiveSummary?.credibility_submitted,
         }
       ],
     },
