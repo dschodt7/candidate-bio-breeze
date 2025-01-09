@@ -1,16 +1,38 @@
-import { useState, useEffect } from "react";
-import { useToast } from "@/hooks/use-toast";
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
-import { MergeResult } from "@/types/executive-summary";
+import { useResultsState } from "./useResultsState";
+import { useResultsDatabase } from "./useResultsDatabase";
+import { useResultsMerge } from "./useResultsMerge";
 
 export const useResultsAchievementsSection = (candidateId: string | null) => {
-  const { toast } = useToast();
-  const [value, setValue] = useState("");
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isMerging, setIsMerging] = useState(false);
-  const [mergeResult, setMergeResult] = useState<MergeResult | null>(null);
+  const {
+    value,
+    setValue,
+    isSubmitted,
+    setIsSubmitted,
+    isEditing,
+    setIsEditing,
+    isLoading,
+    setIsLoading,
+    isMerging,
+    setIsMerging,
+  } = useResultsState();
+
+  const {
+    mergeResult,
+    setMergeResult,
+    handleSubmit: submitToDatabase,
+    handleReset: resetInDatabase,
+  } = useResultsDatabase(candidateId);
+
+  const { handleMerge } = useResultsMerge(
+    candidateId,
+    setValue,
+    setIsEditing,
+    setIsMerging,
+    setMergeResult
+  );
 
   // Source availability state
   const [hasResume, setHasResume] = useState(false);
@@ -31,7 +53,7 @@ export const useResultsAchievementsSection = (candidateId: string | null) => {
         const [summaryResponse, resumeResponse, linkedInResponse] = await Promise.all([
           supabase
             .from('executive_summaries')
-            .select('results_achievements')
+            .select('results_achievements, results_submitted')
             .eq('candidate_id', candidateId)
             .maybeSingle(),
           supabase
@@ -47,20 +69,12 @@ export const useResultsAchievementsSection = (candidateId: string | null) => {
             .maybeSingle()
         ]);
 
-        if (summaryResponse.error) {
-          console.error("Error fetching results summary:", summaryResponse.error);
-          toast({
-            title: "Error Loading Data",
-            description: "Failed to load results data. Please try again.",
-            variant: "destructive",
-          });
-          throw summaryResponse.error;
-        }
+        if (summaryResponse.error) throw summaryResponse.error;
         
         if (summaryResponse.data) {
           console.log("Found existing results summary:", summaryResponse.data);
           setValue(summaryResponse.data.results_achievements || "");
-          setIsSubmitted(!!summaryResponse.data.results_achievements);
+          setIsSubmitted(!!summaryResponse.data.results_submitted);
         }
 
         setHasResume(!!resumeResponse.data?.credibility_statements);
@@ -75,144 +89,16 @@ export const useResultsAchievementsSection = (candidateId: string | null) => {
 
       } catch (error) {
         console.error("Error fetching initial results state:", error);
-        toast({
-          title: "Error",
-          description: "Failed to load results section. Please refresh the page.",
-          variant: "destructive",
-        });
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchInitialState();
-  }, [candidateId, toast]);
+  }, [candidateId]);
 
-  const handleSubmit = async () => {
-    if (!candidateId) {
-      toast({
-        title: "Error",
-        description: "No candidate selected",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      console.log("Submitting results achievement to database for candidate:", candidateId);
-      const { error } = await supabase
-        .from('executive_summaries')
-        .update({
-          results_achievements: value,
-        })
-        .eq('candidate_id', candidateId);
-
-      if (error) throw error;
-
-      console.log("Results achievement submitted successfully");
-      setIsSubmitted(true);
-      setIsEditing(false);
-      toast({
-        title: "Success",
-        description: "Results and achievements saved successfully",
-      });
-    } catch (error) {
-      console.error("Error submitting results achievement:", error);
-      toast({
-        title: "Error",
-        description: "Failed to save results and achievements",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleReset = async () => {
-    if (!candidateId) {
-      toast({
-        title: "Error",
-        description: "No candidate selected",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    try {
-      console.log("Resetting results achievement in database for candidate:", candidateId);
-      const { error } = await supabase
-        .from('executive_summaries')
-        .update({
-          results_achievements: "",
-          resume_results_source: null,
-          linkedin_results_source: null
-        })
-        .eq('candidate_id', candidateId);
-
-      if (error) throw error;
-
-      console.log("Results achievement reset successfully");
-      setValue("");
-      setIsSubmitted(false);
-      setIsEditing(false);
-      setMergeResult(null);
-      toast({
-        title: "Success",
-        description: "Results and achievements have been reset",
-      });
-    } catch (error) {
-      console.error("Error resetting results achievement:", error);
-      toast({
-        title: "Error",
-        description: "Failed to reset results and achievements",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const handleMerge = async () => {
-    if (!candidateId) {
-      toast({
-        title: "Error",
-        description: "No candidate selected",
-        variant: "destructive",
-      });
-      return;
-    }
-
-    setIsMerging(true);
-    try {
-      console.log("Starting merge operation for results achievements, candidate:", candidateId);
-      const { data, error } = await supabase.functions.invoke('merge-results-achievements', {
-        body: { candidateId }
-      });
-
-      if (error) throw error;
-
-      console.log("Received merge response for results:", data);
-
-      if (data?.data?.mergedStatements) {
-        const result = data.data as MergeResult;
-        setMergeResult(result);
-        setValue(result.mergedStatements.join("\n\n"));
-        setIsEditing(true);
-        
-        toast({
-          title: "Success",
-          description: "Results and achievements merged successfully",
-        });
-      } else {
-        throw new Error("No merged statements received");
-      }
-    } catch (error) {
-      console.error("Error merging results achievements:", error);
-      toast({
-        title: "Merge Failed",
-        description: "Failed to merge results and achievements. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsMerging(false);
-    }
-  };
+  const handleSubmit = () => submitToDatabase(value, setIsSubmitted, setIsEditing);
+  const handleReset = () => resetInDatabase(setValue, setIsSubmitted, setIsEditing, setMergeResult);
 
   return {
     value,
