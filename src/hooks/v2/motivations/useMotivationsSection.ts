@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -11,15 +11,45 @@ export const useMotivationsSection = (candidateId: string | null) => {
   const [isMerging, setIsMerging] = useState(false);
   const [executiveSummary, setExecutiveSummary] = useState(null);
 
-  console.log("[useMotivationsSection] State:", {
-    hasValue: !!value,
-    isSubmitted,
-    isEditing,
-    isLoading,
-    isMerging,
-    hasExecutiveSummary: !!executiveSummary,
-    candidateId
-  });
+  useEffect(() => {
+    const fetchInitialState = async () => {
+      if (!candidateId) {
+        setIsLoading(false);
+        return;
+      }
+
+      try {
+        console.log("[useMotivationsSection] Fetching initial state for candidate:", candidateId);
+        setIsLoading(true);
+
+        const { data, error } = await supabase
+          .from('executive_summaries')
+          .select('motivations')
+          .eq('candidate_id', candidateId)
+          .maybeSingle();
+
+        if (error) throw error;
+
+        if (data) {
+          console.log("[useMotivationsSection] Received data:", data);
+          setValue(data.motivations || "");
+          setIsSubmitted(!!data.motivations);
+        }
+        
+        setIsLoading(false);
+      } catch (error) {
+        console.error("[useMotivationsSection] Error fetching initial state:", error);
+        toast({
+          title: "Error",
+          description: "Failed to load motivations data. Please try again.",
+          variant: "destructive",
+        });
+        setIsLoading(false);
+      }
+    };
+
+    fetchInitialState();
+  }, [candidateId, toast]);
 
   const handleSubmit = async () => {
     if (!candidateId) {
@@ -51,7 +81,7 @@ export const useMotivationsSection = (candidateId: string | null) => {
         description: "Motivations saved successfully",
       });
     } catch (error) {
-      console.error("[useMotivationsSection] Error saving motivations:", error);
+      console.error("[useMotivationsSection] Error submitting motivations:", error);
       toast({
         title: "Error",
         description: "Failed to save motivations",
