@@ -27,7 +27,7 @@ export const useMotivationsSection = (candidateId: string | null) => {
 
         const { data, error } = await supabase
           .from('executive_summaries')
-          .select('motivations, resume_motivations_source, linkedin_motivations_source')
+          .select('motivations, motivations_submitted, resume_motivations_source, linkedin_motivations_source')
           .eq('candidate_id', candidateId)
           .maybeSingle();
 
@@ -36,7 +36,7 @@ export const useMotivationsSection = (candidateId: string | null) => {
         if (data) {
           console.log("[useMotivationsSection] Received data:", data);
           setValue(data.motivations || "");
-          setIsSubmitted(!!data.motivations);
+          setIsSubmitted(!!data.motivations_submitted);
           setHasResume(!!data.resume_motivations_source);
           setHasLinkedIn(!!data.linkedin_motivations_source);
           setHasScreening(false); // Motivations don't have screening source
