@@ -114,6 +114,7 @@ const MainContentPanel = () => {
             {candidate && (
               <div className="grid grid-cols-[300px_1fr] gap-6">
                 <div className="space-y-6">
+                  <h3 className="text-lg font-semibold text-muted-foreground">Inputs Analyzed</h3>
                   <DisplayCards cards={displayCards} />
                 </div>
                 <div className="space-y-6">
