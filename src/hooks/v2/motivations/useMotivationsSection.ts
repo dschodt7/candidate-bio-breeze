@@ -37,10 +37,10 @@ export const useMotivationsSection = (candidateId: string | null) => {
           console.log("[useMotivationsSection] Received data:", data);
           setValue(data.motivations || "");
           setIsSubmitted(!!data.motivations_submitted);
-          // Updated source availability logic to consider both source existence and submission state
-          setHasResume(!!data.resume_motivations_source && !!data.motivations_submitted);
-          setHasLinkedIn(!!data.linkedin_motivations_source && !!data.motivations_submitted);
-          setHasScreening(false); // Motivations don't have screening source
+          // Updated: Only check for source existence
+          setHasResume(!!data.resume_motivations_source);
+          setHasLinkedIn(!!data.linkedin_motivations_source);
+          setHasScreening(false);
           setExecutiveSummary(data);
         }
         
