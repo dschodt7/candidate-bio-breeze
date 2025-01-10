@@ -28,12 +28,12 @@ export const NotesInput = () => {
           .from('candidates')
           .select('screening_notes')
           .eq('id', candidateId)
-          .single();
+          .maybeSingle();
 
         if (error) throw error;
 
-        console.log("Fetched notes:", data.screening_notes);
-        if (data.screening_notes) {
+        console.log("Fetched notes:", data?.screening_notes);
+        if (data?.screening_notes) {
           setNotes(data.screening_notes);
           setIsSubmitted(data.screening_notes.trim().length > 0);
         } else {
