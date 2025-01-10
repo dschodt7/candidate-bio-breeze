@@ -3,10 +3,9 @@ import { FileUpload } from "@/components/file-upload/FileUpload";
 import { LinkedInInput } from "@/components/LinkedInInput";
 import { NotesInput } from "@/components/NotesInput";
 import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
-import { ProgressVisualization } from "@/components/progress/ProgressVisualization";
 import { useCandidate } from "@/hooks/useCandidate";
 import DisplayCards from "@/components/ui/display-cards";
-import { User, FileText, Users, Check } from "lucide-react";
+import { User, FileText, Users } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -120,7 +119,6 @@ const MainContentPanel = () => {
                   </div>
                 </div>
                 <div className="space-y-6">
-                  <ProgressVisualization />
                   {renderActiveSection()}
                   <ExecutiveSummaryForm />
                 </div>
