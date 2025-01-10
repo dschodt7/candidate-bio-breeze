@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
 
 export const useMotivationsSection = (candidateId: string | null) => {
   const { toast } = useToast();
@@ -13,6 +14,55 @@ export const useMotivationsSection = (candidateId: string | null) => {
   const [hasResume, setHasResume] = useState(false);
   const [hasLinkedIn, setHasLinkedIn] = useState(false);
   const [hasScreening, setHasScreening] = useState(false);
+
+  // Query LinkedIn analysis
+  const { data: linkedInAnalysis } = useQuery({
+    queryKey: ['linkedInAnalysis', candidateId],
+    queryFn: async () => {
+      if (!candidateId) return null;
+      console.log("[useMotivationsSection] Fetching LinkedIn analysis for candidate:", candidateId);
+      
+      const { data, error } = await supabase
+        .from('linkedin_sections')
+        .select('analysis')
+        .eq('candidate_id', candidateId)
+        .eq('section_type', 'about')
+        .maybeSingle();
+
+      if (error) {
+        console.error("[useMotivationsSection] Error fetching LinkedIn analysis:", error);
+        return null;
+      }
+
+      console.log("[useMotivationsSection] LinkedIn analysis data:", data);
+      return data?.analysis;
+    },
+    enabled: !!candidateId,
+  });
+
+  // Query Resume analysis
+  const { data: resumeAnalysis } = useQuery({
+    queryKey: ['resumeAnalysis', candidateId],
+    queryFn: async () => {
+      if (!candidateId) return null;
+      console.log("[useMotivationsSection] Fetching Resume analysis for candidate:", candidateId);
+      
+      const { data, error } = await supabase
+        .from('resume_analyses')
+        .select('motivations')
+        .eq('candidate_id', candidateId)
+        .maybeSingle();
+
+      if (error) {
+        console.error("[useMotivationsSection] Error fetching Resume analysis:", error);
+        return null;
+      }
+
+      console.log("[useMotivationsSection] Resume analysis data:", data);
+      return data?.motivations;
+    },
+    enabled: !!candidateId,
+  });
 
   useEffect(() => {
     const fetchInitialState = async () => {
@@ -27,7 +77,7 @@ export const useMotivationsSection = (candidateId: string | null) => {
 
         const { data, error } = await supabase
           .from('executive_summaries')
-          .select('motivations, motivations_submitted, resume_motivations_source, linkedin_motivations_source')
+          .select('motivations, motivations_submitted')
           .eq('candidate_id', candidateId)
           .maybeSingle();
 
@@ -35,16 +85,8 @@ export const useMotivationsSection = (candidateId: string | null) => {
 
         if (data) {
           console.log("[useMotivationsSection] Received data:", data);
-          console.log("[useMotivationsSection] Source data:", {
-            resume: data.resume_motivations_source,
-            linkedin: data.linkedin_motivations_source
-          });
           setValue(data.motivations || "");
           setIsSubmitted(!!data.motivations_submitted);
-          // Updated: Only check for source existence
-          setHasResume(!!data.resume_motivations_source);
-          setHasLinkedIn(!!data.linkedin_motivations_source);
-          setHasScreening(false);
           setExecutiveSummary(data);
         }
         
@@ -62,6 +104,12 @@ export const useMotivationsSection = (candidateId: string | null) => {
 
     fetchInitialState();
   }, [candidateId, toast]);
+
+  // Update source indicators based on analyses
+  useEffect(() => {
+    setHasLinkedIn(!!linkedInAnalysis && Object.keys(linkedInAnalysis).length > 0);
+    setHasResume(!!resumeAnalysis);
+  }, [linkedInAnalysis, resumeAnalysis]);
 
   const handleSubmit = async () => {
     if (!candidateId) {
