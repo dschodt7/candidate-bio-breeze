@@ -84,7 +84,7 @@ const MainContentPanel = () => {
             {candidate && (
               <div className="grid gap-6">
                 <CandidateStatusChecklist />
-                <div className="py-8">
+                <div className="py-4 mb-12">
                   <DisplayCards cards={displayCards} />
                 </div>
                 {renderActiveSection()}
