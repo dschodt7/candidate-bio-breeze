@@ -95,11 +95,11 @@ export function AIInputWithFile({
             placeholder={placeholder}
             className={cn(
               "max-w-xl bg-black/5 dark:bg-white/5 w-full rounded-2xl sm:rounded-3xl pl-10 sm:pl-12 pr-12 sm:pr-16",
-              "placeholder:text-black/70 dark:placeholder:text-white/70",
+              "placeholder:text-black/70 dark:placeholder:text-white/70 placeholder:text-xs",
               "border-none ring-black/30 dark:ring-white/30",
               "text-black dark:text-white text-wrap py-3 sm:py-4",
               "text-sm sm:text-base",
-              "max-h-[200px] overflow-y-auto resize-none leading-[1.2]",
+              "max-h-[200px] overflow-hidden resize-none leading-[1.2] whitespace-nowrap",
               `min-h-[${minHeight}px]`
             )}
             ref={textareaRef}
