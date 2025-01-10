@@ -35,6 +35,10 @@ export const useMotivationsSection = (candidateId: string | null) => {
 
         if (data) {
           console.log("[useMotivationsSection] Received data:", data);
+          console.log("[useMotivationsSection] Source data:", {
+            resume: data.resume_motivations_source,
+            linkedin: data.linkedin_motivations_source
+          });
           setValue(data.motivations || "");
           setIsSubmitted(!!data.motivations_submitted);
           // Updated: Only check for source existence
