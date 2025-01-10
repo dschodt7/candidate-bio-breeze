@@ -10,6 +10,9 @@ export const useMotivationsSection = (candidateId: string | null) => {
   const [isLoading, setIsLoading] = useState(true);
   const [isMerging, setIsMerging] = useState(false);
   const [executiveSummary, setExecutiveSummary] = useState(null);
+  const [hasResume, setHasResume] = useState(false);
+  const [hasLinkedIn, setHasLinkedIn] = useState(false);
+  const [hasScreening, setHasScreening] = useState(false);
 
   useEffect(() => {
     const fetchInitialState = async () => {
@@ -24,7 +27,7 @@ export const useMotivationsSection = (candidateId: string | null) => {
 
         const { data, error } = await supabase
           .from('executive_summaries')
-          .select('motivations')
+          .select('motivations, resume_motivations_source, linkedin_motivations_source')
           .eq('candidate_id', candidateId)
           .maybeSingle();
 
@@ -34,9 +37,12 @@ export const useMotivationsSection = (candidateId: string | null) => {
           console.log("[useMotivationsSection] Received data:", data);
           setValue(data.motivations || "");
           setIsSubmitted(!!data.motivations);
+          setHasResume(!!data.resume_motivations_source);
+          setHasLinkedIn(!!data.linkedin_motivations_source);
+          setHasScreening(false); // Motivations don't have screening source
+          setExecutiveSummary(data);
         }
         
-        setIsLoading(false);
       } catch (error) {
         console.error("[useMotivationsSection] Error fetching initial state:", error);
         toast({
@@ -44,6 +50,7 @@ export const useMotivationsSection = (candidateId: string | null) => {
           description: "Failed to load motivations data. Please try again.",
           variant: "destructive",
         });
+      } finally {
         setIsLoading(false);
       }
     };
@@ -118,6 +125,8 @@ export const useMotivationsSection = (candidateId: string | null) => {
       setValue("");
       setIsSubmitted(false);
       setIsEditing(false);
+      setHasResume(false);
+      setHasLinkedIn(false);
       toast({
         title: "Success",
         description: "Motivations have been reset",
@@ -185,6 +194,9 @@ export const useMotivationsSection = (candidateId: string | null) => {
     isLoading,
     isMerging,
     executiveSummary,
+    hasResume,
+    hasLinkedIn,
+    hasScreening,
     handleSubmit,
     handleReset,
     handleMerge,
