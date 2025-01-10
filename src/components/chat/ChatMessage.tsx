@@ -1,4 +1,6 @@
 import { cn } from "@/lib/utils";
+import { useAnimatedText } from "@/components/ui/animated-text";
+import { Bot, User } from "lucide-react";
 
 interface ChatMessageProps {
   role: "assistant" | "user";
@@ -6,17 +8,26 @@ interface ChatMessageProps {
 }
 
 export const ChatMessage = ({ role, content }: ChatMessageProps) => {
+  const animatedContent = role === "assistant" ? useAnimatedText(content, "") : content;
+
   return (
     <div
       className={cn(
-        "flex w-full items-start gap-2 rounded-lg p-4",
-        role === "assistant" ? "bg-secondary" : "bg-muted"
+        "flex gap-3 p-4 rounded-lg",
+        role === "assistant" ? "bg-muted/50" : "bg-background"
       )}
     >
+      <div className="w-6 h-6">
+        {role === "assistant" ? (
+          <Bot className="w-6 h-6" />
+        ) : (
+          <User className="w-6 h-6" />
+        )}
+      </div>
       <div className="flex-1 space-y-2">
-        <div className="prose-sm prose-slate w-full break-words whitespace-pre-line">
-          {content}
-        </div>
+        <p className="text-sm whitespace-pre-wrap">
+          {animatedContent}
+        </p>
       </div>
     </div>
   );
