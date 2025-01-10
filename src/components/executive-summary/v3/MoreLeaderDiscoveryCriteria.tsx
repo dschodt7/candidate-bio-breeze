@@ -4,6 +4,17 @@ import { BaseSectionWrapper } from "../base/BaseSectionWrapper";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 
+interface LinkedInAnalysis {
+  interests: string;
+  activities: string;
+  foundationalUnderstanding: string;
+  credibilityStatements: string;
+  caseStudies: string;
+  jobAssessment: string;
+  motivations: string;
+  businessProblems: string;
+}
+
 interface MoreLeaderDiscoveryCriteriaProps {
   candidateId: string | null;
 }
@@ -58,6 +69,7 @@ export const MoreLeaderDiscoveryCriteria = ({ candidateId }: MoreLeaderDiscovery
 
   const hasLinkedIn = !!linkedInData;
   const hasScreening = !!screeningData;
+  const analysis = linkedInData as LinkedInAnalysis;
 
   return (
     <BaseSectionWrapper
@@ -76,15 +88,15 @@ export const MoreLeaderDiscoveryCriteria = ({ candidateId }: MoreLeaderDiscovery
             <div className="space-y-4">
               <div>
                 <Label className="text-xs">Interests</Label>
-                <p className="text-sm mt-1">{linkedInData.interests || "No data available"}</p>
+                <p className="text-sm mt-1">{analysis.interests || "No data available"}</p>
               </div>
               <div>
                 <Label className="text-xs">Activities and Hobbies</Label>
-                <p className="text-sm mt-1">{linkedInData.activities || "No data available"}</p>
+                <p className="text-sm mt-1">{analysis.activities || "No data available"}</p>
               </div>
               <div>
                 <Label className="text-xs">Foundational Understanding</Label>
-                <p className="text-sm mt-1">{linkedInData.foundationalUnderstanding || "No data available"}</p>
+                <p className="text-sm mt-1">{analysis.foundationalUnderstanding || "No data available"}</p>
               </div>
             </div>
           </Card>
