@@ -69,7 +69,7 @@ export const MoreLeaderDiscoveryCriteria = ({ candidateId }: MoreLeaderDiscovery
 
   const hasLinkedIn = !!linkedInData;
   const hasScreening = !!screeningData;
-  const analysis = linkedInData as LinkedInAnalysis;
+  const analysis = (linkedInData as unknown) as LinkedInAnalysis;
 
   return (
     <BaseSectionWrapper
