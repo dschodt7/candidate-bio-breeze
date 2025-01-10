@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ProfileMenu } from "./header/ProfileMenu";
 import { ResetPasswordDialog } from "./header/ResetPasswordDialog";
+import { AuroraBackground } from "./ui/aurora-background";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -103,23 +104,25 @@ const Header = () => {
   };
 
   return (
-    <header className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-gray-200 backdrop-blur-sm shadow-md px-6 py-4 flex justify-between items-center">
-      <h1 className="text-2xl font-bold text-gray-800">Executive Career Catalyst</h1>
-      <ProfileMenu
-        firstName={firstName}
-        onSignOut={handleSignOut}
-        onResetPassword={() => setIsResetDialogOpen(true)}
-      />
-      <ResetPasswordDialog
-        isOpen={isResetDialogOpen}
-        onOpenChange={setIsResetDialogOpen}
-        newPassword={newPassword}
-        confirmPassword={confirmPassword}
-        onNewPasswordChange={setNewPassword}
-        onConfirmPasswordChange={setConfirmPassword}
-        onSubmit={handleResetPassword}
-      />
-    </header>
+    <AuroraBackground className="h-auto">
+      <header className="w-full px-6 py-4 flex justify-between items-center">
+        <h1 className="text-2xl font-bold text-gray-800">Executive Career Catalyst</h1>
+        <ProfileMenu
+          firstName={firstName}
+          onSignOut={handleSignOut}
+          onResetPassword={() => setIsResetDialogOpen(true)}
+        />
+        <ResetPasswordDialog
+          isOpen={isResetDialogOpen}
+          onOpenChange={setIsResetDialogOpen}
+          newPassword={newPassword}
+          confirmPassword={confirmPassword}
+          onNewPasswordChange={setNewPassword}
+          onConfirmPasswordChange={setConfirmPassword}
+          onSubmit={handleResetPassword}
+        />
+      </header>
+    </AuroraBackground>
   );
 };
 
