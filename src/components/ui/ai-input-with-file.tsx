@@ -42,7 +42,7 @@ interface AIInputWithFileProps {
 
 export function AIInputWithFile({
   id = "ai-input-with-file",
-  placeholder = "Ask me anything about executive recruiting...",
+  placeholder = "Ready to help...!",
   minHeight = 52,
   maxHeight = 200,
   accept = "application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document",
