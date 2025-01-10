@@ -11,6 +11,9 @@ export const MotivationsSection = ({ candidateId }: { candidateId: string | null
     isLoading,
     isMerging,
     executiveSummary,
+    hasResume,
+    hasLinkedIn,
+    hasScreening,
     setValue,
     setIsEditing,
     handleSubmit,
@@ -28,9 +31,9 @@ export const MotivationsSection = ({ candidateId }: { candidateId: string | null
   });
 
   const sourceAvailability = {
-    hasResume: !!executiveSummary?.resume_motivations_source,
-    hasLinkedIn: !!executiveSummary?.linkedin_motivations_source,
-    hasScreening: false,
+    hasResume,
+    hasLinkedIn,
+    hasScreening,
   };
 
   return (
