@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Check } from "lucide-react";
 
 interface DisplayCardProps {
   className?: string;
@@ -12,6 +12,7 @@ interface DisplayCardProps {
   iconClassName?: string;
   titleClassName?: string;
   onClick?: () => void;
+  isComplete?: boolean;
 }
 
 function DisplayCard({
@@ -23,6 +24,7 @@ function DisplayCard({
   iconClassName = "text-blue-500",
   titleClassName = "text-blue-500",
   onClick,
+  isComplete = false,
 }: DisplayCardProps) {
   return (
     <div
@@ -32,6 +34,11 @@ function DisplayCard({
       )}
       onClick={onClick}
     >
+      {isComplete && (
+        <div className="absolute top-2 right-2 z-10">
+          <Check className="h-5 w-5 text-green-500" />
+        </div>
+      )}
       <div>
         <span className="relative inline-block rounded-full bg-blue-800 p-1">
           {icon}

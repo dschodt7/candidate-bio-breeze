@@ -6,14 +6,41 @@ import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
 import { ProgressVisualization } from "@/components/progress/ProgressVisualization";
 import { useCandidate } from "@/hooks/useCandidate";
 import DisplayCards from "@/components/ui/display-cards";
-import { User, FileText, Users } from "lucide-react";
+import { User, FileText, Users, Check } from "lucide-react";
 import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import { supabase } from "@/integrations/supabase/client";
 
 type ActiveSection = "linkedin" | "resume" | "screening" | null;
 
 const MainContentPanel = () => {
   const { candidate, getCandidateName } = useCandidate();
   const [activeSection, setActiveSection] = useState<ActiveSection>(null);
+
+  // Query to check if LinkedIn analysis exists
+  const { data: linkedInAnalysis } = useQuery({
+    queryKey: ['linkedInAnalysis', candidate?.id],
+    queryFn: async () => {
+      if (!candidate?.id) return null;
+      console.log("Fetching LinkedIn analysis for candidate:", candidate.id);
+      
+      const { data, error } = await supabase
+        .from('linkedin_sections')
+        .select('analysis')
+        .eq('candidate_id', candidate.id)
+        .eq('section_type', 'about')
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error fetching LinkedIn analysis:", error);
+        return null;
+      }
+
+      console.log("LinkedIn analysis data:", data);
+      return data?.analysis;
+    },
+    enabled: !!candidate?.id,
+  });
 
   const handleCardClick = (section: ActiveSection) => {
     setActiveSection(section === activeSection ? null : section);
@@ -29,6 +56,7 @@ const MainContentPanel = () => {
       titleClassName: "text-blue-500",
       className: `[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:left-0 before:top-0 cursor-pointer ${activeSection === 'linkedin' ? 'ring-2 ring-blue-500 grayscale-0' : ''}`,
       onClick: () => handleCardClick('linkedin'),
+      isComplete: !!linkedInAnalysis && Object.keys(linkedInAnalysis).length > 0,
     },
     {
       icon: <FileText className="size-4 text-indigo-300" />,
@@ -39,6 +67,7 @@ const MainContentPanel = () => {
       titleClassName: "text-indigo-500",
       className: `[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/50 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:left-0 before:top-0 cursor-pointer ${activeSection === 'resume' ? 'ring-2 ring-indigo-500 grayscale-0' : ''}`,
       onClick: () => handleCardClick('resume'),
+      isComplete: !!candidate?.resume_path,
     },
     {
       icon: <Users className="size-4 text-green-300" />,
@@ -49,6 +78,7 @@ const MainContentPanel = () => {
       titleClassName: "text-green-500",
       className: `[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10 cursor-pointer ${activeSection === 'screening' ? 'ring-2 ring-green-500' : ''}`,
       onClick: () => handleCardClick('screening'),
+      isComplete: !!candidate?.screening_notes,
     },
   ];
 
@@ -82,13 +112,15 @@ const MainContentPanel = () => {
             </div>
 
             {candidate && (
-              <div className="grid gap-6">
-                <ProgressVisualization />
-                <div className="py-4 mb-12">
+              <div className="grid grid-cols-[300px_1fr] gap-6">
+                <div className="space-y-6">
                   <DisplayCards cards={displayCards} />
                 </div>
-                {renderActiveSection()}
-                <ExecutiveSummaryForm />
+                <div className="space-y-6">
+                  <ProgressVisualization />
+                  {renderActiveSection()}
+                  <ExecutiveSummaryForm />
+                </div>
               </div>
             )}
           </div>
