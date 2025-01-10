@@ -8,7 +8,7 @@ const defaultCards = [
     icon: <User className="size-4 text-blue-300" />,
     title: "LinkedIn Profile",
     description: "Connect your profile",
-    date: "Profile status",
+    date: "Step 1",
     iconClassName: "text-blue-500",
     titleClassName: "text-blue-500",
     className:
@@ -18,7 +18,7 @@ const defaultCards = [
     icon: <FileText className="size-4 text-indigo-300" />,
     title: "Resume",
     description: "Upload your resume",
-    date: "Document status",
+    date: "Step 2",
     iconClassName: "text-indigo-500",
     titleClassName: "text-indigo-500",
     className:
@@ -27,8 +27,8 @@ const defaultCards = [
   {
     icon: <Users className="size-4 text-green-300" />,
     title: "Leader Discovery Screening",
-    description: "Start screening process",
-    date: "Screening status",
+    description: "Complete screening",
+    date: "Step 3",
     iconClassName: "text-green-500",
     titleClassName: "text-green-500",
     className:
