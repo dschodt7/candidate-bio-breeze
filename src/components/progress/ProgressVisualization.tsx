@@ -1,5 +1,6 @@
 import { Check, Circle, ArrowRight } from "lucide-react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useCandidate } from "@/hooks/useCandidate";
 import { useExecutiveSummary } from "@/hooks/useExecutiveSummary";
 import { useQuery } from "@tanstack/react-query";
@@ -51,14 +52,14 @@ export const ProgressVisualization = () => {
   return (
     <Card className="p-6 relative overflow-hidden">
       <div className="grid grid-cols-3 gap-8">
-        {/* Input Sources */}
+        {/* Inputs Analyzed */}
         <div className="space-y-4">
-          <h3 className="text-lg font-semibold mb-4">Input Sources</h3>
+          <h3 className="text-lg font-semibold mb-4">Inputs Analyzed</h3>
           <div className="space-y-3">
             <div className="flex items-center space-x-3">
               {getStatusIcon(!!linkedInAnalysis)}
               <span className={!!linkedInAnalysis ? "text-gray-900" : "text-gray-500"}>
-                LinkedIn Profile
+                LinkedIn
               </span>
             </div>
             <div className="flex items-center space-x-3">
@@ -70,53 +71,44 @@ export const ProgressVisualization = () => {
             <div className="flex items-center space-x-3">
               {getStatusIcon(!!candidate?.screening_notes)}
               <span className={!!candidate?.screening_notes ? "text-gray-900" : "text-gray-500"}>
-                Screening Notes
+                Screening
               </span>
             </div>
           </div>
         </div>
 
-        {/* Analysis Hub */}
+        {/* Exec Components */}
         <div className="space-y-4 relative">
-          <h3 className="text-lg font-semibold mb-4">Analysis Hub</h3>
+          <h3 className="text-lg font-semibold mb-4">Exec Components</h3>
           <div className="absolute left-0 top-1/2 -translate-x-full">
             <ArrowRight className="h-6 w-6 text-gray-400" />
           </div>
           <div className="space-y-3">
             <div className="flex items-center space-x-3">
-              {getStatusIcon(!!executiveSummary?.credibility_statement)}
-              <span className={!!executiveSummary?.credibility_statement ? "text-gray-900" : "text-gray-500"}>
-                Credibility Analysis
-              </span>
+              <span className="text-gray-900">5/5 AI Compile Complete</span>
             </div>
             <div className="flex items-center space-x-3">
-              {getStatusIcon(!!executiveSummary?.results_achievements)}
-              <span className={!!executiveSummary?.results_achievements ? "text-gray-900" : "text-gray-500"}>
-                Results Analysis
-              </span>
-            </div>
-            <div className="flex items-center space-x-3">
-              {getStatusIcon(!!executiveSummary?.case_studies)}
-              <span className={!!executiveSummary?.case_studies ? "text-gray-900" : "text-gray-500"}>
-                Case Studies Analysis
-              </span>
+              <span className="text-gray-900">8/8 More Criteria</span>
             </div>
           </div>
         </div>
 
-        {/* Outputs */}
+        {/* AI Agents */}
         <div className="space-y-4 relative">
-          <h3 className="text-lg font-semibold mb-4">Outputs</h3>
+          <h3 className="text-lg font-semibold mb-4">AI Agents</h3>
           <div className="absolute left-0 top-1/2 -translate-x-full">
             <ArrowRight className="h-6 w-6 text-gray-400" />
           </div>
           <div className="space-y-3">
-            <div className="flex items-center space-x-3">
-              {getStatusIcon(allSectionsSubmitted)}
-              <span className={allSectionsSubmitted ? "text-gray-900" : "text-gray-500"}>
-                Executive Summary
-              </span>
-            </div>
+            <Button variant="outline" className="w-full justify-start">
+              Executive Summary
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
+              Ideal Company Profile
+            </Button>
+            <Button variant="outline" className="w-full justify-start">
+              Gap Analysis
+            </Button>
           </div>
         </div>
       </div>
