@@ -3,7 +3,7 @@ import { FileUpload } from "@/components/file-upload/FileUpload";
 import { LinkedInInput } from "@/components/LinkedInInput";
 import { NotesInput } from "@/components/NotesInput";
 import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
-import { CandidateStatusChecklist } from "@/components/CandidateStatusChecklist";
+import { ProgressVisualization } from "@/components/progress/ProgressVisualization";
 import { useCandidate } from "@/hooks/useCandidate";
 import DisplayCards from "@/components/ui/display-cards";
 import { User, FileText, Users } from "lucide-react";
@@ -83,7 +83,7 @@ const MainContentPanel = () => {
 
             {candidate && (
               <div className="grid gap-6">
-                <CandidateStatusChecklist />
+                <ProgressVisualization />
                 <div className="py-4 mb-12">
                   <DisplayCards cards={displayCards} />
                 </div>
