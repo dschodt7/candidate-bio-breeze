@@ -112,13 +112,13 @@ const MainContentPanel = () => {
 
             {candidate && (
               <div className="grid grid-cols-[300px_1fr] gap-6">
-                <div className="space-y-8">
+                <div className="space-y-8 relative z-10">
                   <h3 className="text-lg font-semibold text-muted-foreground">Inputs Analyzed</h3>
                   <div className="mt-4">
                     <DisplayCards cards={displayCards} />
                   </div>
                 </div>
-                <div className="space-y-6">
+                <div className="space-y-6 relative z-0">
                   {renderActiveSection()}
                   <ExecutiveSummaryForm />
                 </div>
