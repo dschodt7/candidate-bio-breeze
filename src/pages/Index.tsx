@@ -11,7 +11,7 @@ const Index = () => {
       <main className="flex-1 overflow-hidden">
         <ResizablePanelGroup 
           direction="horizontal" 
-          className="h-full rounded-lg border"
+          className="h-full"
         >
           <CandidatesPanel />
           <MainContentPanel />

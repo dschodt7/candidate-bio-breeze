@@ -99,12 +99,12 @@ const MainContentPanel = () => {
   return (
     <>
       <ResizablePanel defaultSize={55} className="p-0">
-        <div className="h-full p-6 overflow-y-auto">
-          <div className="max-w-6xl mx-auto space-y-6">
+        <div className="h-full overflow-y-auto">
+          <div className="max-w-6xl mx-auto">
             {/* Hero Section with Glow */}
-            <div className="relative py-8">
+            <div className="relative">
               {/* Extended Hero Section Container */}
-              <div className="relative px-8 py-12 rounded-xl bg-background/80 backdrop-blur-sm">
+              <div className="relative px-8 py-12 bg-background/80 backdrop-blur-sm">
                 {/* Glow Effect */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                   <div className="absolute left-1/2 top-1/2 h-[500px] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,_hsla(210,100%,50%,0.15)_10%,_transparent_70%)] animate-aurora" />
@@ -175,7 +175,7 @@ const MainContentPanel = () => {
             </div>
 
             {/* Active Section Content */}
-            <div className="space-y-6">
+            <div className="space-y-6 p-6">
               {renderActiveSection()}
               <ExecutiveSummaryForm />
             </div>
