@@ -70,7 +70,7 @@ const MainContentPanel = () => {
     },
     {
       icon: <Users className="size-4 text-green-300" />,
-      title: "Leader Discovery Screening",
+      title: "Discovery Screening",
       description: "Complete screening",
       date: "Step 3",
       iconClassName: "text-green-500",
