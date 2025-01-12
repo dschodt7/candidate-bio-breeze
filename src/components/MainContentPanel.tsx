@@ -101,8 +101,25 @@ const MainContentPanel = () => {
       <ResizablePanel defaultSize={55} className="p-0">
         <div className="h-full p-6 overflow-y-auto">
           <div className="max-w-6xl mx-auto space-y-6">
+            {/* Hero Section with Glow */}
+            <div className="relative py-8">
+              {/* Glow Effect */}
+              <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                <div className="absolute left-1/2 top-1/2 h-[256px] w-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,_hsla(210,100%,50%,0.15)_10%,_transparent_70%)]" />
+              </div>
+              
+              {/* Title */}
+              <div className="relative z-10">
+                <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-b from-foreground via-foreground/90 to-muted-foreground bg-clip-text text-transparent">
+                  Executive Pipeline
+                </h2>
+              </div>
+              
+              {/* Subtle Border */}
+              <div className="absolute bottom-0 left-1/2 w-[80%] h-px -translate-x-1/2 bg-gradient-to-r from-transparent via-border to-transparent" />
+            </div>
+
             <div className="space-y-4">
-              <h2 className="text-2xl font-bold tracking-tight">{getCandidateName()}</h2>
               {!candidate && (
                 <p className="text-lg text-muted-foreground animate-fadeIn">
                   Select a candidate from the left panel to view and edit their information
@@ -110,6 +127,7 @@ const MainContentPanel = () => {
               )}
             </div>
 
+            {/* Rest of the existing content */}
             {candidate && (
               <div className="grid grid-cols-[300px_1fr_300px] gap-8">
                 {/* Left Column - Display Cards */}
