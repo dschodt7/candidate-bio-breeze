@@ -103,75 +103,76 @@ const MainContentPanel = () => {
           <div className="max-w-6xl mx-auto space-y-6">
             {/* Hero Section with Glow */}
             <div className="relative py-8">
-              {/* Glow Effect */}
-              <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute left-1/2 top-1/2 h-[256px] w-[60%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,_hsla(210,100%,50%,0.15)_10%,_transparent_70%)]" />
-              </div>
-              
-              {/* Title */}
-              <div className="relative z-10">
-                <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-b from-foreground via-foreground/90 to-muted-foreground bg-clip-text text-transparent">
-                  Executive Pipeline
-                </h2>
-              </div>
-              
-              {/* Subtle Border */}
-              <div className="absolute bottom-0 left-1/2 w-[80%] h-px -translate-x-1/2 bg-gradient-to-r from-transparent via-border to-transparent" />
-            </div>
+              {/* Extended Hero Section Container */}
+              <div className="relative px-8 py-12 rounded-xl bg-background/80 backdrop-blur-sm">
+                {/* Glow Effect */}
+                <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                  <div className="absolute left-1/2 top-1/2 h-[500px] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,_hsla(210,100%,50%,0.15)_10%,_transparent_70%)] animate-aurora" />
+                </div>
+                
+                {/* Title */}
+                <div className="relative z-10 mb-8">
+                  <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-b from-foreground via-foreground/90 to-muted-foreground bg-clip-text text-transparent">
+                    Executive Pipeline
+                  </h2>
+                </div>
 
-            <div className="space-y-4">
+                {/* Content Grid */}
+                {candidate && (
+                  <div className="grid grid-cols-[300px_1fr_300px] gap-8 relative z-10">
+                    {/* Left Column - Display Cards */}
+                    <div className="space-y-8">
+                      <h3 className="text-lg font-semibold text-muted-foreground">Inputs Analyzed</h3>
+                      <div className="mt-4 relative">
+                        <DisplayCards cards={displayCards} />
+                        <div className="absolute -right-8 top-1/2 -translate-y-1/2">
+                          <ArrowRight className="w-6 h-6 text-muted-foreground/30" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Center Column - Exec Components */}
+                    <div className="space-y-6 relative">
+                      <div className="border rounded-lg p-6 space-y-4 bg-background/80 backdrop-blur-sm">
+                        <h3 className="text-lg font-semibold">Exec Components</h3>
+                        <div className="space-y-2 text-sm text-muted-foreground">
+                          <p>5/5 AI Compile Complete</p>
+                          <p>8/8 More Criteria</p>
+                        </div>
+                        <div className="absolute -right-8 top-1/2 -translate-y-1/2">
+                          <ArrowRight className="w-6 h-6 text-muted-foreground/30" />
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Right Column - AI Agents */}
+                    <div className="space-y-6">
+                      <h3 className="text-lg font-semibold">AI Agents</h3>
+                      <div className="space-y-3">
+                        <button className="w-full px-4 py-2 text-sm border rounded-lg hover:bg-accent">
+                          Executive Summary
+                        </button>
+                        <button className="w-full px-4 py-2 text-sm border rounded-lg hover:bg-accent">
+                          Ideal Company Profile
+                        </button>
+                        <button className="w-full px-4 py-2 text-sm border rounded-lg hover:bg-accent">
+                          Gap Analysis
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Subtle Border */}
+                <div className="absolute bottom-0 left-1/2 w-[90%] h-px -translate-x-1/2 bg-gradient-to-r from-transparent via-border to-transparent opacity-50" />
+              </div>
+
               {!candidate && (
                 <p className="text-lg text-muted-foreground animate-fadeIn">
                   Select a candidate from the left panel to view and edit their information
                 </p>
               )}
             </div>
-
-            {/* Rest of the existing content */}
-            {candidate && (
-              <div className="grid grid-cols-[300px_1fr_300px] gap-8">
-                {/* Left Column - Display Cards */}
-                <div className="space-y-8">
-                  <h3 className="text-lg font-semibold text-muted-foreground">Inputs Analyzed</h3>
-                  <div className="mt-4 relative">
-                    <DisplayCards cards={displayCards} />
-                    <div className="absolute -right-8 top-1/2 -translate-y-1/2">
-                      <ArrowRight className="w-6 h-6 text-muted-foreground/30" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Center Column - Exec Components */}
-                <div className="space-y-6 relative">
-                  <div className="border rounded-lg p-6 space-y-4">
-                    <h3 className="text-lg font-semibold">Exec Components</h3>
-                    <div className="space-y-2 text-sm text-muted-foreground">
-                      <p>5/5 AI Compile Complete</p>
-                      <p>8/8 More Criteria</p>
-                    </div>
-                    <div className="absolute -right-8 top-1/2 -translate-y-1/2">
-                      <ArrowRight className="w-6 h-6 text-muted-foreground/30" />
-                    </div>
-                  </div>
-                </div>
-
-                {/* Right Column - AI Agents */}
-                <div className="space-y-6">
-                  <h3 className="text-lg font-semibold">AI Agents</h3>
-                  <div className="space-y-3">
-                    <button className="w-full px-4 py-2 text-sm border rounded-lg hover:bg-accent">
-                      Executive Summary
-                    </button>
-                    <button className="w-full px-4 py-2 text-sm border rounded-lg hover:bg-accent">
-                      Ideal Company Profile
-                    </button>
-                    <button className="w-full px-4 py-2 text-sm border rounded-lg hover:bg-accent">
-                      Gap Analysis
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
 
             {/* Active Section Content */}
             <div className="space-y-6">
