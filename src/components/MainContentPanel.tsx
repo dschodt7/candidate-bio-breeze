@@ -5,7 +5,7 @@ import { NotesInput } from "@/components/NotesInput";
 import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
 import { useCandidate } from "@/hooks/useCandidate";
 import DisplayCards from "@/components/ui/display-cards";
-import { User, FileText, Users } from "lucide-react";
+import { User, FileText, Users, ArrowRight } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -100,7 +100,7 @@ const MainContentPanel = () => {
     <>
       <ResizablePanel defaultSize={55} className="p-0">
         <div className="h-full p-6 overflow-y-auto">
-          <div className="max-w-3xl mx-auto space-y-6">
+          <div className="max-w-6xl mx-auto space-y-6">
             <div className="space-y-4">
               <h2 className="text-2xl font-bold tracking-tight">{getCandidateName()}</h2>
               {!candidate && (
@@ -111,19 +111,55 @@ const MainContentPanel = () => {
             </div>
 
             {candidate && (
-              <div className="grid grid-cols-[300px_1fr] gap-6">
-                <div className="space-y-8 relative z-10">
+              <div className="grid grid-cols-[300px_1fr_300px] gap-8">
+                {/* Left Column - Display Cards */}
+                <div className="space-y-8">
                   <h3 className="text-lg font-semibold text-muted-foreground">Inputs Analyzed</h3>
-                  <div className="mt-4">
+                  <div className="mt-4 relative">
                     <DisplayCards cards={displayCards} />
+                    <div className="absolute -right-8 top-1/2 -translate-y-1/2">
+                      <ArrowRight className="w-6 h-6 text-muted-foreground/30" />
+                    </div>
                   </div>
                 </div>
-                <div className="space-y-6 relative z-0">
-                  {renderActiveSection()}
-                  <ExecutiveSummaryForm />
+
+                {/* Center Column - Exec Components */}
+                <div className="space-y-6 relative">
+                  <div className="border rounded-lg p-6 space-y-4">
+                    <h3 className="text-lg font-semibold">Exec Components</h3>
+                    <div className="space-y-2 text-sm text-muted-foreground">
+                      <p>5/5 AI Compile Complete</p>
+                      <p>8/8 More Criteria</p>
+                    </div>
+                    <div className="absolute -right-8 top-1/2 -translate-y-1/2">
+                      <ArrowRight className="w-6 h-6 text-muted-foreground/30" />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column - AI Agents */}
+                <div className="space-y-6">
+                  <h3 className="text-lg font-semibold">AI Agents</h3>
+                  <div className="space-y-3">
+                    <button className="w-full px-4 py-2 text-sm border rounded-lg hover:bg-accent">
+                      Executive Summary
+                    </button>
+                    <button className="w-full px-4 py-2 text-sm border rounded-lg hover:bg-accent">
+                      Ideal Company Profile
+                    </button>
+                    <button className="w-full px-4 py-2 text-sm border rounded-lg hover:bg-accent">
+                      Gap Analysis
+                    </button>
+                  </div>
                 </div>
               </div>
             )}
+
+            {/* Active Section Content */}
+            <div className="space-y-6">
+              {renderActiveSection()}
+              <ExecutiveSummaryForm />
+            </div>
           </div>
         </div>
       </ResizablePanel>
