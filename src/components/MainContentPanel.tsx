@@ -139,7 +139,7 @@ const MainContentPanel = () => {
                         date: "8/8 More Criteria",
                         iconClassName: "text-indigo-500",
                         titleClassName: "text-indigo-500",
-                        className: `[grid-area:stack] translate-x-4 translate-y-6 hover:-translate-y-2 cursor-pointer transition-transform duration-700 ${activeSection === null ? 'ring-2 ring-indigo-500' : ''}`,
+                        className: `[grid-area:stack] translate-x-16 translate-y-6 hover:-translate-y-2 cursor-pointer transition-transform duration-700 ${activeSection === null ? 'ring-2 ring-indigo-500' : ''}`,
                         onClick: () => handleCardClick(null),
                       }]} />
                     </div>
