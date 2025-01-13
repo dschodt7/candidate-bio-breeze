@@ -35,7 +35,7 @@ function DisplayCard({
       onClick={onClick}
     >
       {isComplete && (
-        <div className="absolute top-2 right-2 z-10">
+        <div className="absolute top-2 left-2 z-10">
           <Check className="h-5 w-5 text-green-500" />
         </div>
       )}
