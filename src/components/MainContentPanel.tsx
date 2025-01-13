@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ButtonDemo } from "@/components/ui/ai-button";
+import { ExecutivePipelineHero } from "@/components/ExecutivePipelineHero";
 
 type ActiveSection = "linkedin" | "resume" | "screening" | null;
 
@@ -102,28 +103,14 @@ const MainContentPanel = () => {
       <ResizablePanel defaultSize={55} className="p-0">
         <div className="h-full overflow-y-auto">
           <div className="max-w-6xl mx-auto">
-            {/* Hero Section with Glow */}
+            {/* Hero Section */}
             <div className="relative">
-              {/* Extended Hero Section Container */}
-              <div className="relative h-[400px] px-8 bg-background/80 backdrop-blur-sm">
-                {/* Glow Effect */}
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <div className="absolute left-1/2 top-1/2 h-[500px] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,_hsla(210,100%,50%,0.15)_10%,_transparent_70%)] animate-aurora" />
-                </div>
-                
-                {/* Title */}
-                <div className="relative z-10 mb-8 pt-12 text-center">
-                  <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-b from-foreground via-foreground/90 to-muted-foreground bg-clip-text text-transparent">
-                    Executive Pipeline
-                  </h2>
-                </div>
-
-                {/* Content Grid */}
-                {candidate && (
-                  <div className="grid grid-cols-[300px_1fr_300px] gap-8 relative z-10">
+              {candidate && (
+                <>
+                  <ExecutivePipelineHero />
+                  <div className="grid grid-cols-[300px_1fr_300px] gap-8 relative z-10 px-8">
                     {/* Left Column - Display Cards */}
                     <div className="space-y-8">
-                      <h3 className="text-lg font-semibold text-center">AI Input Analyzer</h3>
                       <div className="mt-4 relative">
                         <DisplayCards cards={displayCards} />
                       </div>
@@ -131,7 +118,6 @@ const MainContentPanel = () => {
 
                     {/* Center Column - Exec Components */}
                     <div className="space-y-6 relative">
-                      <h3 className="text-lg font-semibold text-center">AI Compiler</h3>
                       <DisplayCards cards={[{
                         icon: <Package className="size-4 text-purple-300" />,
                         title: "Exec Components",
@@ -145,7 +131,6 @@ const MainContentPanel = () => {
 
                     {/* Right Column - AI Agents */}
                     <div className="space-y-6">
-                      <h3 className="text-lg font-semibold text-center">AI Agents</h3>
                       <div className="space-y-3">
                         <ButtonDemo />
                         <ButtonDemo />
@@ -153,18 +138,18 @@ const MainContentPanel = () => {
                       </div>
                     </div>
                   </div>
-                )}
-
-                {/* Subtle Border */}
-                <div className="absolute bottom-0 left-1/2 w-[90%] h-px -translate-x-1/2 bg-gradient-to-r from-transparent via-border to-transparent opacity-50" />
-              </div>
-
-              {!candidate && (
-                <p className="text-lg text-muted-foreground animate-fadeIn">
-                  Select a candidate from the left panel to view and edit their information
-                </p>
+                </>
               )}
+
+              {/* Subtle Border */}
+              <div className="absolute bottom-0 left-1/2 w-[90%] h-px -translate-x-1/2 bg-gradient-to-r from-transparent via-border to-transparent opacity-50" />
             </div>
+
+            {!candidate && (
+              <p className="text-lg text-muted-foreground animate-fadeIn">
+                Select a candidate from the left panel to view and edit their information
+              </p>
+            )}
 
             {/* Active Section Content */}
             <div className="space-y-6 px-6 pt-2 pb-6">
