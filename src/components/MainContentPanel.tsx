@@ -104,7 +104,7 @@ const MainContentPanel = () => {
             {/* Hero Section with Glow */}
             <div className="relative">
               {/* Extended Hero Section Container */}
-              <div className="relative h-[300px] px-8 bg-background/80 backdrop-blur-sm">
+              <div className="relative h-[400px] px-8 bg-background/80 backdrop-blur-sm">
                 {/* Glow Effect */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                   <div className="absolute left-1/2 top-1/2 h-[500px] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,_hsla(210,100%,50%,0.15)_10%,_transparent_70%)] animate-aurora" />
