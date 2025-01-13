@@ -53,7 +53,7 @@ const MainContentPanel = () => {
       date: "Step 1",
       iconClassName: "text-blue-500",
       titleClassName: "text-blue-500",
-      className: `[grid-area:stack] hover:-translate-y-4 cursor-pointer ${activeSection === 'linkedin' ? 'ring-2 ring-blue-500' : ''}`,
+      className: `[grid-area:stack] hover:-translate-y-8 cursor-pointer ${activeSection === 'linkedin' ? 'ring-2 ring-blue-500' : ''}`,
       onClick: () => handleCardClick('linkedin'),
       isComplete: !!linkedInAnalysis && Object.keys(linkedInAnalysis).length > 0,
     },
