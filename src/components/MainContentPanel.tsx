@@ -104,14 +104,14 @@ const MainContentPanel = () => {
             {/* Hero Section with Glow */}
             <div className="relative">
               {/* Extended Hero Section Container */}
-              <div className="relative px-8 pt-12 pb-4 bg-background/80 backdrop-blur-sm">
+              <div className="relative h-[300px] px-8 bg-background/80 backdrop-blur-sm">
                 {/* Glow Effect */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                   <div className="absolute left-1/2 top-1/2 h-[500px] w-[80%] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(ellipse_at_center,_hsla(210,100%,50%,0.15)_10%,_transparent_70%)] animate-aurora" />
                 </div>
                 
                 {/* Title */}
-                <div className="relative z-10 mb-8 text-center">
+                <div className="relative z-10 mb-8 pt-12 text-center">
                   <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-b from-foreground via-foreground/90 to-muted-foreground bg-clip-text text-transparent">
                     Executive Pipeline
                   </h2>
