@@ -9,6 +9,7 @@ import { User, FileText, Users, Package } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
+import { ButtonDemo } from "@/components/ui/ai-button";
 
 type ActiveSection = "linkedin" | "resume" | "screening" | null;
 
@@ -146,15 +147,9 @@ const MainContentPanel = () => {
                     <div className="space-y-6">
                       <h3 className="text-lg font-semibold text-center">AI Agents</h3>
                       <div className="space-y-3">
-                        <button className="w-full px-4 py-2 text-sm border rounded-lg hover:bg-accent">
-                          Executive Summary
-                        </button>
-                        <button className="w-full px-4 py-2 text-sm border rounded-lg hover:bg-accent">
-                          Ideal Company Profile
-                        </button>
-                        <button className="w-full px-4 py-2 text-sm border rounded-lg hover:bg-accent">
-                          Gap Analysis
-                        </button>
+                        <ButtonDemo />
+                        <ButtonDemo />
+                        <ButtonDemo />
                       </div>
                     </div>
                   </div>
