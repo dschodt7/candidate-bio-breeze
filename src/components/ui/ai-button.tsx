@@ -7,9 +7,9 @@ interface ButtonDemoProps {
 
 function ButtonDemo({ label }: ButtonDemoProps) {
   return (
-    <Button variant="outline" className="w-[220px]">
+    <Button variant="outline" className="w-[220px] flex justify-between">
       {label}
-      <Sparkles className="-me-1 ms-2 opacity-60" size={16} strokeWidth={2} aria-hidden="true" />
+      <Sparkles className="opacity-60" size={16} strokeWidth={2} aria-hidden="true" />
     </Button>
   );
 }
