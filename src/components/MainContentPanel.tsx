@@ -141,7 +141,7 @@ const MainContentPanel = () => {
                         date: "8/8 More Criteria",
                         iconClassName: "text-purple-500",
                         titleClassName: "text-purple-500",
-                        className: "[grid-area:stack] translate-y-10 hover:-translate-y-2 cursor-pointer transition-transform duration-700",
+                        className: "[grid-area:stack] translate-x-4 translate-y-6 hover:-translate-y-2 cursor-pointer transition-transform duration-700",
                       }]} />
                       <div className="absolute -right-8 top-1/2 -translate-y-1/2">
                         <ArrowRight className="w-6 h-6 text-muted-foreground/30" />
