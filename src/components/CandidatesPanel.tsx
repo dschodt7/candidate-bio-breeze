@@ -7,7 +7,7 @@ const CandidatesPanel = () => {
   
   return (
     <>
-      <ResizablePanel defaultSize={20} minSize={15} className="p-0">
+      <ResizablePanel defaultSize={12} minSize={4} className="p-0">
         <div className="h-full p-4 bg-gray-50">
           <h2 className="text-lg font-semibold mb-4">Candidates</h2>
           <CandidateList 
