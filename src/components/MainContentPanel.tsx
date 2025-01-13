@@ -146,10 +146,11 @@ const MainContentPanel = () => {
                     {/* Right Column - AI Agents */}
                     <div className="space-y-6">
                       <h3 className="text-lg font-semibold text-center">AI Agents</h3>
-                      <div className="space-y-3">
-                        <ButtonDemo />
-                        <ButtonDemo />
-                        <ButtonDemo />
+                      <div className="space-y-3 flex flex-col items-center">
+                        <ButtonDemo label="Executive Summary" />
+                        <ButtonDemo label="Ideal Company Profile" />
+                        <ButtonDemo label="LinkedIn Optimizer" />
+                        <ButtonDemo label="Resume Optimizer" />
                       </div>
                     </div>
                   </div>
