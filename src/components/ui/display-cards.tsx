@@ -29,7 +29,7 @@ function DisplayCard({
   return (
     <div
       className={cn(
-        "relative flex h-36 w-[18rem] -skew-y-[8deg] select-none flex-col justify-between rounded-xl border-2 backdrop-blur-sm px-4 py-3 transition-all duration-700 after:absolute after:-right-1 after:top-[-5%] after:h-[110%] after:w-[20rem] after:bg-gradient-to-l after:from-background/5 after:to-transparent after:content-[''] hover:border-white/20 [&>*]:flex [&>*]:items-center [&>*]:gap-2",
+        "relative flex h-36 w-[16rem] -skew-y-[8deg] select-none flex-col justify-between rounded-xl border-2 backdrop-blur-sm px-4 py-3 transition-all duration-700 after:absolute after:-right-1 after:top-[-5%] after:h-[110%] after:w-[20rem] after:bg-gradient-to-l after:from-background/5 after:to-transparent after:content-[''] hover:border-white/20 [&>*]:flex [&>*]:items-center [&>*]:gap-2",
         isComplete ? "bg-[#D9F2CC]/95" : "bg-[#FFDEE2]/95",
         className
       )}
