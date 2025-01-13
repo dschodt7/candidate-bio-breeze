@@ -133,12 +133,12 @@ const MainContentPanel = () => {
                     <div className="space-y-6 relative">
                       <h3 className="text-lg font-semibold text-center">AI Compiler</h3>
                       <DisplayCards cards={[{
-                        icon: <Package className="size-4 text-purple-300" />,
+                        icon: <Package className="size-4 text-indigo-300" />,
                         title: "Exec Components",
                         description: "5/5 AI Compile Complete",
                         date: "8/8 More Criteria",
-                        iconClassName: "text-purple-500",
-                        titleClassName: "text-purple-500",
+                        iconClassName: "text-indigo-500",
+                        titleClassName: "text-indigo-500",
                         className: "[grid-area:stack] translate-x-4 translate-y-6 hover:-translate-y-2 cursor-pointer transition-transform duration-700",
                       }]} />
                     </div>
