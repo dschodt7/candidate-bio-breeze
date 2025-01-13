@@ -42,6 +42,40 @@ const MainContentPanel = () => {
     enabled: !!candidate?.id,
   });
 
+  // Query to get executive summary completion status
+  const { data: execSummaryStatus } = useQuery({
+    queryKey: ['execSummaryStatus', candidate?.id],
+    queryFn: async () => {
+      if (!candidate?.id) return null;
+      console.log("Fetching executive summary status for candidate:", candidate.id);
+      
+      const { data, error } = await supabase
+        .from('executive_summaries')
+        .select(`
+          credibility_submitted,
+          results_submitted,
+          case_studies_submitted,
+          business_problems_submitted,
+          motivations_submitted
+        `)
+        .eq('candidate_id', candidate.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Error fetching executive summary status:", error);
+        return null;
+      }
+
+      console.log("Executive summary status:", data);
+      return data;
+    },
+    enabled: !!candidate?.id,
+  });
+
+  // Calculate completed sections count
+  const completedSections = execSummaryStatus ? 
+    Object.values(execSummaryStatus).filter(Boolean).length : 0;
+
   const handleCardClick = (section: ActiveSection) => {
     setActiveSection(section === activeSection ? null : section);
   };
@@ -135,7 +169,7 @@ const MainContentPanel = () => {
                       <DisplayCards cards={[{
                         icon: <Package className="size-4 text-indigo-300" />,
                         title: "Exec Components",
-                        description: "5/5 AI Compile Complete",
+                        description: `${completedSections}/5 AI Compile Complete`,
                         date: "8/8 More Criteria",
                         iconClassName: "text-indigo-500",
                         titleClassName: "text-indigo-500",
