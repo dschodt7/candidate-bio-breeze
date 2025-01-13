@@ -35,11 +35,6 @@ function DisplayCard({
       )}
       onClick={onClick}
     >
-      {isComplete && (
-        <div className="absolute top-2 left-2 z-10">
-          <Check className="h-5 w-5 text-green-500" />
-        </div>
-      )}
       <div>
         <span className="relative inline-block rounded-full bg-blue-800 p-1">
           {icon}
@@ -48,6 +43,11 @@ function DisplayCard({
       </div>
       <p className="whitespace-nowrap text-lg">{description}</p>
       <p className="text-muted-foreground">{date}</p>
+      {isComplete && (
+        <div className="flex items-center">
+          <Check className="h-5 w-5 text-green-500" />
+        </div>
+      )}
     </div>
   );
 }
