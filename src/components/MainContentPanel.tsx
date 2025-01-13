@@ -123,7 +123,7 @@ const MainContentPanel = () => {
                   <div className="grid grid-cols-[300px_1fr_300px] gap-8 relative z-10">
                     {/* Left Column - Display Cards */}
                     <div className="space-y-8">
-                      <h3 className="text-lg font-semibold text-center">AI Input Analyzer</h3>
+                      <h3 className="text-lg font-semibold text-center">AI Input Analysis</h3>
                       <div className="mt-4 relative">
                         <DisplayCards cards={displayCards} />
                       </div>
