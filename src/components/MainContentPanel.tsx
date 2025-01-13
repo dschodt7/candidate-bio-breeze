@@ -106,9 +106,9 @@ const MainContentPanel = () => {
             <div className="relative">
               {/* Extended Hero Section Container */}
               <div className="relative h-[400px] px-8 bg-background/80 backdrop-blur-sm">
-                {/* Glow Effect - Modified for softer, top-originating light with increased opacity */}
+                {/* Glow Effect - Modified for much higher opacity */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <div className="absolute left-1/2 -translate-x-1/2 top-0 h-[400px] w-[90%] bg-[radial-gradient(ellipse_at_top,_#D3E4FD25_0%,_#D3E4FD15_35%,_transparent_50%)] animate-aurora" />
+                  <div className="absolute left-1/2 -translate-x-1/2 top-0 h-[400px] w-[90%] bg-[radial-gradient(ellipse_at_top,_#D3E4FD75_0%,_#D3E4FD35_35%,_transparent_50%)] animate-aurora" />
                 </div>
                 
                 {/* Title */}
