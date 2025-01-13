@@ -133,6 +133,7 @@ const MainContentPanel = () => {
 
                     {/* Center Column - Exec Components */}
                     <div className="space-y-6 relative">
+                      <h3 className="text-lg font-semibold text-center">AI Compiler</h3>
                       <DisplayCards cards={[{
                         icon: <Package className="size-4 text-purple-300" />,
                         title: "Exec Components",
