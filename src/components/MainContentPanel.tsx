@@ -5,7 +5,7 @@ import { NotesInput } from "@/components/NotesInput";
 import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
 import { useCandidate } from "@/hooks/useCandidate";
 import DisplayCards from "@/components/ui/display-cards";
-import { User, FileText, Users, ArrowRight } from "lucide-react";
+import { User, FileText, Users, ArrowRight, Package } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -133,15 +133,17 @@ const MainContentPanel = () => {
 
                     {/* Center Column - Exec Components */}
                     <div className="space-y-6 relative">
-                      <div className="border rounded-lg p-6 space-y-4 bg-background/80 backdrop-blur-sm">
-                        <h3 className="text-lg font-semibold">Exec Components</h3>
-                        <div className="space-y-2 text-sm text-muted-foreground">
-                          <p>5/5 AI Compile Complete</p>
-                          <p>8/8 More Criteria</p>
-                        </div>
-                        <div className="absolute -right-8 top-1/2 -translate-y-1/2">
-                          <ArrowRight className="w-6 h-6 text-muted-foreground/30" />
-                        </div>
+                      <DisplayCards cards={[{
+                        icon: <Package className="size-4 text-purple-300" />,
+                        title: "Exec Components",
+                        description: "5/5 AI Compile Complete",
+                        date: "8/8 More Criteria",
+                        iconClassName: "text-purple-500",
+                        titleClassName: "text-purple-500",
+                        className: "[grid-area:stack] hover:-translate-y-2 cursor-pointer",
+                      }]} />
+                      <div className="absolute -right-8 top-1/2 -translate-y-1/2">
+                        <ArrowRight className="w-6 h-6 text-muted-foreground/30" />
                       </div>
                     </div>
 
