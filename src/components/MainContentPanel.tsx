@@ -192,6 +192,8 @@ const MainContentPanel = () => {
     }
   };
 
+  const isFullyComplete = completedSections === 5 && completedCriteria === 8;
+
   return (
     <>
       <ResizablePanel defaultSize={55} className="p-0">
@@ -236,6 +238,7 @@ const MainContentPanel = () => {
                         titleClassName: "text-indigo-500",
                         className: `[grid-area:stack] translate-x-16 translate-y-6 hover:-translate-y-2 cursor-pointer transition-transform duration-700 ${activeSection === null ? 'ring-2 ring-indigo-500' : ''}`,
                         onClick: () => handleCardClick(null),
+                        isComplete: isFullyComplete,
                       }]} />
                     </div>
 
