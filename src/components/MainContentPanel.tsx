@@ -5,7 +5,7 @@ import { NotesInput } from "@/components/NotesInput";
 import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
 import { useCandidate } from "@/hooks/useCandidate";
 import DisplayCards from "@/components/ui/display-cards";
-import { User, FileText, Users, Package } from "lucide-react";
+import { User, FileText, Users, Package, Circle } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -177,6 +177,16 @@ const MainContentPanel = () => {
     },
   ];
 
+  const isFullyComplete = completedSections === 5 && completedCriteria === 8;
+
+  const execSections = [
+    { name: "Assessment of Current Skills", submitted: execSummaryStatus?.credibility_submitted },
+    { name: "Results and Achievements", submitted: execSummaryStatus?.results_submitted },
+    { name: "Case Studies", submitted: execSummaryStatus?.case_studies_submitted },
+    { name: "Business Problems", submitted: execSummaryStatus?.business_problems_submitted },
+    { name: "Motivations", submitted: execSummaryStatus?.motivations_submitted },
+  ];
+
   const renderActiveSection = () => {
     if (!activeSection) return null;
 
@@ -191,8 +201,6 @@ const MainContentPanel = () => {
         return null;
     }
   };
-
-  const isFullyComplete = completedSections === 5 && completedCriteria === 8;
 
   return (
     <>
@@ -232,7 +240,24 @@ const MainContentPanel = () => {
                       <DisplayCards cards={[{
                         icon: <Package className="size-4 text-indigo-300" />,
                         title: "Exec Components",
-                        description: `${completedSections}/5 AI Compile Complete`,
+                        description: (
+                          <div className="space-y-2">
+                            <div className="text-sm text-muted-foreground">{completedSections}/5 AI Compile Complete</div>
+                            <div className="text-sm text-muted-foreground">{completedCriteria}/8 More Criteria</div>
+                            <ul className="space-y-1.5 mt-3 text-sm">
+                              {execSections.map((section, index) => (
+                                <li key={index} className="flex items-center space-x-2">
+                                  <Circle 
+                                    className={`h-2 w-2 ${section.submitted ? 'fill-indigo-500 text-indigo-500' : 'text-gray-300'}`}
+                                  />
+                                  <span className={section.submitted ? 'text-indigo-500' : 'text-gray-500'}>
+                                    {section.name}
+                                  </span>
+                                </li>
+                              ))}
+                            </ul>
+                          </div>
+                        ),
                         date: `${completedCriteria}/8 More Criteria`,
                         iconClassName: "text-indigo-500",
                         titleClassName: "text-indigo-500",
