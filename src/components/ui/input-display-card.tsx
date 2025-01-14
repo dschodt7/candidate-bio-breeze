@@ -27,7 +27,7 @@ export function InputDisplayCard({
   return (
     <div
       className={cn(
-        "relative flex h-36 w-[16rem] select-none flex-col justify-between rounded-lg border bg-white shadow-sm px-4 py-3 transition-all duration-300 hover:shadow-md",
+        "relative flex h-36 w-[16rem] select-none flex-col rounded-lg border bg-white shadow-sm p-4 transition-all duration-300 hover:shadow-md cursor-pointer",
         className
       )}
       onClick={onClick}
@@ -43,8 +43,10 @@ export function InputDisplayCard({
           </div>
         )}
       </div>
-      <p className="whitespace-nowrap text-lg">{description}</p>
-      <p className="text-muted-foreground">{date}</p>
+      <div className="mt-4 flex items-center gap-2">
+        <span className="text-sm text-muted-foreground">{date}</span>
+        <span className="text-sm">{description}</span>
+      </div>
     </div>
   );
 }
