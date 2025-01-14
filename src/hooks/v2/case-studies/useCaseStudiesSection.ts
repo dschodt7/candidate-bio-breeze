@@ -104,7 +104,7 @@ export const useCaseStudiesSection = (candidateId: string | null) => {
         .from('executive_summaries')
         .update({
           case_studies: value,
-          case_studies_submitted: true
+          case_studies_submitted: true  // Added this flag
         })
         .eq('candidate_id', candidateId);
 

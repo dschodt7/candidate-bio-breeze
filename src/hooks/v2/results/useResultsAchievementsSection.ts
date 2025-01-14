@@ -104,7 +104,7 @@ export const useResultsAchievementsSection = (candidateId: string | null) => {
         .from('executive_summaries')
         .update({
           results_achievements: value,
-          results_submitted: true
+          results_submitted: true  // Added this flag
         })
         .eq('candidate_id', candidateId);
 
