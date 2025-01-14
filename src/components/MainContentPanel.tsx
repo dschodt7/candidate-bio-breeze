@@ -243,7 +243,6 @@ const MainContentPanel = () => {
                         description: (
                           <div className="space-y-2">
                             <div className="text-sm text-muted-foreground">{completedSections}/5 AI Compile Complete</div>
-                            <div className="text-sm text-muted-foreground">{completedCriteria}/8 More Criteria</div>
                             <ul className="space-y-1.5 mt-3 text-sm">
                               {execSections.map((section, index) => (
                                 <li key={index} className="flex items-center space-x-2">
@@ -256,9 +255,10 @@ const MainContentPanel = () => {
                                 </li>
                               ))}
                             </ul>
+                            <div className="text-sm text-muted-foreground">{completedCriteria}/8 More Criteria</div>
                           </div>
                         ),
-                        date: `${completedCriteria}/8 More Criteria`,
+                        date: "",
                         iconClassName: "text-indigo-500",
                         titleClassName: "text-indigo-500",
                         className: `[grid-area:stack] translate-x-16 translate-y-6 hover:-translate-y-2 cursor-pointer transition-transform duration-700 ${activeSection === null ? 'ring-2 ring-indigo-500' : ''}`,
