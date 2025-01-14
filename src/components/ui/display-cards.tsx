@@ -7,7 +7,7 @@ interface DisplayCardProps {
   className?: string;
   icon?: React.ReactNode;
   title?: string;
-  description?: string;
+  description?: React.ReactNode;
   date?: string;
   iconClassName?: string;
   titleClassName?: string;
