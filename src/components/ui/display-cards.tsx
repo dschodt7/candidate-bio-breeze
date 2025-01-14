@@ -29,14 +29,13 @@ function DisplayCard({
   return (
     <div
       className={cn(
-        "relative flex h-36 w-[16rem] -skew-y-[8deg] select-none flex-col justify-between rounded-xl border-2 backdrop-blur-sm px-4 py-3 transition-all duration-700 after:absolute after:-right-1 after:top-[-5%] after:h-[110%] after:w-[20rem] after:bg-gradient-to-l after:from-background/5 after:to-transparent after:content-[''] hover:border-white/20 [&>*]:flex [&>*]:items-center [&>*]:gap-2",
-        isComplete ? "bg-[#D9F2CC]/95" : "bg-[#FFDEE2]/95",
+        "relative flex h-36 w-[16rem] select-none flex-col justify-between rounded-lg border bg-white shadow-sm px-4 py-3 transition-all duration-300 hover:shadow-md [&>*]:flex [&>*]:items-center [&>*]:gap-2",
         className
       )}
       onClick={onClick}
     >
       <div>
-        <span className="relative inline-block rounded-full bg-blue-800 p-1">
+        <span className="relative inline-block rounded-full bg-blue-50 p-1">
           {icon}
         </span>
         <p className={cn("text-lg font-medium", titleClassName)}>{title}</p>
@@ -44,7 +43,7 @@ function DisplayCard({
       <p className="whitespace-nowrap text-lg">{description}</p>
       <p className="text-muted-foreground">{date}</p>
       {isComplete && (
-        <div className="flex items-center">
+        <div className="absolute top-3 right-3">
           <Check className="h-5 w-5 text-green-500" />
         </div>
       )}
@@ -59,20 +58,20 @@ interface DisplayCardsProps {
 export default function DisplayCards({ cards }: DisplayCardsProps) {
   const defaultCards = [
     {
-      className: "[grid-area:stack] hover:-translate-y-10 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/5 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:left-0 before:top-0",
+      className: "hover:bg-accent/50",
     },
     {
-      className: "[grid-area:stack] translate-x-16 translate-y-10 hover:-translate-y-1 before:absolute before:w-[100%] before:outline-1 before:rounded-xl before:outline-border before:h-[100%] before:content-[''] before:bg-blend-overlay before:bg-background/5 grayscale-[100%] hover:before:opacity-0 before:transition-opacity before:duration:700 hover:grayscale-0 before:left-0 before:top-0",
+      className: "hover:bg-accent/50",
     },
     {
-      className: "[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10",
+      className: "hover:bg-accent/50",
     },
   ];
 
   const displayCards = cards || defaultCards;
 
   return (
-    <div className="grid [grid-template-areas:'stack'] place-items-center opacity-100 animate-in fade-in-0 duration-700">
+    <div className="grid gap-4">
       {displayCards.map((cardProps, index) => (
         <DisplayCard key={index} {...cardProps} />
       ))}
