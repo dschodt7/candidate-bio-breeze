@@ -22,7 +22,7 @@ const MainContentPanel = () => {
     queryKey: ['linkedInAnalysis', candidate?.id],
     queryFn: async () => {
       if (!candidate?.id) return null;
-      console.log("Fetching LinkedIn analysis for candidate:", candidate.id);
+      console.log("[MainContentPanel] Fetching LinkedIn analysis for candidate:", candidate.id);
       
       const { data, error } = await supabase
         .from('linkedin_sections')
@@ -32,11 +32,11 @@ const MainContentPanel = () => {
         .maybeSingle();
 
       if (error) {
-        console.error("Error fetching LinkedIn analysis:", error);
+        console.error("[MainContentPanel] Error fetching LinkedIn analysis:", error);
         return null;
       }
 
-      console.log("LinkedIn analysis data:", data);
+      console.log("[MainContentPanel] LinkedIn analysis data:", data);
       return data?.analysis;
     },
     enabled: !!candidate?.id,
