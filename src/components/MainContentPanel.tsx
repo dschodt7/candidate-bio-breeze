@@ -23,7 +23,6 @@ const MainContentPanel = () => {
   const { candidate, getCandidateName } = useCandidate();
   const [activeSection, setActiveSection] = useState<ActiveSection>(null);
 
-  // Query to check if LinkedIn analysis exists
   const { data: linkedInAnalysis } = useQuery({
     queryKey: ['linkedInAnalysis', candidate?.id],
     queryFn: async () => {
@@ -48,7 +47,6 @@ const MainContentPanel = () => {
     enabled: !!candidate?.id,
   });
 
-  // Query to get screening analysis
   const { data: screeningAnalysis } = useQuery({
     queryKey: ['screeningAnalysis', candidate?.id],
     queryFn: async () => {
@@ -72,7 +70,6 @@ const MainContentPanel = () => {
     enabled: !!candidate?.id,
   });
 
-  // Query to get executive summary completion status
   const { data: execSummaryStatus } = useQuery({
     queryKey: ['execSummaryStatus', candidate?.id],
     queryFn: async () => {
@@ -102,7 +99,6 @@ const MainContentPanel = () => {
     enabled: !!candidate?.id,
   });
 
-  // Calculate completed sections count with detailed logging
   const completedSections = execSummaryStatus ? 
     Object.entries(execSummaryStatus).reduce((count, [key, value]) => {
       console.log(`[MainContentPanel] Checking section ${key}: ${value}`);
@@ -149,7 +145,7 @@ const MainContentPanel = () => {
       date: "1 of 3",
       iconClassName: "text-blue-500",
       titleClassName: "text-blue-500",
-      className: `[grid-area:stack] hover:-translate-y-10 cursor-pointer ${activeSection === 'linkedin' ? 'ring-2 ring-blue-500' : ''}`,
+      className: `hover:bg-accent/50 cursor-pointer ${activeSection === 'linkedin' ? 'ring-2 ring-blue-500' : ''}`,
       onClick: () => handleCardClick('linkedin'),
       isComplete: !!linkedInAnalysis && Object.keys(linkedInAnalysis).length > 0,
     },
@@ -160,7 +156,7 @@ const MainContentPanel = () => {
       date: "2 of 3",
       iconClassName: "text-blue-500",
       titleClassName: "text-blue-500",
-      className: `[grid-area:stack] translate-x-16 translate-y-10 hover:translate-y-0 cursor-pointer ${activeSection === 'resume' ? 'ring-2 ring-blue-500' : ''}`,
+      className: `hover:bg-accent/50 cursor-pointer ${activeSection === 'resume' ? 'ring-2 ring-blue-500' : ''}`,
       onClick: () => handleCardClick('resume'),
       isComplete: !!candidate?.resume_path,
     },
@@ -171,7 +167,7 @@ const MainContentPanel = () => {
       date: "3 of 3",
       iconClassName: "text-blue-500",
       titleClassName: "text-blue-500",
-      className: `[grid-area:stack] translate-x-32 translate-y-20 hover:translate-y-10 cursor-pointer ${activeSection === 'screening' ? 'ring-2 ring-blue-500' : ''}`,
+      className: `hover:bg-accent/50 cursor-pointer ${activeSection === 'screening' ? 'ring-2 ring-blue-500' : ''}`,
       onClick: () => handleCardClick('screening'),
       isComplete: !!candidate?.screening_notes,
     },
@@ -209,7 +205,6 @@ const MainContentPanel = () => {
           <div className="max-w-6xl mx-auto">
             {/* Hero Section with Glow */}
             <div className="relative">
-              {/* Extended Hero Section Container */}
               <div className="relative h-[400px] px-8 bg-background/80 backdrop-blur-sm">
                 {/* Glow Effect */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -229,13 +224,13 @@ const MainContentPanel = () => {
                     {/* Left Column - Display Cards */}
                     <div className="space-y-8">
                       <h3 className="text-lg font-semibold text-center">AI Input Analysis</h3>
-                      <div className="mt-4 relative">
+                      <div className="mt-4">
                         <DisplayCards cards={displayCards} />
                       </div>
                     </div>
 
                     {/* Center Column - Exec Components */}
-                    <div className="space-y-6 relative">
+                    <div className="space-y-6">
                       <h3 className="text-lg font-semibold text-center">AI Compiler</h3>
                       <DisplayCards cards={[{
                         icon: <Package className="size-4 text-indigo-300" />,
@@ -261,7 +256,7 @@ const MainContentPanel = () => {
                         date: "",
                         iconClassName: "text-indigo-500",
                         titleClassName: "text-indigo-500",
-                        className: `[grid-area:stack] translate-x-16 translate-y-6 hover:-translate-y-2 cursor-pointer transition-transform duration-700 ${activeSection === null ? 'ring-2 ring-indigo-500' : ''}`,
+                        className: `hover:bg-accent/50 cursor-pointer transition-colors ${activeSection === null ? 'ring-2 ring-indigo-500' : ''}`,
                         onClick: () => handleCardClick(null),
                         isComplete: isFullyComplete,
                       }]} />
