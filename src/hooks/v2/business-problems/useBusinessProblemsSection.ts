@@ -104,6 +104,7 @@ export const useBusinessProblemsSection = (candidateId: string | null) => {
         .from('executive_summaries')
         .update({
           business_problems: value,
+          business_problems_submitted: true // Added this flag
         })
         .eq('candidate_id', candidateId);
 
