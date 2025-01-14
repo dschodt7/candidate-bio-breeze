@@ -222,16 +222,16 @@ const MainContentPanel = () => {
                 {candidate && (
                   <div className="grid grid-cols-[300px_1fr_300px] gap-8 relative z-10">
                     {/* Left Column - Display Cards */}
-                    <div className="space-y-8">
-                      <h3 className="text-lg font-semibold text-center">AI Input Analysis</h3>
-                      <div className="mt-4">
+                    <div className="flex flex-col items-center space-y-6">
+                      <h3 className="text-lg font-semibold">AI Input Analysis</h3>
+                      <div className="mt-2">
                         <DisplayCards cards={displayCards} />
                       </div>
                     </div>
 
                     {/* Center Column - Exec Components */}
-                    <div className="space-y-6">
-                      <h3 className="text-lg font-semibold text-center">AI Compiler</h3>
+                    <div className="flex flex-col items-center space-y-6">
+                      <h3 className="text-lg font-semibold">AI Compiler</h3>
                       <DisplayCards cards={[{
                         icon: <Package className="size-4 text-indigo-300" />,
                         title: "Exec Components",
@@ -263,8 +263,8 @@ const MainContentPanel = () => {
                     </div>
 
                     {/* Right Column - AI Agents */}
-                    <div className="space-y-6">
-                      <h3 className="text-lg font-semibold text-center">AI Agents</h3>
+                    <div className="flex flex-col items-center space-y-6">
+                      <h3 className="text-lg font-semibold">AI Agents</h3>
                       <div className="flex flex-col items-center gap-4">
                         <ButtonDemo label="Executive Summary" />
                         <ButtonDemo label="Ideal Company Profile" />
