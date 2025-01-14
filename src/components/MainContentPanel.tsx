@@ -13,6 +13,12 @@ import { ButtonDemo } from "@/components/ui/ai-button";
 
 type ActiveSection = "linkedin" | "resume" | "screening" | null;
 
+interface LinkedInAnalysisData {
+  interests?: string;
+  activities?: string;
+  foundationalUnderstanding?: string;
+}
+
 const MainContentPanel = () => {
   const { candidate, getCandidateName } = useCandidate();
   const [activeSection, setActiveSection] = useState<ActiveSection>(null);
@@ -37,7 +43,7 @@ const MainContentPanel = () => {
       }
 
       console.log("[MainContentPanel] LinkedIn analysis data:", data);
-      return data?.analysis;
+      return data?.analysis as LinkedInAnalysisData | null;
     },
     enabled: !!candidate?.id,
   });
