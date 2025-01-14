@@ -37,7 +37,7 @@ function DisplayCard(props: DisplayCardProps) {
     <div
       className={cn(
         "relative flex select-none flex-col justify-between rounded-lg border bg-white shadow-sm px-3 py-2 transition-all duration-300 hover:shadow-md [&>*]:flex [&>*]:items-center [&>*]:gap-2",
-        !isExecComponents && "h-[80px]", // Only apply fixed height if not Exec Components
+        isExecComponents ? "w-[16rem]" : "", // Match the width of InputDisplayCard for Exec Components
         props.className
       )}
       onClick={props.onClick}
