@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Sparkles } from "lucide-react";
+import { Sparkles, Check } from "lucide-react";
 import { InputDisplayCard } from "./input-display-card";
 
 interface DisplayCardProps {
@@ -18,7 +18,17 @@ interface DisplayCardProps {
 
 function DisplayCard(props: DisplayCardProps) {
   if (props.title && ["LinkedIn Profile", "Resume", "Discovery Screening"].includes(props.title)) {
-    return <InputDisplayCard {...props} />;
+    return <InputDisplayCard 
+      icon={props.icon || <Sparkles className="size-4 text-blue-300" />}
+      title={props.title}
+      description={props.description || "Discover amazing content"}
+      date={props.date || "Just now"}
+      iconClassName={props.iconClassName}
+      titleClassName={props.titleClassName}
+      className={props.className}
+      onClick={props.onClick}
+      isComplete={props.isComplete}
+    />;
   }
 
   return (
