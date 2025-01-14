@@ -47,7 +47,7 @@ const MainContentPanel = () => {
     queryKey: ['execSummaryStatus', candidate?.id],
     queryFn: async () => {
       if (!candidate?.id) return null;
-      console.log("Fetching executive summary status for candidate:", candidate.id);
+      console.log("[MainContentPanel] Fetching executive summary status for candidate:", candidate.id);
       
       const { data, error } = await supabase
         .from('executive_summaries')
@@ -62,19 +62,24 @@ const MainContentPanel = () => {
         .maybeSingle();
 
       if (error) {
-        console.error("Error fetching executive summary status:", error);
+        console.error("[MainContentPanel] Error fetching executive summary status:", error);
         return null;
       }
 
-      console.log("Executive summary status:", data);
+      console.log("[MainContentPanel] Raw executive summary status data:", data);
       return data;
     },
     enabled: !!candidate?.id,
   });
 
-  // Calculate completed sections count
+  // Calculate completed sections count with detailed logging
   const completedSections = execSummaryStatus ? 
-    Object.values(execSummaryStatus).filter(Boolean).length : 0;
+    Object.entries(execSummaryStatus).reduce((count, [key, value]) => {
+      console.log(`[MainContentPanel] Checking section ${key}: ${value}`);
+      return count + (value ? 1 : 0);
+    }, 0) : 0;
+
+  console.log("[MainContentPanel] Final completed sections count:", completedSections);
 
   const handleCardClick = (section: ActiveSection) => {
     setActiveSection(section === activeSection ? null : section);
