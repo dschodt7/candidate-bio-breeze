@@ -1,7 +1,8 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Sparkles, Check } from "lucide-react";
+import { Sparkles } from "lucide-react";
+import { InputDisplayCard } from "./input-display-card";
 
 interface DisplayCardProps {
   className?: string;
@@ -15,34 +16,28 @@ interface DisplayCardProps {
   isComplete?: boolean;
 }
 
-function DisplayCard({
-  className,
-  icon = <Sparkles className="size-4 text-blue-300" />,
-  title = "Featured",
-  description = "Discover amazing content",
-  date = "Just now",
-  iconClassName = "text-blue-500",
-  titleClassName = "text-blue-500",
-  onClick,
-  isComplete = false,
-}: DisplayCardProps) {
+function DisplayCard(props: DisplayCardProps) {
+  if (props.title && ["LinkedIn Profile", "Resume", "Discovery Screening"].includes(props.title)) {
+    return <InputDisplayCard {...props} />;
+  }
+
   return (
     <div
       className={cn(
         "relative flex h-36 w-[16rem] select-none flex-col justify-between rounded-lg border bg-white shadow-sm px-4 py-3 transition-all duration-300 hover:shadow-md [&>*]:flex [&>*]:items-center [&>*]:gap-2",
-        className
+        props.className
       )}
-      onClick={onClick}
+      onClick={props.onClick}
     >
       <div>
         <span className="relative inline-block rounded-full bg-blue-50 p-1">
-          {icon}
+          {props.icon || <Sparkles className="size-4 text-blue-300" />}
         </span>
-        <p className={cn("text-lg font-medium", titleClassName)}>{title}</p>
+        <p className={cn("text-lg font-medium", props.titleClassName)}>{props.title || "Featured"}</p>
       </div>
-      <p className="whitespace-nowrap text-lg">{description}</p>
-      <p className="text-muted-foreground">{date}</p>
-      {isComplete && (
+      <p className="whitespace-nowrap text-lg">{props.description || "Discover amazing content"}</p>
+      <p className="text-muted-foreground">{props.date || "Just now"}</p>
+      {props.isComplete && (
         <div className="absolute top-3 right-3">
           <Check className="h-5 w-5 text-green-500" />
         </div>
