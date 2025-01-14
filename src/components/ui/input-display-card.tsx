@@ -27,7 +27,7 @@ export function InputDisplayCard({
   return (
     <div
       className={cn(
-        "relative flex h-[110px] w-[16rem] select-none flex-col rounded-lg border bg-white shadow-sm p-3 transition-all duration-300 hover:shadow-md cursor-pointer",
+        "relative flex h-[100px] w-[16rem] select-none flex-col rounded-lg border bg-white shadow-sm p-2 transition-all duration-300 hover:shadow-md cursor-pointer",
         className
       )}
       onClick={onClick}
@@ -38,12 +38,12 @@ export function InputDisplayCard({
         </span>
         <p className={cn("text-lg font-medium", titleClassName)}>{title}</p>
         {isComplete && (
-          <div className="absolute top-2.5 right-3">
+          <div className="absolute top-2 right-2">
             <Check className="h-5 w-5 text-green-500" />
           </div>
         )}
       </div>
-      <div className="mt-3 flex items-center gap-2">
+      <div className="mt-2 flex items-center gap-2">
         <span className="text-sm text-muted-foreground">{date}</span>
         <span className="text-sm">{description}</span>
       </div>

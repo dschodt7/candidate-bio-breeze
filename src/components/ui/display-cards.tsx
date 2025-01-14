@@ -34,7 +34,7 @@ function DisplayCard(props: DisplayCardProps) {
   return (
     <div
       className={cn(
-        "relative flex h-36 w-[16rem] select-none flex-col justify-between rounded-lg border bg-white shadow-sm px-4 py-3 transition-all duration-300 hover:shadow-md [&>*]:flex [&>*]:items-center [&>*]:gap-2",
+        "relative flex h-[100px] w-[16rem] select-none flex-col justify-between rounded-lg border bg-white shadow-sm px-3 py-2 transition-all duration-300 hover:shadow-md [&>*]:flex [&>*]:items-center [&>*]:gap-2",
         props.className
       )}
       onClick={props.onClick}
@@ -48,7 +48,7 @@ function DisplayCard(props: DisplayCardProps) {
       <p className="whitespace-nowrap text-lg">{props.description || "Discover amazing content"}</p>
       <p className="text-muted-foreground">{props.date || "Just now"}</p>
       {props.isComplete && (
-        <div className="absolute top-3 right-3">
+        <div className="absolute top-2 right-2">
           <Check className="h-5 w-5 text-green-500" />
         </div>
       )}
@@ -76,7 +76,7 @@ export default function DisplayCards({ cards }: DisplayCardsProps) {
   const displayCards = cards || defaultCards;
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-2">
       {displayCards.map((cardProps, index) => (
         <DisplayCard key={index} {...cardProps} />
       ))}
