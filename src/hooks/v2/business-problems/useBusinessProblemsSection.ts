@@ -99,18 +99,18 @@ export const useBusinessProblemsSection = (candidateId: string | null) => {
     }
 
     try {
-      console.log("Submitting business problems to database for candidate:", candidateId);
+      console.log("[BusinessProblemsSection] Submitting business problems to database for candidate:", candidateId);
       const { error } = await supabase
         .from('executive_summaries')
         .update({
           business_problems: value,
-          business_problems_submitted: true // Added this flag
+          business_problems_submitted: true
         })
         .eq('candidate_id', candidateId);
 
       if (error) throw error;
 
-      console.log("Business problems submitted successfully");
+      console.log("[BusinessProblemsSection] Business problems submitted successfully");
       setIsSubmitted(true);
       setIsEditing(false);
       toast({
@@ -118,7 +118,7 @@ export const useBusinessProblemsSection = (candidateId: string | null) => {
         description: "Business problems saved successfully",
       });
     } catch (error) {
-      console.error("Error submitting business problems:", error);
+      console.error("[BusinessProblemsSection] Error submitting business problems:", error);
       toast({
         title: "Error",
         description: "Failed to save business problems",

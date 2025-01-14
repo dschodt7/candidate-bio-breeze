@@ -99,18 +99,18 @@ export const useResultsAchievementsSection = (candidateId: string | null) => {
     }
 
     try {
-      console.log("Submitting results achievement to database for candidate:", candidateId);
+      console.log("[ResultsAchievementsSection] Submitting results achievement to database for candidate:", candidateId);
       const { error } = await supabase
         .from('executive_summaries')
         .update({
           results_achievements: value,
-          results_submitted: true // Added this flag
+          results_submitted: true
         })
         .eq('candidate_id', candidateId);
 
       if (error) throw error;
 
-      console.log("Results achievement submitted successfully");
+      console.log("[ResultsAchievementsSection] Results achievement submitted successfully");
       setIsSubmitted(true);
       setIsEditing(false);
       toast({
@@ -118,7 +118,7 @@ export const useResultsAchievementsSection = (candidateId: string | null) => {
         description: "Results and achievements saved successfully",
       });
     } catch (error) {
-      console.error("Error submitting results achievement:", error);
+      console.error("[ResultsAchievementsSection] Error submitting results achievement:", error);
       toast({
         title: "Error",
         description: "Failed to save results and achievements",

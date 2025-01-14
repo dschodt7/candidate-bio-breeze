@@ -99,18 +99,18 @@ export const useCaseStudiesSection = (candidateId: string | null) => {
     }
 
     try {
-      console.log("Submitting case studies to database for candidate:", candidateId);
+      console.log("[CaseStudiesSection] Submitting case studies to database for candidate:", candidateId);
       const { error } = await supabase
         .from('executive_summaries')
         .update({
           case_studies: value,
-          case_studies_submitted: true // Added this flag
+          case_studies_submitted: true
         })
         .eq('candidate_id', candidateId);
 
       if (error) throw error;
 
-      console.log("Case studies submitted successfully");
+      console.log("[CaseStudiesSection] Case studies submitted successfully");
       setIsSubmitted(true);
       setIsEditing(false);
       toast({
@@ -118,7 +118,7 @@ export const useCaseStudiesSection = (candidateId: string | null) => {
         description: "Case studies saved successfully",
       });
     } catch (error) {
-      console.error("Error submitting case studies:", error);
+      console.error("[CaseStudiesSection] Error submitting case studies:", error);
       toast({
         title: "Error",
         description: "Failed to save case studies",
