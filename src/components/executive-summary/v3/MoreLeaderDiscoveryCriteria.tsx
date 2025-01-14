@@ -37,13 +37,13 @@ export const MoreLeaderDiscoveryCriteria = ({ candidateId }: MoreLeaderDiscovery
         .select('analysis')
         .eq('candidate_id', candidateId)
         .eq('section_type', 'about')
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("[MoreLeaderDiscoveryCriteria] Error fetching LinkedIn data:", error);
-        throw error;
+        return null;
       }
-      return data?.analysis;
+      return data?.analysis || null;
     },
     enabled: !!candidateId
   });
@@ -56,13 +56,13 @@ export const MoreLeaderDiscoveryCriteria = ({ candidateId }: MoreLeaderDiscovery
         .from('screening_analyses')
         .select('*')
         .eq('candidate_id', candidateId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error("[MoreLeaderDiscoveryCriteria] Error fetching screening data:", error);
-        throw error;
+        return null;
       }
-      return data;
+      return data || null;
     },
     enabled: !!candidateId
   });
