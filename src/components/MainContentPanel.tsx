@@ -211,8 +211,8 @@ const MainContentPanel = () => {
                   <div className="absolute left-1/2 -translate-x-1/2 top-0 h-[400px] w-[90%] bg-[radial-gradient(ellipse_at_top,_#D3E4FD75_0%,_#D3E4FD35_35%,_transparent_50%)] animate-aurora" />
                 </div>
                 
-                {/* Title */}
-                <div className="relative z-10 mb-8 pt-12 text-center">
+                {/* Title - Adjusted padding from pt-12 to pt-6 */}
+                <div className="relative z-10 mb-8 pt-6 text-center">
                   <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-b from-foreground via-foreground/90 to-muted-foreground bg-clip-text text-transparent">
                     Executive Pipeline
                   </h2>
