@@ -31,10 +31,13 @@ function DisplayCard(props: DisplayCardProps) {
     />;
   }
 
+  const isExecComponents = props.title === "Exec Components";
+  
   return (
     <div
       className={cn(
-        "relative flex h-[80px] w-[16rem] select-none flex-col justify-between rounded-lg border bg-white shadow-sm px-3 py-2 transition-all duration-300 hover:shadow-md [&>*]:flex [&>*]:items-center [&>*]:gap-2",
+        "relative flex select-none flex-col justify-between rounded-lg border bg-white shadow-sm px-3 py-2 transition-all duration-300 hover:shadow-md [&>*]:flex [&>*]:items-center [&>*]:gap-2",
+        !isExecComponents && "h-[80px]", // Only apply fixed height if not Exec Components
         props.className
       )}
       onClick={props.onClick}
