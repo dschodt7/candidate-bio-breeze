@@ -42,6 +42,30 @@ const MainContentPanel = () => {
     enabled: !!candidate?.id,
   });
 
+  // Query to get screening analysis
+  const { data: screeningAnalysis } = useQuery({
+    queryKey: ['screeningAnalysis', candidate?.id],
+    queryFn: async () => {
+      if (!candidate?.id) return null;
+      console.log("[MainContentPanel] Fetching screening analysis for candidate:", candidate.id);
+      
+      const { data, error } = await supabase
+        .from('screening_analyses')
+        .select('*')
+        .eq('candidate_id', candidate.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("[MainContentPanel] Error fetching screening analysis:", error);
+        return null;
+      }
+
+      console.log("[MainContentPanel] Screening analysis data:", data);
+      return data;
+    },
+    enabled: !!candidate?.id,
+  });
+
   // Query to get executive summary completion status
   const { data: execSummaryStatus } = useQuery({
     queryKey: ['execSummaryStatus', candidate?.id],
@@ -80,6 +104,32 @@ const MainContentPanel = () => {
     }, 0) : 0;
 
   console.log("[MainContentPanel] Final completed sections count:", completedSections);
+
+  // Calculate completed criteria count
+  const calculateCompletedCriteria = () => {
+    let count = 0;
+    
+    // Check LinkedIn analysis fields
+    if (linkedInAnalysis) {
+      if (linkedInAnalysis.interests && linkedInAnalysis.interests !== "No data available") count++;
+      if (linkedInAnalysis.activities && linkedInAnalysis.activities !== "No data available") count++;
+      if (linkedInAnalysis.foundationalUnderstanding && linkedInAnalysis.foundationalUnderstanding !== "No data available") count++;
+    }
+
+    // Check Screening analysis fields
+    if (screeningAnalysis) {
+      if (screeningAnalysis.compensation_expectations && screeningAnalysis.compensation_expectations !== "No data available") count++;
+      if (screeningAnalysis.work_arrangements && screeningAnalysis.work_arrangements !== "No data available") count++;
+      if (screeningAnalysis.availability_timeline && screeningAnalysis.availability_timeline !== "No data available") count++;
+      if (screeningAnalysis.current_challenges && screeningAnalysis.current_challenges !== "No data available") count++;
+      if (screeningAnalysis.executive_summary_notes && screeningAnalysis.executive_summary_notes !== "No data available") count++;
+    }
+
+    console.log("[MainContentPanel] Completed criteria count:", count);
+    return count;
+  };
+
+  const completedCriteria = calculateCompletedCriteria();
 
   const handleCardClick = (section: ActiveSection) => {
     setActiveSection(section === activeSection ? null : section);
@@ -145,7 +195,7 @@ const MainContentPanel = () => {
             <div className="relative">
               {/* Extended Hero Section Container */}
               <div className="relative h-[400px] px-8 bg-background/80 backdrop-blur-sm">
-                {/* Glow Effect - Modified for much higher opacity */}
+                {/* Glow Effect */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                   <div className="absolute left-1/2 -translate-x-1/2 top-0 h-[400px] w-[90%] bg-[radial-gradient(ellipse_at_top,_#D3E4FD75_0%,_#D3E4FD35_35%,_transparent_50%)] animate-aurora" />
                 </div>
@@ -175,7 +225,7 @@ const MainContentPanel = () => {
                         icon: <Package className="size-4 text-indigo-300" />,
                         title: "Exec Components",
                         description: `${completedSections}/5 AI Compile Complete`,
-                        date: "8/8 More Criteria",
+                        date: `${completedCriteria}/8 More Criteria`,
                         iconClassName: "text-indigo-500",
                         titleClassName: "text-indigo-500",
                         className: `[grid-area:stack] translate-x-16 translate-y-6 hover:-translate-y-2 cursor-pointer transition-transform duration-700 ${activeSection === null ? 'ring-2 ring-indigo-500' : ''}`,
