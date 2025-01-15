@@ -13,8 +13,9 @@ serve(async (req) => {
   }
 
   try {
-    const { candidateId, format } = await req.json();
-    console.log('[generate-executive-summary] Processing request for candidate:', candidateId, 'format:', format);
+    const { candidateId, format, tone, components } = await req.json();
+    console.log('[generate-executive-summary] Processing request for candidate:', candidateId);
+    console.log('[generate-executive-summary] Options:', { format, tone, components });
 
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
@@ -57,6 +58,12 @@ serve(async (req) => {
       hasResume: !!resumeAnalysis.data
     });
 
+    const toneInstructions = {
+      formal: "Create a professional and data-driven executive summary using precise language and clear hierarchical structure.",
+      narrative: "Craft an engaging narrative that tells the leader's story through their achievements and impact, using storytelling techniques.",
+      glorious: "Compose an inspiring and bold executive summary that emphasizes magnitude of achievements and visionary leadership."
+    };
+
     const formatInstructions = {
       snapshot: "Create a concise 1-2 paragraph executive summary highlighting the most impactful achievements and unique value proposition.",
       detailed: "Generate a full-page executive summary with detailed sections on achievements, leadership approach, and strategic impact.",
@@ -66,6 +73,8 @@ serve(async (req) => {
     const systemPrompt = `You are an expert executive recruiter creating powerful executive summaries. Your task is to synthesize data from multiple sources into a compelling narrative that showcases leadership capability and strategic impact.
 
 Format Requirements: ${formatInstructions[format]}
+
+Tone Requirements: ${toneInstructions[tone]}
 
 Focus on:
 1. Quantifiable achievements and business impact
@@ -99,6 +108,9 @@ ${JSON.stringify(screeningAnalysis.data, null, 2)}
 
 Resume Analysis:
 ${JSON.stringify(resumeAnalysis.data, null, 2)}
+
+Selected Components to Include:
+${JSON.stringify(components, null, 2)}
 
 Create a compelling executive summary that showcases this leader's capabilities and impact.`;
 
