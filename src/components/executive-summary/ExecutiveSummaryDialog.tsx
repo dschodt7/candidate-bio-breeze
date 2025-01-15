@@ -171,13 +171,14 @@ export const ExecutiveSummaryDialog = ({
         <Button 
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="w-full relative group"
+          className="w-full relative group transition-all duration-200 disabled:opacity-70"
         >
           <span className="flex items-center justify-center gap-2">
             {isGenerating ? (
               <>
-                <Sparkles className="h-4 w-4 animate-spin" />
-                Generating...
+                <Sparkles className="h-4 w-4 animate-pulse text-yellow-400" />
+                Making Magic
+                <Sparkles className="h-4 w-4 animate-pulse text-yellow-400" />
               </>
             ) : (
               <>
