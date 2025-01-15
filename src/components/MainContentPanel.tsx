@@ -244,7 +244,7 @@ const MainContentPanel = () => {
                                   <Circle 
                                     className={`h-2 w-2 ${section.submitted ? 'fill-green-500 text-green-500' : 'text-gray-300'}`}
                                   />
-                                  <span className={section.submitted ? 'text-green-500' : 'text-gray-500'}>
+                                  <span>
                                     {section.name}
                                   </span>
                                 </li>
