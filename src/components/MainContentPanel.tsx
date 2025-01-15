@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ButtonDemo } from "@/components/ui/ai-button";
 import { ExecutiveSummaryDialog } from "@/components/executive-summary/ExecutiveSummaryDialog";
+import { useToast } from "@/hooks/use-toast";
 
 type ActiveSection = "linkedin" | "resume" | "screening" | null;
 
@@ -24,6 +25,7 @@ const MainContentPanel = () => {
   const { candidate, getCandidateName } = useCandidate();
   const [activeSection, setActiveSection] = useState<ActiveSection>(null);
   const [isExecSummaryDialogOpen, setIsExecSummaryDialogOpen] = useState(false);
+  const { toast } = useToast();
 
   const { data: linkedInAnalysis } = useQuery({
     queryKey: ['linkedInAnalysis', candidate?.id],
@@ -142,7 +144,47 @@ const MainContentPanel = () => {
   };
 
   const handleGenerateExecSummary = async (options: any) => {
-    console.log("[MainContentPanel] Generating executive summary with options:", options);
+    if (!candidate?.id) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      console.log("[MainContentPanel] Generating executive summary with options:", options);
+      
+      const { data, error } = await supabase.functions.invoke(
+        'generate-executive-summary',
+        {
+          body: { 
+            candidateId: candidate.id,
+            format: options.format,
+            tone: options.tone,
+            components: options.components
+          }
+        }
+      );
+
+      if (error) throw error;
+
+      console.log("[MainContentPanel] Summary generated successfully:", data);
+      toast({
+        title: "Success",
+        description: "Executive summary generated successfully",
+      });
+
+      setIsExecSummaryDialogOpen(false);
+    } catch (error) {
+      console.error("[MainContentPanel] Error generating summary:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate executive summary",
+        variant: "destructive",
+      });
+    }
   };
 
   const displayCards = [
