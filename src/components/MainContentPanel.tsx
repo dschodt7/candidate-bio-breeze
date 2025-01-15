@@ -25,6 +25,7 @@ const MainContentPanel = () => {
   const { candidate, getCandidateName } = useCandidate();
   const [activeSection, setActiveSection] = useState<ActiveSection>(null);
   const [isExecSummaryDialogOpen, setIsExecSummaryDialogOpen] = useState(false);
+  const [isGenerating, setIsGenerating] = useState(false);
   const { toast } = useToast();
 
   const { data: linkedInAnalysis } = useQuery({
@@ -155,6 +156,7 @@ const MainContentPanel = () => {
 
     try {
       console.log("[MainContentPanel] Generating executive summary with options:", options);
+      setIsGenerating(true);
       
       const { data, error } = await supabase.functions.invoke(
         'generate-executive-summary',
@@ -186,6 +188,8 @@ const MainContentPanel = () => {
         description: "Failed to generate executive summary",
         variant: "destructive",
       });
+    } finally {
+      setIsGenerating(false);
     }
   };
 
@@ -355,7 +359,7 @@ const MainContentPanel = () => {
         open={isExecSummaryDialogOpen}
         onOpenChange={setIsExecSummaryDialogOpen}
         onGenerate={handleGenerateExecSummary}
-        isGenerating={false}
+        isGenerating={isGenerating}
       />
     </>
   );
