@@ -30,19 +30,20 @@ const AIAssistantPanel = () => {
     const handleExecSummary = (event: CustomEvent<any>) => {
       console.log("[AIAssistantPanel] Received executive summary:", event.detail);
       
+      const summaryData = event.detail.data;
       const summaryContent = `Here's the executive summary I've generated:
 
 Summary:
-${event.detail.summary}
+${summaryData.summary}
 
 Key Highlights:
-${event.detail.highlights.map((highlight: string) => `• ${highlight}`).join('\n')}
+${summaryData.highlights.map((highlight: string) => `• ${highlight}`).join('\n')}
 
 Focus Areas:
-• Strategic Leadership: ${event.detail.focusAreas.strategicLeadership}
-• Execution Excellence: ${event.detail.focusAreas.executionExcellence}
-• Innovation Mindset: ${event.detail.focusAreas.innovationMindset}
-• Industry Expertise: ${event.detail.focusAreas.industryExpertise}`;
+• Strategic Leadership: ${summaryData.focusAreas.strategicLeadership}
+• Execution Excellence: ${summaryData.focusAreas.executionExcellence}
+• Innovation Mindset: ${summaryData.focusAreas.innovationMindset}
+• Industry Expertise: ${summaryData.focusAreas.industryExpertise}`;
 
       const assistantMessage: Message = {
         role: "assistant",
