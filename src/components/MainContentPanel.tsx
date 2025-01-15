@@ -171,10 +171,12 @@ const MainContentPanel = () => {
       if (error) throw error;
 
       console.log("[MainContentPanel] Summary generated successfully:", data);
-      toast({
-        title: "Success",
-        description: "Executive summary generated successfully",
+      
+      // Emit custom event with summary data
+      const summaryEvent = new CustomEvent('execSummaryGenerated', { 
+        detail: data
       });
+      window.dispatchEvent(summaryEvent);
 
       setIsExecSummaryDialogOpen(false);
     } catch (error) {

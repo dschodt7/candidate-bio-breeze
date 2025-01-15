@@ -25,6 +25,40 @@ const AIAssistantPanel = () => {
     }
   }, [messages]);
 
+  // Listen for executive summary generation events
+  useEffect(() => {
+    const handleExecSummary = (event: CustomEvent<any>) => {
+      console.log("[AIAssistantPanel] Received executive summary:", event.detail);
+      
+      const summaryContent = `Here's the executive summary I've generated:
+
+Summary:
+${event.detail.summary}
+
+Key Highlights:
+${event.detail.highlights.map((highlight: string) => `• ${highlight}`).join('\n')}
+
+Focus Areas:
+• Strategic Leadership: ${event.detail.focusAreas.strategicLeadership}
+• Execution Excellence: ${event.detail.focusAreas.executionExcellence}
+• Innovation Mindset: ${event.detail.focusAreas.innovationMindset}
+• Industry Expertise: ${event.detail.focusAreas.industryExpertise}`;
+
+      const assistantMessage: Message = {
+        role: "assistant",
+        content: summaryContent
+      };
+      
+      setMessages(prev => [...prev, assistantMessage]);
+    };
+
+    window.addEventListener('execSummaryGenerated', handleExecSummary as EventListener);
+    
+    return () => {
+      window.removeEventListener('execSummaryGenerated', handleExecSummary as EventListener);
+    };
+  }, []);
+
   const handleSendMessage = async (content: string) => {
     try {
       setIsLoading(true);
