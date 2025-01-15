@@ -242,9 +242,9 @@ const MainContentPanel = () => {
                               {execSections.map((section, index) => (
                                 <li key={index} className="flex items-center space-x-2">
                                   <Circle 
-                                    className={`h-2 w-2 ${section.submitted ? 'fill-indigo-500 text-indigo-500' : 'text-gray-300'}`}
+                                    className={`h-2 w-2 ${section.submitted ? 'fill-green-500 text-green-500' : 'text-gray-300'}`}
                                   />
-                                  <span className={section.submitted ? 'text-indigo-500' : 'text-gray-500'}>
+                                  <span className={section.submitted ? 'text-green-500' : 'text-gray-500'}>
                                     {section.name}
                                   </span>
                                 </li>
