@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ButtonDemo } from "@/components/ui/ai-button";
+import { ExecutiveSummaryDialog } from "@/components/executive-summary/ExecutiveSummaryDialog";
 
 type ActiveSection = "linkedin" | "resume" | "screening" | null;
 
@@ -22,6 +23,7 @@ interface LinkedInAnalysisData {
 const MainContentPanel = () => {
   const { candidate, getCandidateName } = useCandidate();
   const [activeSection, setActiveSection] = useState<ActiveSection>(null);
+  const [isExecSummaryDialogOpen, setIsExecSummaryDialogOpen] = useState(false);
 
   const { data: linkedInAnalysis } = useQuery({
     queryKey: ['linkedInAnalysis', candidate?.id],
@@ -107,18 +109,15 @@ const MainContentPanel = () => {
 
   console.log("[MainContentPanel] Final completed sections count:", completedSections);
 
-  // Calculate completed criteria count
   const calculateCompletedCriteria = () => {
     let count = 0;
     
-    // Check LinkedIn analysis fields
     if (linkedInAnalysis) {
       if (linkedInAnalysis.interests && linkedInAnalysis.interests !== "No data available") count++;
       if (linkedInAnalysis.activities && linkedInAnalysis.activities !== "No data available") count++;
       if (linkedInAnalysis.foundationalUnderstanding && linkedInAnalysis.foundationalUnderstanding !== "No data available") count++;
     }
 
-    // Check Screening analysis fields
     if (screeningAnalysis) {
       if (screeningAnalysis.compensation_expectations && screeningAnalysis.compensation_expectations !== "No data available") count++;
       if (screeningAnalysis.work_arrangements && screeningAnalysis.work_arrangements !== "No data available") count++;
@@ -135,6 +134,15 @@ const MainContentPanel = () => {
 
   const handleCardClick = (section: ActiveSection) => {
     setActiveSection(section === activeSection ? null : section);
+  };
+
+  const handleExecSummaryClick = () => {
+    console.log("[MainContentPanel] Executive Summary button clicked");
+    setIsExecSummaryDialogOpen(true);
+  };
+
+  const handleGenerateExecSummary = async (options: any) => {
+    console.log("[MainContentPanel] Generating executive summary with options:", options);
   };
 
   const displayCards = [
@@ -266,7 +274,10 @@ const MainContentPanel = () => {
                     <div className="flex flex-col items-center space-y-6">
                       <h3 className="text-lg font-semibold">AI Agents</h3>
                       <div className="flex flex-col items-center gap-4">
-                        <ButtonDemo label="Executive Summary" />
+                        <ButtonDemo 
+                          label="Executive Summary" 
+                          onClick={handleExecSummaryClick}
+                        />
                         <ButtonDemo label="Ideal Company Profile" />
                         <ButtonDemo label="LinkedIn Optimizer" />
                         <ButtonDemo label="Resume Optimizer" />
@@ -295,6 +306,13 @@ const MainContentPanel = () => {
         </div>
       </ResizablePanel>
       <ResizableHandle withHandle />
+
+      <ExecutiveSummaryDialog
+        open={isExecSummaryDialogOpen}
+        onOpenChange={setIsExecSummaryDialogOpen}
+        onGenerate={handleGenerateExecSummary}
+        isGenerating={false}
+      />
     </>
   );
 };
