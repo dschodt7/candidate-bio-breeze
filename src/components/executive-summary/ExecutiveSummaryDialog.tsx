@@ -177,7 +177,7 @@ export const ExecutiveSummaryDialog = ({
             {isGenerating ? (
               <>
                 <Sparkles className="h-4 w-4 animate-pulse text-yellow-400" />
-                Making Magic
+                Making Magic, Take 3 Deep Breaths!
                 <Sparkles className="h-4 w-4 animate-pulse text-yellow-400" />
               </>
             ) : (
