@@ -95,9 +95,32 @@ interface ConfettiButtonProps extends ButtonProps {
 
 function ConfettiButton({ options, children, ...props }: ConfettiButtonProps) {
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    console.log("[ConfettiButton] Click event triggered", {
+      timestamp: new Date().toISOString(),
+      buttonRect: event.currentTarget.getBoundingClientRect(),
+    });
+
     const rect = event.currentTarget.getBoundingClientRect()
     const x = rect.left + rect.width / 2
     const y = rect.top + rect.height / 2
+
+    console.log("[ConfettiButton] Calculated position:", {
+      x: x / window.innerWidth,
+      y: y / window.innerHeight,
+      windowSize: {
+        width: window.innerWidth,
+        height: window.innerHeight
+      }
+    });
+
+    console.log("[ConfettiButton] Confetti options:", {
+      ...options,
+      origin: {
+        x: x / window.innerWidth,
+        y: y / window.innerHeight,
+      }
+    });
+
     confetti({
       ...options,
       origin: {
