@@ -197,7 +197,7 @@ const MainContentPanel = () => {
     {
       icon: <User className="size-4 text-blue-300" />,
       title: "LinkedIn Profile",
-      description: "Connect your profile",
+      description: "Submit & Analyze",
       date: "1 of 3",
       iconClassName: "text-blue-500",
       titleClassName: "text-blue-500",
