@@ -39,13 +39,6 @@ export const CandidateList = ({
     }
   };
 
-  const handleConfettiClick = () => {
-    // Add a small delay before opening the dialog
-    setTimeout(() => {
-      setIsDialogOpen(true);
-    }, 150);
-  };
-
   return (
     <div className="space-y-2">
       {candidates.map((candidate) => (
@@ -103,7 +96,6 @@ export const CandidateList = ({
           <ConfettiButton
             variant="outline"
             className="w-full justify-start gap-2"
-            onClick={handleConfettiClick}
             options={{
               particleCount: 35,
               spread: 360,
