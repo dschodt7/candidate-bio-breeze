@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { CheckSquare, Square, Sparkles } from "lucide-react";
+import { CheckSquare, Square, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ExecutiveSummaryDialogProps {
@@ -64,9 +64,9 @@ export const ExecutiveSummaryDialog = ({
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
           <DialogTitle className="text-center flex items-center justify-center gap-2 text-xl">
-            <Sparkles className="h-5 w-5 text-yellow-400 animate-sparkle" />
+            <Star className="h-5 w-5 text-yellow-400 animate-pulse" />
             <span>At Your Service!</span>
-            <Sparkles className="h-5 w-5 text-yellow-400 animate-sparkle" />
+            <Star className="h-5 w-5 text-yellow-400 animate-pulse" />
           </DialogTitle>
         </DialogHeader>
 
@@ -179,13 +179,13 @@ export const ExecutiveSummaryDialog = ({
           <span className="flex items-center justify-center gap-2">
             {isGenerating ? (
               <>
-                <Sparkles className="h-4 w-4 animate-pulse text-yellow-400" />
+                <Star className="h-4 w-4 animate-pulse text-yellow-400" />
                 Making Magic, Take 3 Deep Breaths!
-                <Sparkles className="h-4 w-4 animate-pulse text-yellow-400" />
+                <Star className="h-4 w-4 animate-pulse text-yellow-400" />
               </>
             ) : (
               <>
-                <Sparkles className="h-4 w-4 transition-transform group-hover:rotate-12" />
+                <Star className="h-4 w-4 transition-transform group-hover:rotate-12 text-yellow-400" />
                 Generate Executive Summary
               </>
             )}
