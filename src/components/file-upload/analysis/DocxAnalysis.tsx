@@ -88,7 +88,7 @@ export const DocxAnalysis = () => {
     <div className="mt-4">
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="analysis">
-          <AccordionTrigger className="text-sm font-medium">
+          <AccordionTrigger className="text-lg font-medium">
             <div className="flex items-center gap-2">
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
