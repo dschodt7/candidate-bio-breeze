@@ -18,7 +18,7 @@ const CandidatesPanel = () => {
         <div className="relative">
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="absolute right-[-20px] top-4 z-10 flex h-6 w-6 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-accent transition-colors"
+            className="absolute right-[10px] top-4 z-10 flex h-6 w-6 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-accent transition-colors"
           >
             <ChevronLeft className={cn(
               "h-4 w-4 transition-transform duration-200",
