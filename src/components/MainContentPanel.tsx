@@ -195,35 +195,35 @@ const MainContentPanel = () => {
 
   const displayCards = [
     {
-      icon: <User className="size-4 text-blue-300" />,
+      icon: <User className="size-4 text-sky-300" />,
       title: "LinkedIn Profile",
       description: "Submit & Analyze",
       date: "1 of 3",
-      iconClassName: "text-blue-500",
-      titleClassName: "text-blue-500",
-      className: `hover:bg-accent/50 cursor-pointer ${activeSection === 'linkedin' ? 'ring-2 ring-blue-500' : ''}`,
+      iconClassName: "text-sky-500",
+      titleClassName: "text-sky-500",
+      className: `hover:bg-accent/50 cursor-pointer ${activeSection === 'linkedin' ? 'ring-2 ring-sky-500' : ''}`,
       onClick: () => handleCardClick('linkedin'),
       isComplete: !!linkedInAnalysis && Object.keys(linkedInAnalysis).length > 0,
     },
     {
-      icon: <FileText className="size-4 text-blue-300" />,
+      icon: <FileText className="size-4 text-sky-300" />,
       title: "Resume",
       description: "Upload Your Resume",
       date: "2 of 3",
-      iconClassName: "text-blue-500",
-      titleClassName: "text-blue-500",
-      className: `hover:bg-accent/50 cursor-pointer ${activeSection === 'resume' ? 'ring-2 ring-blue-500' : ''}`,
+      iconClassName: "text-sky-500",
+      titleClassName: "text-sky-500",
+      className: `hover:bg-accent/50 cursor-pointer ${activeSection === 'resume' ? 'ring-2 ring-sky-500' : ''}`,
       onClick: () => handleCardClick('resume'),
       isComplete: !!candidate?.resume_path,
     },
     {
-      icon: <Users className="size-4 text-blue-300" />,
+      icon: <Users className="size-4 text-sky-300" />,
       title: "Discovery Screening",
       description: "Submit & Analyze Transcript",
       date: "3 of 3",
-      iconClassName: "text-blue-500",
-      titleClassName: "text-blue-500",
-      className: `hover:bg-accent/50 cursor-pointer ${activeSection === 'screening' ? 'ring-2 ring-blue-500' : ''}`,
+      iconClassName: "text-sky-500",
+      titleClassName: "text-sky-500",
+      className: `hover:bg-accent/50 cursor-pointer ${activeSection === 'screening' ? 'ring-2 ring-sky-500' : ''}`,
       onClick: () => handleCardClick('screening'),
       isComplete: !!candidate?.screening_notes,
     },
@@ -289,7 +289,7 @@ const MainContentPanel = () => {
                     <div className="flex flex-col items-center space-y-6">
                       <h3 className="text-lg font-semibold">AI Compiler</h3>
                       <DisplayCards cards={[{
-                        icon: <Package className="size-4 text-indigo-300" />,
+                        icon: <Package className="size-4 text-sky-300" />,
                         title: "Exec Components",
                         description: (
                           <div className="space-y-2">
@@ -310,9 +310,9 @@ const MainContentPanel = () => {
                           </div>
                         ),
                         date: "",
-                        iconClassName: "text-indigo-500",
-                        titleClassName: "text-indigo-500",
-                        className: `hover:bg-accent/50 cursor-pointer transition-colors ${activeSection === null ? 'ring-2 ring-indigo-500' : ''}`,
+                        iconClassName: "text-sky-500",
+                        titleClassName: "text-sky-500",
+                        className: `hover:bg-accent/50 cursor-pointer transition-colors ${activeSection === null ? 'ring-2 ring-sky-500' : ''}`,
                         onClick: () => handleCardClick(null),
                         isComplete: isFullyComplete,
                       }]} />
