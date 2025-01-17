@@ -26,10 +26,16 @@ export const CandidateList = ({
   const [searchParams] = useSearchParams();
   const selectedCandidateId = searchParams.get('candidate');
 
-  const handleNewCandidate = () => {
+  const handleNewCandidate = async () => {
+    console.log("[CandidateList] Adding new candidate:", newCandidateName);
     onCandidateClick({ name: newCandidateName, linkedin_url: null });
     setNewCandidateName("");
-    setIsDialogOpen(false);
+    
+    // Delay dialog closing to allow confetti to render
+    setTimeout(() => {
+      console.log("[CandidateList] Closing dialog after confetti");
+      setIsDialogOpen(false);
+    }, 500);
   };
 
   const handleDelete = async () => {
@@ -116,11 +122,13 @@ export const CandidateList = ({
               onClick={handleNewCandidate}
               disabled={!newCandidateName.trim()}
               options={{
-                particleCount: 50,
-                spread: 360,
-                startVelocity: 15,
+                particleCount: 100,
+                spread: 70,
+                startVelocity: 20,
                 gravity: 0.8,
-                colors: ['#a864fd', '#29cdff', '#78ff44', '#ff718d', '#fdff6a']
+                origin: { y: 0.65 },
+                colors: ['#FFD700', '#FFA500', '#FF69B4', '#00FF00', '#4169E1'],
+                zIndex: 9999
               }}
             >
               Add Candidate
