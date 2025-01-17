@@ -21,7 +21,7 @@ export const AuroraBackground = ({
       )}
       {...props}
     >
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div
           className={cn(
             `
