@@ -34,7 +34,7 @@ export const ExecutiveSummaryForm = () => {
             <ErrorBoundary>
               <MotivationsSection candidateId={candidateId} />
             </ErrorBoundary>
-            <div className="mt-12 pt-6 border-t border-gray-100">
+            <div className="mt-6 pt-4 border-t border-gray-200">
               <ErrorBoundary>
                 <MoreLeaderDiscoveryCriteria candidateId={candidateId} />
               </ErrorBoundary>
