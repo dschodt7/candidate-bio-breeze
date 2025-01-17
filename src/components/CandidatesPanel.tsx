@@ -19,7 +19,6 @@ const CandidatesPanel = () => {
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
             className="absolute right-[10px] z-10 top-4 flex h-6 w-6 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-accent transition-colors"
-            style={{ transform: 'translateX(50%)' }}
           >
             <ChevronLeft className={cn(
               "h-4 w-4 transition-transform duration-200",
@@ -30,7 +29,7 @@ const CandidatesPanel = () => {
           <CollapsibleContent 
             className={cn(
               "min-h-screen bg-gray-50 transition-all duration-300",
-              isCollapsed ? "w-16" : "w-[250px] p-4"
+              isCollapsed ? "w-20" : "w-[250px] p-4"
             )}
           >
             <h2 className={cn(
