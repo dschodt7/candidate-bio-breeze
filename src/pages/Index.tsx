@@ -1,4 +1,3 @@
-import { ResizablePanelGroup } from "@/components/ui/resizable";
 import Header from "@/components/Header";
 import CandidatesPanel from "@/components/CandidatesPanel";
 import MainContentPanel from "@/components/MainContentPanel";
@@ -9,14 +8,11 @@ const Index = () => {
     <div className="flex flex-col h-screen">
       <Header />
       <main className="flex-1 overflow-hidden">
-        <ResizablePanelGroup 
-          direction="horizontal" 
-          className="h-full"
-        >
+        <div className="flex h-full">
           <CandidatesPanel />
           <MainContentPanel />
           <AIAssistantPanel />
-        </ResizablePanelGroup>
+        </div>
       </main>
     </div>
   );
