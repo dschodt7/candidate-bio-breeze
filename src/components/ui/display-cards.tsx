@@ -1,7 +1,7 @@
 "use client";
 
 import { cn } from "@/lib/utils";
-import { Sparkles, Check } from "lucide-react";
+import { Sparkles, CheckCircle } from "lucide-react";
 import { InputDisplayCard } from "./input-display-card";
 
 interface DisplayCardProps {
@@ -37,7 +37,7 @@ function DisplayCard(props: DisplayCardProps) {
     <div
       className={cn(
         "relative flex select-none flex-col justify-between rounded-lg border bg-white shadow-sm px-3 py-2 transition-all duration-300 hover:shadow-md [&>*]:flex [&>*]:items-center [&>*]:gap-2",
-        isExecComponents ? "w-[16rem]" : "", // Match the width of InputDisplayCard for Exec Components
+        isExecComponents ? "w-[16rem]" : "",
         props.className
       )}
       onClick={props.onClick}
@@ -52,7 +52,7 @@ function DisplayCard(props: DisplayCardProps) {
       {props.date && <p className="text-muted-foreground">{props.date}</p>}
       {props.isComplete && (
         <div className="absolute top-2 right-2">
-          <Check className="h-5 w-5 text-green-500" />
+          <CheckCircle className="h-5 w-5 text-green-500" />
         </div>
       )}
     </div>
