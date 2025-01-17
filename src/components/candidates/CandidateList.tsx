@@ -92,22 +92,24 @@ export const CandidateList = ({
       ))}
       
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogTrigger asChild>
-          <ConfettiButton
-            variant="outline"
-            className="w-full justify-start gap-2"
-            options={{
-              particleCount: 35,
-              spread: 360,
-              startVelocity: 20,
-              gravity: 0.8,
-              colors: ['#a864fd', '#29cdff', '#78ff44', '#ff718d', '#fdff6a']
-            }}
-          >
-            <UserPlus className="h-4 w-4" />
-            New Candidate
-          </ConfettiButton>
-        </DialogTrigger>
+        <ConfettiButton
+          variant="outline"
+          className="w-full justify-start gap-2"
+          options={{
+            particleCount: 35,
+            spread: 360,
+            startVelocity: 20,
+            gravity: 0.8,
+            colors: ['#a864fd', '#29cdff', '#78ff44', '#ff718d', '#fdff6a']
+          }}
+        >
+          <DialogTrigger asChild>
+            <div className="flex items-center gap-2">
+              <UserPlus className="h-4 w-4" />
+              New Candidate
+            </div>
+          </DialogTrigger>
+        </ConfettiButton>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Add New Candidate</DialogTitle>
