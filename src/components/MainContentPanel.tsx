@@ -208,7 +208,7 @@ const MainContentPanel = () => {
     {
       icon: <FileText className="size-4 text-blue-300" />,
       title: "Resume",
-      description: "Upload your resume",
+      description: "Upload Your Resume",
       date: "2 of 3",
       iconClassName: "text-blue-500",
       titleClassName: "text-blue-500",
