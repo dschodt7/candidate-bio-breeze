@@ -17,7 +17,7 @@ const CandidatesPanel = () => {
         maxSize={20}
         collapsible={true}
         defaultCollapsed={isCollapsed}
-        onCollapse={(collapsed: boolean, _: number) => setIsCollapsed(collapsed)}
+        onCollapse={(collapsed) => setIsCollapsed(collapsed)}
         className="p-0"
       >
         <div className="h-full p-4 bg-gray-50 relative">
