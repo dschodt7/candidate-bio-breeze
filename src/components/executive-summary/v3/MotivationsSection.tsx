@@ -40,6 +40,7 @@ export const MotivationsSection = ({ candidateId }: { candidateId: string | null
     <BaseSectionWrapper
       config={MOTIVATIONS_SECTION}
       sourceAvailability={sourceAvailability}
+      isSubmitted={isSubmitted}
     >
       <BaseSectionContent
         value={value}

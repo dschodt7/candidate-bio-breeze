@@ -43,6 +43,7 @@ export const BusinessProblemsSection = ({ candidateId }: BusinessProblemsSection
       <BaseSectionWrapper
         config={BUSINESS_PROBLEMS_SECTION}
         sourceAvailability={{ hasResume, hasLinkedIn, hasScreening }}
+        isSubmitted={isSubmitted}
       >
         <div className="space-y-4">
           <BaseSectionContent

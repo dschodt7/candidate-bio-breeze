@@ -43,6 +43,7 @@ export const ResultsAchievementsSection = ({ candidateId }: ResultsAchievementsS
       <BaseSectionWrapper
         config={RESULTS_SECTION}
         sourceAvailability={{ hasResume, hasLinkedIn, hasScreening }}
+        isSubmitted={isSubmitted}
       >
         <div className="space-y-4">
           <BaseSectionContent

@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { HelpCircle } from "lucide-react";
+import { CheckCircle, HelpCircle } from "lucide-react";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { SourceIndicators } from "../common/SourceIndicators";
 import { ExecutiveSummarySectionConfig, SectionSourceAvailability } from "@/types/executive-summary-section";
@@ -9,12 +9,14 @@ interface BaseSectionWrapperProps {
   config: ExecutiveSummarySectionConfig;
   sourceAvailability: SectionSourceAvailability;
   children: ReactNode;
+  isSubmitted?: boolean;
 }
 
 export const BaseSectionWrapper = ({
   config,
   sourceAvailability,
-  children
+  children,
+  isSubmitted = false
 }: BaseSectionWrapperProps) => {
   const { key, title, helpText } = config;
   const { hasResume, hasLinkedIn, hasScreening } = sourceAvailability;
@@ -26,6 +28,9 @@ export const BaseSectionWrapper = ({
           <div className="flex items-center justify-between flex-1">
             <div className="flex items-center gap-2">
               {title}
+              {isSubmitted && (
+                <CheckCircle className="h-4 w-4 text-green-500" />
+              )}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="bg-muted rounded-full p-1">

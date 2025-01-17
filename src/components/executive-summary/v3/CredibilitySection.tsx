@@ -43,6 +43,7 @@ export const CredibilitySection = ({ candidateId }: CredibilitySectionProps) => 
       <BaseSectionWrapper
         config={CREDIBILITY_SECTION}
         sourceAvailability={{ hasResume, hasLinkedIn, hasScreening }}
+        isSubmitted={isSubmitted}
       >
         <div className="space-y-4">
           <BaseSectionContent
