@@ -219,7 +219,7 @@ const MainContentPanel = () => {
     {
       icon: <Users className="size-4 text-blue-300" />,
       title: "Discovery Screening",
-      description: "Complete screening",
+      description: "Submit & Analyze Transcript",
       date: "3 of 3",
       iconClassName: "text-blue-500",
       titleClassName: "text-blue-500",
