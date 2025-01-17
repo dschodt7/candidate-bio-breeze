@@ -17,7 +17,7 @@ export const ExecutiveSummaryForm = () => {
       <h3 className="text-lg font-medium mb-6">Executive Summary Components</h3>
       <div className="space-y-8">
         <div>
-          <h4 className="text-base font-medium mb-4">Leader Discovery Criteria to Merge</h4>
+          <h4 className="text-base font-medium mb-4">AI Compile: Leader Discovery Criteria</h4>
           <div className="pl-4">
             <ErrorBoundary>
               <CredibilitySection candidateId={candidateId} />
