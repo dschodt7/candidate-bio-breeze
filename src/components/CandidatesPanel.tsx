@@ -16,13 +16,14 @@ const CandidatesPanel = () => {
         minSize={4} 
         maxSize={20}
         collapsible={true}
-        collapsedSize={4}
+        defaultCollapsed={isCollapsed}
+        onCollapse={(collapsed) => setIsCollapsed(collapsed)}
         className="p-0"
       >
         <div className="h-full p-4 bg-gray-50 relative">
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="absolute right-[-12px] top-4 z-10 flex h-6 w-6 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-accent transition-colors"
+            className="absolute right-[-20px] top-4 z-10 flex h-6 w-6 items-center justify-center rounded-full border bg-background shadow-sm hover:bg-accent transition-colors"
           >
             <ChevronLeft className={cn(
               "h-4 w-4 transition-transform duration-200",
