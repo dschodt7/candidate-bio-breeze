@@ -5,7 +5,7 @@ import { NotesInput } from "@/components/NotesInput";
 import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
 import { useCandidate } from "@/hooks/useCandidate";
 import DisplayCards from "@/components/ui/display-cards";
-import { User, FileText, Users, Package, Circle } from "lucide-react";
+import { User, FileText, Users, Package, Circle, CheckCircle } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -297,9 +297,11 @@ const MainContentPanel = () => {
                             <ul className="space-y-1.5 mt-3 text-sm">
                               {execSections.map((section, index) => (
                                 <li key={index} className="flex items-center space-x-2">
-                                  <Circle 
-                                    className={`h-2 w-2 ${section.submitted ? 'fill-green-500 text-green-500' : 'text-gray-300'}`}
-                                  />
+                                  {section.submitted ? (
+                                    <CheckCircle className="h-2 w-2 text-green-500" />
+                                  ) : (
+                                    <Circle className="h-2 w-2 text-gray-300" />
+                                  )}
                                   <span>
                                     {section.name}
                                   </span>
