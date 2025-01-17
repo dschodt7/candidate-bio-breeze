@@ -21,7 +21,7 @@ interface MoreLeaderDiscoveryCriteriaProps {
 
 const config = {
   key: "more_criteria",
-  title: "More Leader Discovery Criteria",
+  title: "Additional Leader Discovery Criteria",
   helpText: "Additional insights from LinkedIn and screening analyses"
 };
 
