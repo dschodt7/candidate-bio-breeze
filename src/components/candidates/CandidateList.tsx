@@ -60,7 +60,7 @@ export const CandidateList = ({
       {candidates.map((candidate) => (
         <div key={candidate.id} className="group relative">
           <Button
-            variant={candidate.id === selectedCandidateId ? "secondary" : "ghost"}
+            variant={candidate.id === selectedCandidateId ? "outline" : "ghost"}
             className="w-full justify-start text-left pr-12"
             onClick={() => onCandidateClick(candidate)}
           >
@@ -110,7 +110,7 @@ export const CandidateList = ({
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
           <Button
-            variant="outline"
+            variant="ghost"
             className="w-full justify-start gap-2"
           >
             <UserPlus className="h-4 w-4" />
