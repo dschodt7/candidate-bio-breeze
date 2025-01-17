@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Check, RotateCw, Loader2 } from "lucide-react";
+import { RotateCw, Loader2, CircleCheck } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
@@ -145,7 +145,10 @@ export const NotesInput = () => {
   return (
     <Card className="p-6 animate-fadeIn">
       <div className="space-y-4">
-        <Label htmlFor="screening-notes">Leader Discovery Screening</Label>
+        <div className="flex items-center gap-2">
+          {isSubmitted && <CircleCheck className="h-4 w-4 text-green-500" />}
+          <Label htmlFor="screening-notes">Leader Discovery Screening</Label>
+        </div>
         <Textarea
           id="screening-notes"
           placeholder="Areas Analyzed:
@@ -165,10 +168,11 @@ export const NotesInput = () => {
           disabled={isSubmitted}
         />
         <div className="flex justify-end gap-2">
-          <Button onClick={handleSubmit} className="gap-2">
-            {isSubmitted && <Check className="h-4 w-4 text-green-500" />}
-            {isSubmitted ? "Submitted" : "Submit"}
-          </Button>
+          {!isSubmitted && (
+            <Button onClick={handleSubmit}>
+              Submit
+            </Button>
+          )}
           {isSubmitted && (
             <Button 
               variant="outline" 
