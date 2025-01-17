@@ -27,10 +27,10 @@ export const BaseSectionWrapper = ({
         <AccordionTrigger className="px-4 hover:no-underline">
           <div className="flex items-center justify-between flex-1">
             <div className="flex items-center gap-2">
-              {title}
               {isSubmitted && (
                 <CheckCircle className="h-4 w-4 text-green-500" />
               )}
+              {title}
               <Tooltip>
                 <TooltipTrigger asChild>
                   <div className="bg-muted rounded-full p-1">
