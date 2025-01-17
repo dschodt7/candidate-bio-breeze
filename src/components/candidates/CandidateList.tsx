@@ -5,7 +5,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useSearchParams } from "react-router-dom";
-import { ConfettiButton } from "@/components/ui/confetti";
+import confetti from 'canvas-confetti';
 
 interface CandidateListProps {
   candidates: { id: string; name: string; linkedin_url: string | null }[];
@@ -31,11 +31,21 @@ export const CandidateList = ({
     onCandidateClick({ name: newCandidateName, linkedin_url: null });
     setNewCandidateName("");
     
-    // Delay dialog closing to allow confetti to render
+    // Close dialog first
+    setIsDialogOpen(false);
+    
+    // Trigger confetti after dialog closes
     setTimeout(() => {
-      console.log("[CandidateList] Closing dialog after confetti");
-      setIsDialogOpen(false);
-    }, 500);
+      console.log("[CandidateList] Triggering confetti effect");
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        startVelocity: 20,
+        gravity: 0.8,
+        origin: { y: 0.25 },
+        colors: ['#FFD700', '#FFA500', '#FF69B4', '#00FF00', '#4169E1'],
+      });
+    }, 100);
   };
 
   const handleDelete = async () => {
@@ -117,22 +127,13 @@ export const CandidateList = ({
               value={newCandidateName}
               onChange={(e) => setNewCandidateName(e.target.value)}
             />
-            <ConfettiButton
+            <Button
               className="w-full"
               onClick={handleNewCandidate}
               disabled={!newCandidateName.trim()}
-              options={{
-                particleCount: 100,
-                spread: 70,
-                startVelocity: 20,
-                gravity: 0.8,
-                origin: { y: 0.65 },
-                colors: ['#FFD700', '#FFA500', '#FF69B4', '#00FF00', '#4169E1'],
-                zIndex: 9999
-              }}
             >
               Add Candidate
-            </ConfettiButton>
+            </Button>
           </div>
         </DialogContent>
       </Dialog>
