@@ -95,7 +95,7 @@ export const DocxAnalysis = () => {
               ) : (
                 hasValidContent(analysis) && <CheckCircle className="h-4 w-4 text-green-500" />
               )}
-              Resume: Leader Discovery Criteria
+              Resume: Analysis Results
             </div>
           </AccordionTrigger>
           <AccordionContent>
