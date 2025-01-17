@@ -154,10 +154,10 @@ export const ScreeningAnalysis = ({
 
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="analysis">
-          <AccordionTrigger className="text-sm font-medium">
+          <AccordionTrigger className="text-lg font-medium">
             <div className="flex items-center gap-2">
               {hasContent && <CheckCircle className="h-4 w-4 text-green-500" />}
-              Screening: Leader Discovery Criteria
+              Prelim Screening: Analysis Results
             </div>
           </AccordionTrigger>
           <AccordionContent>
