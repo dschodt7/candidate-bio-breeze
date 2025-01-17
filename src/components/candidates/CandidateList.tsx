@@ -5,6 +5,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { useSearchParams } from "react-router-dom";
+import { ConfettiButton } from "@/components/ui/confetti";
 
 interface CandidateListProps {
   candidates: { id: string; name: string; linkedin_url: string | null }[];
@@ -92,13 +93,20 @@ export const CandidateList = ({
       
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogTrigger asChild>
-          <Button
+          <ConfettiButton
             variant="outline"
             className="w-full justify-start gap-2"
+            options={{
+              particleCount: 35,
+              spread: 360,
+              startVelocity: 20,
+              gravity: 0.8,
+              colors: ['#a864fd', '#29cdff', '#78ff44', '#ff718d', '#fdff6a']
+            }}
           >
             <UserPlus className="h-4 w-4" />
             New Candidate
-          </Button>
+          </ConfettiButton>
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
