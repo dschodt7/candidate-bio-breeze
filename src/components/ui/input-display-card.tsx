@@ -1,5 +1,5 @@
 import { cn } from "@/lib/utils";
-import { Check } from "lucide-react";
+import { CheckCircle } from "lucide-react";
 
 interface InputDisplayCardProps {
   icon: React.ReactNode;
@@ -39,7 +39,7 @@ export function InputDisplayCard({
         <p className={cn("text-lg font-medium", titleClassName)}>{title}</p>
         {isComplete && (
           <div className="absolute top-2 right-2">
-            <Check className="h-5 w-5 text-green-500" />
+            <CheckCircle className="h-5 w-5 text-green-500" />
           </div>
         )}
       </div>
