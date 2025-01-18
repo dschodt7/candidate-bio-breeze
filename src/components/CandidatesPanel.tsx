@@ -28,7 +28,7 @@ const CandidatesPanel = () => {
           
           <CollapsibleContent 
             className={cn(
-              "min-h-screen bg-gray-50 transition-all duration-300",
+              "min-h-screen bg-gray-50 transition-[width] duration-300 ease-in-out",
               isCollapsed ? "w-20" : "w-[250px] p-4"
             )}
           >
