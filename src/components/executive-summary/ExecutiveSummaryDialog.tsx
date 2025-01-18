@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { CheckSquare, Square, Star } from "lucide-react";
+import { Bot, CheckSquare, Square, Star } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ExecutiveSummaryDialogProps {
@@ -64,9 +64,9 @@ export const ExecutiveSummaryDialog = ({
       <DialogContent className="sm:max-w-[500px] bg-gradient-to-b from-[#1A202C] to-[#4A235A] text-white p-4">
         <DialogHeader className="py-2">
           <DialogTitle className="text-center flex items-center justify-center gap-1.5 text-xl">
-            <Star className="h-4 w-4 text-yellow-400 animate-pulse" />
+            <Bot className="h-5 w-5 text-purple-300" />
             <span className="text-white">At Your Service!</span>
-            <Star className="h-4 w-4 text-yellow-400 animate-pulse" />
+            <Bot className="h-5 w-5 text-purple-300" />
           </DialogTitle>
         </DialogHeader>
 
