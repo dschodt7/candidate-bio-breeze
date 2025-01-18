@@ -61,7 +61,7 @@ export const ExecutiveSummaryDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[500px] bg-gradient-to-b from-white to-gray-50/50">
         <DialogHeader>
           <DialogTitle className="text-center flex items-center justify-center gap-2 text-xl">
             <Star className="h-5 w-5 text-yellow-400 animate-pulse" />
@@ -71,9 +71,9 @@ export const ExecutiveSummaryDialog = ({
         </DialogHeader>
 
         <div className="space-y-4 py-2">
-          {/* Components Selection - Reduced spacing */}
+          {/* Components Selection - Enhanced styling */}
           <div className="space-y-2">
-            <Label className="text-base">Components to Include</Label>
+            <Label className="text-base font-semibold">Components to Include</Label>
             <div className="grid gap-1.5">
               {[
                 { key: 'credibility', label: 'Assessment of Current Skills' },
@@ -87,27 +87,29 @@ export const ExecutiveSummaryDialog = ({
                   key={key}
                   onClick={() => toggleComponent(key as keyof SummaryOptions['components'])}
                   className={cn(
-                    "flex items-center gap-2 p-1.5 rounded-md transition-colors",
-                    "hover:bg-accent text-left",
-                    options.components[key as keyof SummaryOptions['components']] && "text-primary"
+                    "flex items-center gap-2 p-2 rounded-md transition-all duration-200",
+                    "hover:bg-purple-50 text-left group",
+                    options.components[key as keyof SummaryOptions['components']] 
+                      ? "text-purple-700 bg-purple-50/50"
+                      : "text-gray-600 hover:text-purple-600"
                   )}
                 >
                   {options.components[key as keyof SummaryOptions['components']] ? (
-                    <CheckSquare className="h-4 w-4" />
+                    <CheckSquare className="h-4 w-4 text-purple-600 transition-transform group-hover:scale-110" />
                   ) : (
-                    <Square className="h-4 w-4" />
+                    <Square className="h-4 w-4 transition-transform group-hover:scale-110" />
                   )}
-                  {label}
+                  <span className="font-medium">{label}</span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Format and Tone Selection - Side by side */}
+          {/* Format and Tone Selection - Side by side with enhanced styling */}
           <div className="grid grid-cols-2 gap-4">
             {/* Format Selection */}
             <div className="space-y-2">
-              <Label className="text-base">Format</Label>
+              <Label className="text-base font-semibold">Format</Label>
               <RadioGroup
                 value={options.format}
                 onValueChange={(value: SummaryOptions['format']) => 
@@ -122,8 +124,8 @@ export const ExecutiveSummaryDialog = ({
                 ].map(({ value, label, description }) => (
                   <div key={value} className="flex items-center space-x-2">
                     <RadioGroupItem value={value} id={`format-${value}`} />
-                    <Label htmlFor={`format-${value}`} className="flex flex-col">
-                      <span>{label}</span>
+                    <Label htmlFor={`format-${value}`} className="flex flex-col cursor-pointer">
+                      <span className="font-medium">{label}</span>
                       <span className="text-sm text-muted-foreground">{description}</span>
                     </Label>
                   </div>
@@ -133,7 +135,7 @@ export const ExecutiveSummaryDialog = ({
 
             {/* Tone Selection */}
             <div className="space-y-2">
-              <Label className="text-base">Tone</Label>
+              <Label className="text-base font-semibold">Tone</Label>
               <RadioGroup
                 value={options.tone}
                 onValueChange={(value: SummaryOptions['tone']) => 
@@ -160,8 +162,8 @@ export const ExecutiveSummaryDialog = ({
                 ].map(({ value, label, description }) => (
                   <div key={value} className="flex items-center space-x-2">
                     <RadioGroupItem value={value} id={`tone-${value}`} />
-                    <Label htmlFor={`tone-${value}`} className="flex flex-col">
-                      <span>{label}</span>
+                    <Label htmlFor={`tone-${value}`} className="flex flex-col cursor-pointer">
+                      <span className="font-medium">{label}</span>
                       <span className="text-sm text-muted-foreground">{description}</span>
                     </Label>
                   </div>
@@ -174,7 +176,7 @@ export const ExecutiveSummaryDialog = ({
         <Button 
           onClick={handleGenerate}
           disabled={isGenerating}
-          className="w-full relative group transition-all duration-200 disabled:opacity-70"
+          className="w-full relative group transition-all duration-200 disabled:opacity-70 bg-gradient-to-r from-purple-600 to-purple-700 hover:from-purple-700 hover:to-purple-800"
         >
           <span className="flex items-center justify-center gap-2">
             {isGenerating ? (
