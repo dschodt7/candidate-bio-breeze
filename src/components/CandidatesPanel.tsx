@@ -23,7 +23,7 @@ const CandidatesPanel = () => {
         
         <div className={cn(
           "min-h-screen bg-gray-50 transition-[width] duration-300 ease-in-out",
-          isCollapsed ? "w-20" : "w-[250px] p-4"
+          isCollapsed ? "w-20" : "w-[220px] p-4"
         )}>
           <h2 className={cn(
             "text-lg font-semibold mb-4 transition-opacity duration-200",
