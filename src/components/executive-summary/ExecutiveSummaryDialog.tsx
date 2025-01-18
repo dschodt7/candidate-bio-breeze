@@ -66,7 +66,6 @@ export const ExecutiveSummaryDialog = ({
           <DialogTitle className="text-center flex items-center justify-center gap-1.5 text-xl">
             <Bot className="h-5 w-5 text-purple-300" />
             <span className="text-white">At Your Service!</span>
-            <Bot className="h-5 w-5 text-purple-300" />
           </DialogTitle>
         </DialogHeader>
 
