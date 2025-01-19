@@ -1,6 +1,5 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -89,6 +88,12 @@ Apply the selected format (${format}) and tone (${tone}) while maintaining authe
     try {
       optimization = JSON.parse(content);
       console.log('[optimize-linkedin-content] Parsed optimization:', optimization);
+
+      // Dispatch a custom event to update the AI Assistant
+      const event = new CustomEvent('linkedInOptimized', {
+        detail: { data: optimization }
+      });
+      window.dispatchEvent(event);
 
       return new Response(
         JSON.stringify({ 
