@@ -139,7 +139,7 @@ export const LinkedInOptimizerDialog = ({
                 className="grid gap-1.5"
               >
                 {[
-                  { value: 'ceo-board', label: 'CEO/Board Level' },
+                  { value: 'ceo-board', label: 'CEO' },
                   { value: 'c-level', label: 'C-Level Executive' },
                   { value: 'senior-leader', label: 'Senior Leader' }
                 ].map(({ value, label }) => (
