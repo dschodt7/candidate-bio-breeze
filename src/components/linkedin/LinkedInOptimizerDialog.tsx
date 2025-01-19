@@ -17,14 +17,13 @@ interface LinkedInOptimizerDialogProps {
   isOptimizing: boolean;
 }
 
+interface SectionState {
+  [key: string]: boolean;
+}
+
 interface OptimizerOptions {
   sections: {
-    about: boolean;
-    experience_1: boolean;
-    experience_2: boolean;
-    experience_3: boolean;
-    skills: boolean;
-    recommendations: boolean;
+    [key: string]: string;  // actual content
   };
   format: 'strategic-narrative' | 'achievement-focused' | 'domain-authority';
   tone: 'ceo-board' | 'c-level' | 'senior-leader';
@@ -39,18 +38,16 @@ export const LinkedInOptimizerDialog = ({
   const { toast } = useToast();
   const [searchParams] = useSearchParams();
   const candidateId = searchParams.get('candidate');
-  const [options, setOptions] = useState<OptimizerOptions>({
-    sections: {
-      about: true,
-      experience_1: true,
-      experience_2: true,
-      experience_3: true,
-      skills: true,
-      recommendations: true
-    },
-    format: 'achievement-focused',
-    tone: 'c-level'
+  const [selectedSections, setSelectedSections] = useState<SectionState>({
+    about: true,
+    experience_1: true,
+    experience_2: true,
+    experience_3: true,
+    skills: true,
+    recommendations: true
   });
+  const [format, setFormat] = useState<OptimizerOptions['format']>('achievement-focused');
+  const [tone, setTone] = useState<OptimizerOptions['tone']>('c-level');
 
   // Fetch LinkedIn sections content
   const { data: linkedInSections } = useQuery({
@@ -73,51 +70,53 @@ export const LinkedInOptimizerDialog = ({
       return data.reduce((acc, section) => ({
         ...acc,
         [section.section_type]: section.content
-      }), {});
+      }), {} as Record<string, string>);
     },
     enabled: !!candidateId
   });
 
-  const toggleSection = (key: keyof OptimizerOptions['sections']) => {
-    setOptions(prev => ({
+  const toggleSection = (key: string) => {
+    setSelectedSections(prev => ({
       ...prev,
-      sections: {
-        ...prev.sections,
-        [key]: !prev.sections[key]
-      }
+      [key]: !prev[key]
     }));
   };
 
   const handleOptimize = async () => {
     try {
-      const selectedSections = Object.entries(options.sections)
-        .filter(([_, isSelected]) => isSelected)
-        .map(([key]) => key);
-
-      if (selectedSections.length === 0) {
+      if (!linkedInSections) {
         toast({
           title: "Error",
-          description: "Please select at least one section to optimize",
+          description: "No LinkedIn content available to optimize",
           variant: "destructive",
         });
         return;
       }
 
-      // Create sections object with actual content
-      const sectionsToOptimize = selectedSections.reduce((acc, sectionType) => {
-        const content = linkedInSections?.[sectionType];
-        if (content) {
-          acc[sectionType] = content;
-        }
-        return acc;
-      }, {} as Record<string, string>);
+      // Filter sections based on selection and content availability
+      const sectionsToOptimize = Object.entries(selectedSections)
+        .filter(([key, isSelected]) => isSelected && linkedInSections[key])
+        .reduce((acc, [key]) => {
+          acc[key] = linkedInSections[key];
+          return acc;
+        }, {} as Record<string, string>);
+
+      if (Object.keys(sectionsToOptimize).length === 0) {
+        toast({
+          title: "Error",
+          description: "Please select at least one section with content to optimize",
+          variant: "destructive",
+        });
+        return;
+      }
 
       console.log("[LinkedInOptimizerDialog] Optimizing sections with content:", sectionsToOptimize);
 
       onOptimize({
-        ...options,
-        sections: sectionsToOptimize
-      } as OptimizerOptions);
+        sections: sectionsToOptimize,
+        format,
+        tone
+      });
     } catch (error) {
       console.error('[LinkedInOptimizerDialog] Error in LinkedIn optimization:', error);
       toast({
@@ -152,16 +151,16 @@ export const LinkedInOptimizerDialog = ({
               ].map(({ key, label }) => (
                 <button
                   key={key}
-                  onClick={() => toggleSection(key as keyof OptimizerOptions['sections'])}
+                  onClick={() => toggleSection(key)}
                   className={cn(
                     "flex items-center gap-2 p-1.5 rounded-md transition-all duration-200",
                     "hover:bg-[#4A235A]/50 text-left group",
-                    options.sections[key as keyof OptimizerOptions['sections']]
+                    selectedSections[key]
                       ? "bg-[#4A235A]/30 text-white"
                       : "text-gray-300 hover:text-white"
                   )}
                 >
-                  {options.sections[key as keyof OptimizerOptions['sections']] ? (
+                  {selectedSections[key] ? (
                     <CheckSquare className="h-4 w-4 text-purple-300 transition-transform group-hover:scale-110" />
                   ) : (
                     <Square className="h-4 w-4 transition-transform group-hover:scale-110" />
@@ -176,9 +175,9 @@ export const LinkedInOptimizerDialog = ({
             <div className="space-y-1.5">
               <Label className="text-base font-semibold text-white">Content Approach</Label>
               <RadioGroup
-                value={options.format}
+                value={format}
                 onValueChange={(value: OptimizerOptions['format']) => 
-                  setOptions(prev => ({ ...prev, format: value }))
+                  setFormat(value)
                 }
                 className="grid gap-1.5"
               >
@@ -201,9 +200,9 @@ export const LinkedInOptimizerDialog = ({
             <div className="space-y-1.5">
               <Label className="text-base font-semibold text-white">Positioning Level</Label>
               <RadioGroup
-                value={options.tone}
+                value={tone}
                 onValueChange={(value: OptimizerOptions['tone']) => 
-                  setOptions(prev => ({ ...prev, tone: value }))
+                  setTone(value)
                 }
                 className="grid gap-1.5"
               >
@@ -213,8 +212,8 @@ export const LinkedInOptimizerDialog = ({
                   { value: 'senior-leader', label: 'Senior Leader', description: 'Proven Leader' }
                 ].map(({ value, label, description }) => (
                   <div key={value} className="flex items-center space-x-2">
-                    <RadioGroupItem value={value} id={`format-${value}`} className="border-purple-300 text-purple-300" />
-                    <Label htmlFor={`format-${value}`} className="flex flex-col cursor-pointer">
+                    <RadioGroupItem value={value} id={`tone-${value}`} className="border-purple-300 text-purple-300" />
+                    <Label htmlFor={`tone-${value}`} className="flex flex-col cursor-pointer">
                       <span className="font-medium text-white">{label}</span>
                       <span className="text-xs text-gray-300">{description}</span>
                     </Label>
