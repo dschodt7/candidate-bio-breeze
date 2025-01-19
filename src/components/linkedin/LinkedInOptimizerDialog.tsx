@@ -16,10 +16,11 @@ interface LinkedInOptimizerDialogProps {
 interface OptimizerOptions {
   sections: {
     about: boolean;
-    experience: boolean;
+    experience_1: boolean;
+    experience_2: boolean;
+    experience_3: boolean;
     skills: boolean;
     recommendations: boolean;
-    headline: boolean;
   };
   format: 'strategic-narrative' | 'achievement-focused' | 'domain-authority';
   tone: 'ceo-board' | 'c-level' | 'senior-leader';
@@ -34,10 +35,11 @@ export const LinkedInOptimizerDialog = ({
   const [options, setOptions] = useState<OptimizerOptions>({
     sections: {
       about: true,
-      experience: true,
+      experience_1: true,
+      experience_2: true,
+      experience_3: true,
       skills: true,
-      recommendations: true,
-      headline: true
+      recommendations: true
     },
     format: 'achievement-focused',
     tone: 'c-level'
@@ -72,10 +74,11 @@ export const LinkedInOptimizerDialog = ({
             <Label className="text-base font-semibold text-white">Sections to Optimize</Label>
             <div className="grid gap-1">
               {[
-                { key: 'headline', label: 'Professional Headline' },
                 { key: 'about', label: 'About Section' },
-                { key: 'experience', label: 'Experience' },
-                { key: 'skills', label: 'Skills & Expertise' },
+                { key: 'experience_1', label: 'Experience 1' },
+                { key: 'experience_2', label: 'Experience 2' },
+                { key: 'experience_3', label: 'Experience 3' },
+                { key: 'skills', label: 'Skills' },
                 { key: 'recommendations', label: 'Recommendations' }
               ].map(({ key, label }) => (
                 <button
