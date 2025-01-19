@@ -62,7 +62,7 @@ Enhance their existing content using the selected format (${format}) and tone ($
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: format === 'strategic-narrative' ? 'gpt-4o' : 'gpt-4o',
+        model: format === 'strategic-narrative' ? 'gpt-4o' : 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }

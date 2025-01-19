@@ -71,7 +71,7 @@ Remember: Return ONLY the JSON object, no additional text or formatting.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o',
+        model: 'gpt-4o-mini',  // Fixed model name
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }

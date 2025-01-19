@@ -82,7 +82,7 @@ Maintain authenticity and credibility while optimizing impact.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: analysisType === 'strategic' ? 'gpt-4o' : 'gpt-4o',
+        model: analysisType === 'strategic' ? 'gpt-4o' : 'gpt-4o-mini',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }

@@ -123,7 +123,7 @@ Create a compelling profile of the ideal company environment for this leader.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: format === 'snapshot' ? 'gpt-4o' : 'gpt-4o',
+        model: format === 'snapshot' ? 'gpt-4o-mini' : 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
