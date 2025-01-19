@@ -53,10 +53,41 @@ Focus Areas:
       setMessages(prev => [...prev, assistantMessage]);
     };
 
+    // Listen for company profile generation events
+    const handleCompanyProfile = (event: CustomEvent<any>) => {
+      console.log("[AIAssistantPanel] Received company profile:", event.detail);
+      
+      const profileData = event.detail.data;
+      const profileContent = `Here's the ideal company profile I've generated:
+
+Profile Overview:
+${profileData.profile}
+
+Key Highlights:
+${profileData.highlights.map((highlight: string) => `• ${highlight}`).join('\n')}
+
+Fit Analysis:
+• Cultural Fit: ${profileData.fitAnalysis.culturalFit}
+• Leadership Style: ${profileData.fitAnalysis.leadershipFit}
+• Growth Stage: ${profileData.fitAnalysis.growthFit}
+• Market Position: ${profileData.fitAnalysis.marketFit}
+• Innovation Focus: ${profileData.fitAnalysis.innovationFit}
+• Team Dynamics: ${profileData.fitAnalysis.teamFit}`;
+
+      const assistantMessage: Message = {
+        role: "assistant",
+        content: profileContent
+      };
+      
+      setMessages(prev => [...prev, assistantMessage]);
+    };
+
     window.addEventListener('execSummaryGenerated', handleExecSummary as EventListener);
+    window.addEventListener('companyProfileGenerated', handleCompanyProfile as EventListener);
     
     return () => {
       window.removeEventListener('execSummaryGenerated', handleExecSummary as EventListener);
+      window.removeEventListener('companyProfileGenerated', handleCompanyProfile as EventListener);
     };
   }, []);
 
@@ -80,7 +111,7 @@ Focus Areas:
       };
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
-      console.error('Chat error:', error);
+      console.error('[AIAssistantPanel] Chat error:', error);
       toast({
         title: "Error",
         description: "Failed to get a response. Please try again.",
