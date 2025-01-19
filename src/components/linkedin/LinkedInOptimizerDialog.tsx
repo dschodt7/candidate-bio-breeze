@@ -139,14 +139,15 @@ export const LinkedInOptimizerDialog = ({
                 className="grid gap-1.5"
               >
                 {[
-                  { value: 'ceo-board', label: 'CEO/Board Level', description: '' },
-                  { value: 'c-level', label: 'C-Level Executive', description: '' },
-                  { value: 'senior-leader', label: 'Senior Leader', description: '' }
-                ].map(({ value, label, description }) => (
-                  <div key={value} className="flex items-center space-x-2">
+                  { value: 'ceo-board', label: 'CEO/Board Level' },
+                  { value: 'c-level', label: 'C-Level Executive' },
+                  { value: 'senior-leader', label: 'Senior Leader' }
+                ].map(({ value, label }) => (
+                  <div key={value} className="flex items-center space-x-2 h-[42px]">
                     <RadioGroupItem value={value} id={`tone-${value}`} className="border-purple-300 text-purple-300" />
-                    <Label htmlFor={`tone-${value}`} className="flex flex-col cursor-pointer">
+                    <Label htmlFor={`tone-${value}`} className="flex flex-col cursor-pointer justify-center">
                       <span className="font-medium text-white">{label}</span>
+                      <span className="text-xs text-gray-300 opacity-0">Spacer</span>
                     </Label>
                   </div>
                 ))}
