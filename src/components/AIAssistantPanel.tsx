@@ -82,12 +82,42 @@ Fit Analysis:
       setMessages(prev => [...prev, assistantMessage]);
     };
 
+    // Listen for LinkedIn optimization events
+    const handleLinkedInOptimization = (event: CustomEvent<any>) => {
+      console.log("[AIAssistantPanel] Received LinkedIn optimization:", event.detail);
+      
+      const optimizationData = event.detail.data;
+      const optimizationContent = `Here's your optimized LinkedIn content:
+
+${Object.entries(optimizationData.sections).map(([section, content]: [string, any]) => `
+${section.charAt(0).toUpperCase() + section.slice(1)}:
+${content.optimized}
+
+Improvements Made:
+${content.improvements.map((improvement: string) => `• ${improvement}`).join('\n')}
+`).join('\n')}
+
+Format: ${optimizationData.format}
+Tone: ${optimizationData.tone}
+
+Review the changes and update your LinkedIn profile accordingly.`;
+
+      const assistantMessage: Message = {
+        role: "assistant",
+        content: optimizationContent
+      };
+      
+      setMessages(prev => [...prev, assistantMessage]);
+    };
+
     window.addEventListener('execSummaryGenerated', handleExecSummary as EventListener);
     window.addEventListener('companyProfileGenerated', handleCompanyProfile as EventListener);
+    window.addEventListener('linkedInOptimized', handleLinkedInOptimization as EventListener);
     
     return () => {
       window.removeEventListener('execSummaryGenerated', handleExecSummary as EventListener);
       window.removeEventListener('companyProfileGenerated', handleCompanyProfile as EventListener);
+      window.removeEventListener('linkedInOptimized', handleLinkedInOptimization as EventListener);
     };
   }, []);
 

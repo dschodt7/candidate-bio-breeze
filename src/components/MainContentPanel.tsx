@@ -13,6 +13,7 @@ import { ButtonDemo } from "@/components/ui/ai-button";
 import { ExecutiveSummaryDialog } from "@/components/executive-summary/ExecutiveSummaryDialog";
 import { IdealCompanyProfileDialog } from "@/components/company-profile/IdealCompanyProfileDialog";
 import { useToast } from "@/hooks/use-toast";
+import { LinkedInOptimizerDialog } from "@/components/linkedin/LinkedInOptimizerDialog";
 
 type ActiveSection = "linkedin" | "resume" | "screening" | null;
 
@@ -29,6 +30,8 @@ const MainContentPanel = () => {
   const [isCompanyProfileDialogOpen, setIsCompanyProfileDialogOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isGeneratingProfile, setIsGeneratingProfile] = useState(false);
+  const [isLinkedInOptimizerDialogOpen, setIsLinkedInOptimizerDialogOpen] = useState(false);
+  const [isOptimizingLinkedIn, setIsOptimizingLinkedIn] = useState(false);
   const { toast } = useToast();
 
   const { data: linkedInAnalysis } = useQuery({
@@ -253,6 +256,64 @@ const MainContentPanel = () => {
     }
   };
 
+  const handleLinkedInOptimizerClick = () => {
+    console.log("[MainContentPanel] LinkedIn Optimizer button clicked");
+    setIsLinkedInOptimizerDialogOpen(true);
+  };
+
+  const handleOptimizeLinkedIn = async (options: any) => {
+    if (!candidate?.id) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      console.log("[MainContentPanel] Optimizing LinkedIn content with options:", options);
+      setIsOptimizingLinkedIn(true);
+      
+      const { data, error } = await supabase.functions.invoke(
+        'optimize-linkedin-content',
+        {
+          body: { 
+            candidateId: candidate.id,
+            format: options.format,
+            tone: options.tone,
+            sections: options.sections
+          }
+        }
+      );
+
+      if (error) throw error;
+
+      console.log("[MainContentPanel] LinkedIn content optimized successfully:", data);
+      
+      const optimizationEvent = new CustomEvent('linkedInOptimized', { 
+        detail: data
+      });
+      window.dispatchEvent(optimizationEvent);
+
+      setIsLinkedInOptimizerDialogOpen(false);
+      
+      toast({
+        title: "Success",
+        description: "LinkedIn content optimized successfully",
+      });
+    } catch (error) {
+      console.error("[MainContentPanel] Error optimizing LinkedIn content:", error);
+      toast({
+        title: "Error",
+        description: "Failed to optimize LinkedIn content",
+        variant: "destructive",
+      });
+    } finally {
+      setIsOptimizingLinkedIn(false);
+    }
+  };
+
   const displayCards = [
     {
       icon: <User className="size-4 text-blue-500" />,
@@ -392,7 +453,10 @@ const MainContentPanel = () => {
                           label="Ideal Company Profile" 
                           onClick={handleCompanyProfileClick}
                         />
-                        <ButtonDemo label="LinkedIn Optimizer" />
+                        <ButtonDemo 
+                          label="LinkedIn Optimizer" 
+                          onClick={handleLinkedInOptimizerClick}
+                        />
                         <ButtonDemo label="Resume Optimizer" />
                       </div>
                     </div>
@@ -432,6 +496,13 @@ const MainContentPanel = () => {
         onOpenChange={setIsCompanyProfileDialogOpen}
         onGenerate={handleGenerateCompanyProfile}
         isGenerating={isGeneratingProfile}
+      />
+
+      <LinkedInOptimizerDialog
+        open={isLinkedInOptimizerDialogOpen}
+        onOpenChange={setIsLinkedInOptimizerDialogOpen}
+        onOptimize={handleOptimizeLinkedIn}
+        isOptimizing={isOptimizingLinkedIn}
       />
     </>
   );
