@@ -144,8 +144,8 @@ export const LinkedInOptimizerDialog = ({
                   { value: 'senior-leader', label: 'Senior Leader', description: 'Proven Leader' }
                 ].map(({ value, label, description }) => (
                   <div key={value} className="flex items-center space-x-2">
-                    <RadioGroupItem value={value} id={`tone-${value}`} className="border-purple-300 text-purple-300" />
-                    <Label htmlFor={`tone-${value}`} className="flex flex-col cursor-pointer">
+                    <RadioGroupItem value={value} id={`format-${value}`} className="border-purple-300 text-purple-300" />
+                    <Label htmlFor={`format-${value}`} className="flex flex-col cursor-pointer">
                       <span className="font-medium text-white">{label}</span>
                       <span className="text-xs text-gray-300">{description}</span>
                     </Label>
