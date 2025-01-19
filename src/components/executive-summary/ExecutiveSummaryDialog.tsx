@@ -164,13 +164,13 @@ export const ExecutiveSummaryDialog = ({
           <span className="flex items-center justify-center gap-1.5">
             {isGenerating ? (
               <>
-                <Wand2 className="h-4 w-4 animate-pulse text-purple-300" />
+                <Wand2 className="h-4 w-4 animate-pulse text-yellow-400" />
                 Making Magic, Take 3 Deep Breaths!
-                <Wand2 className="h-4 w-4 animate-pulse text-purple-300" />
+                <Wand2 className="h-4 w-4 animate-pulse text-yellow-400" />
               </>
             ) : (
               <>
-                <Wand2 className="h-4 w-4 transition-transform group-hover:rotate-12 text-purple-300" />
+                <Wand2 className="h-4 w-4 animate-pulse transition-transform group-hover:rotate-12 text-yellow-400" />
                 Generate Executive Summary
               </>
             )}
