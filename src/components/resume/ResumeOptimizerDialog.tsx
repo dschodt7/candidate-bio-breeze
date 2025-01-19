@@ -82,8 +82,8 @@ export const ResumeOptimizerDialog = ({
             >
               {[
                 { value: 'quick-scan', label: 'Quick Scan', description: 'Overview, Rapid Assessment' },
-                { value: 'deep-dive', label: 'Deep Dive', description: 'Comprehensive Analysis with Detailed Insights' },
-                { value: 'strategic', label: 'Strategic Enhancement', description: 'Advanced Optimization for Executive Positioning' }
+                { value: 'deep-dive', label: 'Deep Dive', description: 'Comprehensive Analysis and Insights' },
+                { value: 'strategic', label: 'Strategic Enhancement', description: 'Advanced Optimization' }
               ].map(({ value, label, description }) => (
                 <div key={value} className="flex items-center space-x-2">
                   <RadioGroupItem value={value} id={`type-${value}`} className="border-purple-300 text-purple-300" />
