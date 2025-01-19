@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { Bot, CheckSquare, Square, Star } from "lucide-react";
+import { Bot, CheckSquare, Square, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface ExecutiveSummaryDialogProps {
@@ -164,13 +164,13 @@ export const ExecutiveSummaryDialog = ({
           <span className="flex items-center justify-center gap-1.5">
             {isGenerating ? (
               <>
-                <Star className="h-4 w-4 animate-pulse text-yellow-400" />
+                <Wand2 className="h-4 w-4 animate-pulse text-purple-300" />
                 Making Magic, Take 3 Deep Breaths!
-                <Star className="h-4 w-4 animate-pulse text-yellow-400" />
+                <Wand2 className="h-4 w-4 animate-pulse text-purple-300" />
               </>
             ) : (
               <>
-                <Star className="h-4 w-4 transition-transform group-hover:rotate-12 text-yellow-400" />
+                <Wand2 className="h-4 w-4 transition-transform group-hover:rotate-12 text-purple-300" />
                 Generate Executive Summary
               </>
             )}
