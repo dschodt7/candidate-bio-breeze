@@ -119,7 +119,7 @@ export const ResumeOptimizerDialog = ({
               >
                 {[
                   { value: 'quick-scan', label: 'Quick Scan', description: 'Overview, Rapid Assessment' },
-                  { value: 'deep-dive', label: 'Deep Dive', description: 'Comprehensive Analysis and Insights' },
+                  { value: 'deep-dive', label: 'Deep Dive', description: 'Comprehensive Analysis' },
                   { value: 'strategic', label: 'Strategic Enhancement', description: 'Advanced Optimization' }
                 ].map(({ value, label, description }) => (
                   <div key={value} className="flex items-center space-x-2">
