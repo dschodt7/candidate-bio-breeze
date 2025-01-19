@@ -123,7 +123,7 @@ Create a compelling executive summary that showcases this leader's capabilities 
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: format === 'snapshot' ? 'gpt-4o-mini' : 'gpt-4o',
+        model: format === 'snapshot' ? 'gpt-4o' : 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
