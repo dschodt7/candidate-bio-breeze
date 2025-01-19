@@ -79,7 +79,7 @@ export const ExecutiveSummaryDialog = ({
                 { key: 'caseStudies', label: 'Case Studies' },
                 { key: 'businessProblems', label: 'Business Problems' },
                 { key: 'motivations', label: 'Motivations' },
-                { key: 'leaderDiscoveryCriteria', label: 'Leader Discovery Criteria' }
+                { key: 'leaderDiscoveryCriteria', label: 'Additional Leader Discovery Criteria' }
               ].map(({ key, label }) => (
                 <button
                   key={key}
