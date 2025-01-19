@@ -118,11 +118,11 @@ export const LinkedInOptimizerDialog = ({
                   { value: 'achievement-focused', label: 'Achievement Focused', description: 'Results & Impact' },
                   { value: 'domain-authority', label: 'Domain Authority', description: 'Industry Expertise' }
                 ].map(({ value, label, description }) => (
-                  <div key={value} className="flex items-center space-x-2 min-h-[42px] h-[42px]">
+                  <div key={value} className="flex items-center space-x-2">
                     <RadioGroupItem value={value} id={`format-${value}`} className="border-purple-300 text-purple-300" />
                     <Label htmlFor={`format-${value}`} className="flex flex-col cursor-pointer">
-                      <span className="font-medium text-white leading-tight">{label}</span>
-                      <span className="text-xs text-gray-300 leading-tight">{description}</span>
+                      <span className="font-medium text-white">{label}</span>
+                      <span className="text-xs text-gray-300">{description}</span>
                     </Label>
                   </div>
                 ))}
@@ -143,11 +143,11 @@ export const LinkedInOptimizerDialog = ({
                   { value: 'c-level', label: 'C-Level Executive', description: 'Domain Expert' },
                   { value: 'senior-leader', label: 'Senior Leader', description: 'Proven Leader' }
                 ].map(({ value, label, description }) => (
-                  <div key={value} className="flex items-center space-x-2 min-h-[42px] h-[42px]">
+                  <div key={value} className="flex items-center space-x-2">
                     <RadioGroupItem value={value} id={`tone-${value}`} className="border-purple-300 text-purple-300" />
                     <Label htmlFor={`tone-${value}`} className="flex flex-col cursor-pointer">
-                      <span className="font-medium text-white leading-tight">{label}</span>
-                      <span className="text-xs text-gray-300 leading-tight">{description}</span>
+                      <span className="font-medium text-white">{label}</span>
+                      <span className="text-xs text-gray-300">{description}</span>
                     </Label>
                   </div>
                 ))}
@@ -165,7 +165,7 @@ export const LinkedInOptimizerDialog = ({
             {isOptimizing ? (
               <>
                 <Wand2 className="h-4 w-4 animate-pulse text-yellow-400" />
-                Optimizing Your LinkedIn Profile...
+                Making Magic, Take 3 Deep Breaths!
                 <Wand2 className="h-4 w-4 animate-pulse text-yellow-400" />
               </>
             ) : (
