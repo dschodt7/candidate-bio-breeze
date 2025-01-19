@@ -11,6 +11,7 @@ import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
 import { ButtonDemo } from "@/components/ui/ai-button";
 import { ExecutiveSummaryDialog } from "@/components/executive-summary/ExecutiveSummaryDialog";
+import { IdealCompanyProfileDialog } from "@/components/company-profile/IdealCompanyProfileDialog";
 import { useToast } from "@/hooks/use-toast";
 
 type ActiveSection = "linkedin" | "resume" | "screening" | null;
@@ -25,7 +26,9 @@ const MainContentPanel = () => {
   const { candidate, getCandidateName } = useCandidate();
   const [activeSection, setActiveSection] = useState<ActiveSection>(null);
   const [isExecSummaryDialogOpen, setIsExecSummaryDialogOpen] = useState(false);
+  const [isCompanyProfileDialogOpen, setIsCompanyProfileDialogOpen] = useState(false);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isGeneratingProfile, setIsGeneratingProfile] = useState(false);
   const { toast } = useToast();
 
   const { data: linkedInAnalysis } = useQuery({
@@ -144,6 +147,11 @@ const MainContentPanel = () => {
     setIsExecSummaryDialogOpen(true);
   };
 
+  const handleCompanyProfileClick = () => {
+    console.log("[MainContentPanel] Company Profile button clicked");
+    setIsCompanyProfileDialogOpen(true);
+  };
+
   const handleGenerateExecSummary = async (options: any) => {
     if (!candidate?.id) {
       toast({
@@ -174,7 +182,6 @@ const MainContentPanel = () => {
 
       console.log("[MainContentPanel] Summary generated successfully:", data);
       
-      // Emit custom event with summary data
       const summaryEvent = new CustomEvent('execSummaryGenerated', { 
         detail: data
       });
@@ -190,6 +197,59 @@ const MainContentPanel = () => {
       });
     } finally {
       setIsGenerating(false);
+    }
+  };
+
+  const handleGenerateCompanyProfile = async (options: any) => {
+    if (!candidate?.id) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      console.log("[MainContentPanel] Generating company profile with options:", options);
+      setIsGeneratingProfile(true);
+      
+      const { data, error } = await supabase.functions.invoke(
+        'generate-company-profile',
+        {
+          body: { 
+            candidateId: candidate.id,
+            format: options.format,
+            tone: options.tone,
+            components: options.components
+          }
+        }
+      );
+
+      if (error) throw error;
+
+      console.log("[MainContentPanel] Company profile generated successfully:", data);
+      
+      const profileEvent = new CustomEvent('companyProfileGenerated', { 
+        detail: data
+      });
+      window.dispatchEvent(profileEvent);
+
+      setIsCompanyProfileDialogOpen(false);
+      
+      toast({
+        title: "Success",
+        description: "Company profile generated successfully",
+      });
+    } catch (error) {
+      console.error("[MainContentPanel] Error generating company profile:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate company profile",
+        variant: "destructive",
+      });
+    } finally {
+      setIsGeneratingProfile(false);
     }
   };
 
@@ -328,7 +388,10 @@ const MainContentPanel = () => {
                           label="Executive Summary" 
                           onClick={handleExecSummaryClick}
                         />
-                        <ButtonDemo label="Ideal Company Profile" />
+                        <ButtonDemo 
+                          label="Ideal Company Profile" 
+                          onClick={handleCompanyProfileClick}
+                        />
                         <ButtonDemo label="LinkedIn Optimizer" />
                         <ButtonDemo label="Resume Optimizer" />
                       </div>
@@ -362,6 +425,13 @@ const MainContentPanel = () => {
         onOpenChange={setIsExecSummaryDialogOpen}
         onGenerate={handleGenerateExecSummary}
         isGenerating={isGenerating}
+      />
+
+      <IdealCompanyProfileDialog
+        open={isCompanyProfileDialogOpen}
+        onOpenChange={setIsCompanyProfileDialogOpen}
+        onGenerate={handleGenerateCompanyProfile}
+        isGenerating={isGeneratingProfile}
       />
     </>
   );
