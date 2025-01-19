@@ -14,6 +14,7 @@ import { ExecutiveSummaryDialog } from "@/components/executive-summary/Executive
 import { IdealCompanyProfileDialog } from "@/components/company-profile/IdealCompanyProfileDialog";
 import { useToast } from "@/hooks/use-toast";
 import { LinkedInOptimizerDialog } from "@/components/linkedin/LinkedInOptimizerDialog";
+import { ResumeOptimizerDialog } from "@/components/resume/ResumeOptimizerDialog";
 
 type ActiveSection = "linkedin" | "resume" | "screening" | null;
 
@@ -32,6 +33,8 @@ const MainContentPanel = () => {
   const [isGeneratingProfile, setIsGeneratingProfile] = useState(false);
   const [isLinkedInOptimizerDialogOpen, setIsLinkedInOptimizerDialogOpen] = useState(false);
   const [isOptimizingLinkedIn, setIsOptimizingLinkedIn] = useState(false);
+  const [isResumeOptimizerDialogOpen, setIsResumeOptimizerDialogOpen] = useState(false);
+  const [isOptimizingResume, setIsOptimizingResume] = useState(false);
   const { toast } = useToast();
 
   const { data: linkedInAnalysis } = useQuery({
@@ -314,6 +317,65 @@ const MainContentPanel = () => {
     }
   };
 
+  const handleResumeOptimizerClick = () => {
+    console.log("[MainContentPanel] Resume Optimizer button clicked");
+    setIsResumeOptimizerDialogOpen(true);
+  };
+
+  const handleOptimizeResume = async (options: any) => {
+    if (!candidate?.id) {
+      toast({
+        title: "Error",
+        description: "No candidate selected",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      console.log("[MainContentPanel] Optimizing resume content with options:", options);
+      setIsOptimizingResume(true);
+      
+      const { data, error } = await supabase.functions.invoke(
+        'optimize-resume-content',
+        {
+          body: { 
+            candidateId: candidate.id,
+            analysisType: options.analysisType,
+            positioningLevel: options.positioningLevel,
+            industry: options.industry,
+            sections: options.sections
+          }
+        }
+      );
+
+      if (error) throw error;
+
+      console.log("[MainContentPanel] Resume content optimized successfully:", data);
+      
+      const optimizationEvent = new CustomEvent('resumeOptimized', { 
+        detail: data
+      });
+      window.dispatchEvent(optimizationEvent);
+
+      setIsResumeOptimizerDialogOpen(false);
+      
+      toast({
+        title: "Success",
+        description: "Resume content optimized successfully",
+      });
+    } catch (error) {
+      console.error("[MainContentPanel] Error optimizing resume content:", error);
+      toast({
+        title: "Error",
+        description: "Failed to optimize resume content",
+        variant: "destructive",
+      });
+    } finally {
+      setIsOptimizingResume(false);
+    }
+  };
+
   const displayCards = [
     {
       icon: <User className="size-4 text-blue-500" />,
@@ -457,7 +519,10 @@ const MainContentPanel = () => {
                           label="LinkedIn Optimizer" 
                           onClick={handleLinkedInOptimizerClick}
                         />
-                        <ButtonDemo label="Resume Optimizer" />
+                        <ButtonDemo 
+                          label="Resume Optimizer" 
+                          onClick={handleResumeOptimizerClick}
+                        />
                       </div>
                     </div>
                   </div>
@@ -503,6 +568,13 @@ const MainContentPanel = () => {
         onOpenChange={setIsLinkedInOptimizerDialogOpen}
         onOptimize={handleOptimizeLinkedIn}
         isOptimizing={isOptimizingLinkedIn}
+      />
+
+      <ResumeOptimizerDialog
+        open={isResumeOptimizerDialogOpen}
+        onOpenChange={setIsResumeOptimizerDialogOpen}
+        onOptimize={handleOptimizeResume}
+        isOptimizing={isOptimizingResume}
       />
     </>
   );
