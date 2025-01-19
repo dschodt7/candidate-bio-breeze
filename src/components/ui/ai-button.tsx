@@ -14,7 +14,12 @@ function ButtonDemo({ label, onClick }: ButtonDemoProps) {
       onClick={onClick}
     >
       {label}
-      <Sparkles className="opacity-60" size={16} strokeWidth={2} aria-hidden="true" />
+      <Sparkles 
+        className="text-yellow-400 animate-pulse" 
+        size={16} 
+        strokeWidth={2} 
+        aria-hidden="true" 
+      />
     </Button>
   );
 }
