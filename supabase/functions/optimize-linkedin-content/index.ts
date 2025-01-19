@@ -15,44 +15,44 @@ serve(async (req) => {
   try {
     const { sections, format, tone } = await req.json();
     console.log('[optimize-linkedin-content] Processing request:', { format, tone });
-    console.log('[optimize-linkedin-content] Sections to optimize:', Object.keys(sections));
+    console.log('[optimize-linkedin-content] Sections to optimize:', sections);
 
-    const systemPrompt = `You are an expert LinkedIn profile optimizer for executive leaders. Your task is to enhance their LinkedIn content while maintaining authenticity and impact.
+    const systemPrompt = `You are an expert LinkedIn profile optimizer for executive leaders. Your task is to enhance their EXISTING LinkedIn content while maintaining authenticity and impact.
 
 Format Requirements:
-${format === 'strategic-narrative' ? 'Create a compelling narrative that showcases strategic leadership and vision.' :
-  format === 'achievement-focused' ? 'Emphasize quantifiable achievements and business impact.' :
-  'Establish domain expertise and thought leadership.'}
+${format === 'strategic-narrative' ? 'Enhance their existing narrative to better showcase strategic leadership and vision.' :
+  format === 'achievement-focused' ? 'Strengthen their existing achievements and quantifiable impact.' :
+  'Elevate their existing content to better establish domain expertise and thought leadership.'}
 
 Tone Requirements:
-${tone === 'ceo-board' ? 'Write for a board-level audience, emphasizing enterprise-wide impact.' :
-  tone === 'c-level' ? 'Target peer C-suite executives, focusing on strategic execution.' :
-  'Address senior leadership peers, highlighting operational excellence.'}
+${tone === 'ceo-board' ? 'Refine for a board-level audience while maintaining their current role context.' :
+  tone === 'c-level' ? 'Enhance for C-suite peers while preserving their actual position and impact.' :
+  'Optimize for senior leadership while keeping their authentic experience.'}
 
-For each section, return:
-1. Optimized content
-2. List of specific improvements made
+For each section, analyze their existing content and return:
+1. Optimized version that maintains their actual role and experience
+2. List of specific improvements made to their original content
 
 Return a JSON object with:
 {
   "sections": {
     "sectionKey": {
       "optimized": "Enhanced content",
-      "improvements": ["Improvement 1", "Improvement 2"]
+      "improvements": ["Specific improvement 1", "Specific improvement 2"]
     }
   },
   "format": "Description of format applied",
   "tone": "Description of tone used"
 }`;
 
-    const userPrompt = `Please optimize these LinkedIn sections:
+    const userPrompt = `Please optimize these actual LinkedIn sections while maintaining the authenticity of their role and experience:
 
 ${Object.entries(sections).map(([key, content]) => `
 ${key.toUpperCase()}:
 ${content}
 `).join('\n')}
 
-Apply the selected format (${format}) and tone (${tone}) while maintaining authenticity.`;
+Enhance their existing content using the selected format (${format}) and tone (${tone}) while preserving their actual role and experience.`;
 
     console.log('[optimize-linkedin-content] Sending request to OpenAI');
 

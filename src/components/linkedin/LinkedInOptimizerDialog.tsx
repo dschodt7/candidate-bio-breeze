@@ -7,6 +7,8 @@ import { Bot, CheckSquare, Square, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
+import { useQuery } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 
 interface LinkedInOptimizerDialogProps {
   open: boolean;
@@ -35,6 +37,8 @@ export const LinkedInOptimizerDialog = ({
   isOptimizing
 }: LinkedInOptimizerDialogProps) => {
   const { toast } = useToast();
+  const [searchParams] = useSearchParams();
+  const candidateId = searchParams.get('candidate');
   const [options, setOptions] = useState<OptimizerOptions>({
     sections: {
       about: true,
@@ -46,6 +50,32 @@ export const LinkedInOptimizerDialog = ({
     },
     format: 'achievement-focused',
     tone: 'c-level'
+  });
+
+  // Fetch LinkedIn sections content
+  const { data: linkedInSections } = useQuery({
+    queryKey: ['linkedin-sections', candidateId],
+    queryFn: async () => {
+      if (!candidateId) return null;
+      console.log("[LinkedInOptimizerDialog] Fetching LinkedIn sections for candidate:", candidateId);
+      
+      const { data, error } = await supabase
+        .from('linkedin_sections')
+        .select('section_type, content')
+        .eq('candidate_id', candidateId);
+
+      if (error) {
+        console.error("[LinkedInOptimizerDialog] Error fetching LinkedIn sections:", error);
+        throw error;
+      }
+
+      console.log("[LinkedInOptimizerDialog] Fetched sections:", data);
+      return data.reduce((acc, section) => ({
+        ...acc,
+        [section.section_type]: section.content
+      }), {});
+    },
+    enabled: !!candidateId
   });
 
   const toggleSection = (key: keyof OptimizerOptions['sections']) => {
@@ -73,9 +103,23 @@ export const LinkedInOptimizerDialog = ({
         return;
       }
 
-      onOptimize(options);
+      // Create sections object with actual content
+      const sectionsToOptimize = selectedSections.reduce((acc, sectionType) => {
+        const content = linkedInSections?.[sectionType];
+        if (content) {
+          acc[sectionType] = content;
+        }
+        return acc;
+      }, {} as Record<string, string>);
+
+      console.log("[LinkedInOptimizerDialog] Optimizing sections with content:", sectionsToOptimize);
+
+      onOptimize({
+        ...options,
+        sections: sectionsToOptimize
+      } as OptimizerOptions);
     } catch (error) {
-      console.error('Error in LinkedIn optimization:', error);
+      console.error('[LinkedInOptimizerDialog] Error in LinkedIn optimization:', error);
       toast({
         title: "Error",
         description: "Failed to optimize LinkedIn content",
