@@ -72,69 +72,6 @@ export const ResumeOptimizerDialog = ({
 
         <div className="space-y-3">
           <div className="space-y-2">
-            <Label className="text-base font-semibold text-white">Analysis Type</Label>
-            <RadioGroup
-              value={options.analysisType}
-              onValueChange={(value: OptimizerOptions['analysisType']) => 
-                setOptions(prev => ({ ...prev, analysisType: value }))
-              }
-              className="grid gap-1.5"
-            >
-              {[
-                { value: 'quick-scan', label: 'Quick Scan', description: 'Overview, Rapid Assessment' },
-                { value: 'deep-dive', label: 'Deep Dive', description: 'Comprehensive Analysis and Insights' },
-                { value: 'strategic', label: 'Strategic Enhancement', description: 'Advanced Optimization' }
-              ].map(({ value, label, description }) => (
-                <div key={value} className="flex items-center space-x-2">
-                  <RadioGroupItem value={value} id={`type-${value}`} className="border-purple-300 text-purple-300" />
-                  <Label htmlFor={`type-${value}`} className="flex flex-col cursor-pointer">
-                    <span className="font-medium text-white">{label}</span>
-                    <span className="text-xs text-gray-300">{description}</span>
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-base font-semibold text-white">Positioning Level</Label>
-            <RadioGroup
-              value={options.positioningLevel}
-              onValueChange={(value: OptimizerOptions['positioningLevel']) => 
-                setOptions(prev => ({ ...prev, positioningLevel: value }))
-              }
-              className="grid gap-1.5"
-            >
-              {[
-                { value: 'ceo', label: 'CEO', description: 'Enterprise Level' },
-                { value: 'c-level', label: 'C-Level Executive', description: 'Domain Expert' },
-                { value: 'senior-leader', label: 'Senior Leader', description: 'Proven Leader' }
-              ].map(({ value, label, description }) => (
-                <div key={value} className="flex items-center space-x-2">
-                  <RadioGroupItem value={value} id={`level-${value}`} className="border-purple-300 text-purple-300" />
-                  <Label htmlFor={`level-${value}`} className="flex flex-col cursor-pointer">
-                    <span className="font-medium text-white">{label}</span>
-                    <span className="text-xs text-gray-300">{description}</span>
-                  </Label>
-                </div>
-              ))}
-            </RadioGroup>
-          </div>
-
-          <div className="space-y-2">
-            <Label className="text-base font-semibold text-white">Industry Context</Label>
-            <div className="relative">
-              <Input
-                value={options.industry}
-                onChange={(e) => setOptions(prev => ({ ...prev, industry: e.target.value }))}
-                placeholder="Enter your industry"
-                className="pl-9 bg-[#1A202C] border-purple-300/20 text-white placeholder:text-gray-400"
-              />
-              <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-purple-300" />
-            </div>
-          </div>
-
-          <div className="space-y-2">
             <Label className="text-base font-semibold text-white">Target Sections to Optimize</Label>
             <div className="grid gap-1">
               <div className="flex items-center gap-2 p-1.5 rounded-md bg-[#4A235A]/30 text-white">
@@ -167,6 +104,71 @@ export const ResumeOptimizerDialog = ({
                   <span className="font-medium">{label}</span>
                 </button>
               ))}
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label className="text-base font-semibold text-white">Analysis Type</Label>
+              <RadioGroup
+                value={options.analysisType}
+                onValueChange={(value: OptimizerOptions['analysisType']) => 
+                  setOptions(prev => ({ ...prev, analysisType: value }))
+                }
+                className="grid gap-1.5"
+              >
+                {[
+                  { value: 'quick-scan', label: 'Quick Scan', description: 'Overview, Rapid Assessment' },
+                  { value: 'deep-dive', label: 'Deep Dive', description: 'Comprehensive Analysis and Insights' },
+                  { value: 'strategic', label: 'Strategic Enhancement', description: 'Advanced Optimization' }
+                ].map(({ value, label, description }) => (
+                  <div key={value} className="flex items-center space-x-2">
+                    <RadioGroupItem value={value} id={`type-${value}`} className="border-purple-300 text-purple-300" />
+                    <Label htmlFor={`type-${value}`} className="flex flex-col cursor-pointer">
+                      <span className="font-medium text-white">{label}</span>
+                      <span className="text-xs text-gray-300">{description}</span>
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+
+            <div className="space-y-2">
+              <Label className="text-base font-semibold text-white">Positioning Level</Label>
+              <RadioGroup
+                value={options.positioningLevel}
+                onValueChange={(value: OptimizerOptions['positioningLevel']) => 
+                  setOptions(prev => ({ ...prev, positioningLevel: value }))
+                }
+                className="grid gap-1.5"
+              >
+                {[
+                  { value: 'ceo', label: 'CEO', description: 'Enterprise Level' },
+                  { value: 'c-level', label: 'C-Level Executive', description: 'Domain Expert' },
+                  { value: 'senior-leader', label: 'Senior Leader', description: 'Proven Leader' }
+                ].map(({ value, label, description }) => (
+                  <div key={value} className="flex items-center space-x-2">
+                    <RadioGroupItem value={value} id={`level-${value}`} className="border-purple-300 text-purple-300" />
+                    <Label htmlFor={`level-${value}`} className="flex flex-col cursor-pointer">
+                      <span className="font-medium text-white">{label}</span>
+                      <span className="text-xs text-gray-300">{description}</span>
+                    </Label>
+                  </div>
+                ))}
+              </RadioGroup>
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label className="text-base font-semibold text-white">Industry Context</Label>
+            <div className="relative">
+              <Input
+                value={options.industry}
+                onChange={(e) => setOptions(prev => ({ ...prev, industry: e.target.value }))}
+                placeholder="Enter your industry"
+                className="pl-9 bg-[#1A202C] border-purple-300/20 text-white placeholder:text-gray-400"
+              />
+              <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-purple-300" />
             </div>
           </div>
         </div>
