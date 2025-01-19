@@ -114,9 +114,9 @@ export const LinkedInOptimizerDialog = ({
                 className="grid gap-1.5"
               >
                 {[
-                  { value: 'strategic-narrative', label: 'Strategic Narrative', description: 'Vision-driven leadership' },
-                  { value: 'achievement-focused', label: 'Achievement Focused', description: 'Results & impact' },
-                  { value: 'domain-authority', label: 'Domain Authority', description: 'Industry expertise' }
+                  { value: 'strategic-narrative', label: 'Strategic Narrative', description: 'VISION-DRIVEN LEADERSHIP' },
+                  { value: 'achievement-focused', label: 'Achievement Focused', description: 'RESULTS & IMPACT' },
+                  { value: 'domain-authority', label: 'Domain Authority', description: 'INDUSTRY EXPERTISE' }
                 ].map(({ value, label, description }) => (
                   <div key={value} className="flex items-center space-x-2">
                     <RadioGroupItem value={value} id={`format-${value}`} className="border-purple-300 text-purple-300" />
@@ -139,9 +139,9 @@ export const LinkedInOptimizerDialog = ({
                 className="grid gap-1.5"
               >
                 {[
-                  { value: 'ceo-board', label: 'CEO/Board Level', description: 'Strategic leadership' },
-                  { value: 'c-level', label: 'C-Level Executive', description: 'Enterprise impact' },
-                  { value: 'senior-leader', label: 'Senior Leader', description: 'Operational excellence' }
+                  { value: 'ceo-board', label: 'CEO/Board Level', description: '' },
+                  { value: 'c-level', label: 'C-Level Executive', description: '' },
+                  { value: 'senior-leader', label: 'Senior Leader', description: '' }
                 ].map(({ value, label, description }) => (
                   <div key={value} className="flex items-center space-x-2">
                     <RadioGroupItem value={value} id={`tone-${value}`} className="border-purple-300 text-purple-300" />
