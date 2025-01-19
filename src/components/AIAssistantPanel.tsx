@@ -25,7 +25,7 @@ const AIAssistantPanel = () => {
     }
   }, [messages]);
 
-  // Listen for executive summary generation events
+  // Listen for various generation events
   useEffect(() => {
     const handleExecSummary = (event: CustomEvent<any>) => {
       console.log("[AIAssistantPanel] Received executive summary:", event.detail);
@@ -53,7 +53,6 @@ Focus Areas:
       setMessages(prev => [...prev, assistantMessage]);
     };
 
-    // Listen for company profile generation events
     const handleCompanyProfile = (event: CustomEvent<any>) => {
       console.log("[AIAssistantPanel] Received company profile:", event.detail);
       
@@ -82,7 +81,6 @@ Fit Analysis:
       setMessages(prev => [...prev, assistantMessage]);
     };
 
-    // Listen for LinkedIn optimization events
     const handleLinkedInOptimization = (event: CustomEvent<any>) => {
       console.log("[AIAssistantPanel] Received LinkedIn optimization:", event.detail);
       
@@ -110,14 +108,45 @@ Review the changes and update your LinkedIn profile accordingly.`;
       setMessages(prev => [...prev, assistantMessage]);
     };
 
+    // New handler for resume optimization
+    const handleResumeOptimization = (event: CustomEvent<any>) => {
+      console.log("[AIAssistantPanel] Received resume optimization:", event.detail);
+      
+      const optimizationData = event.detail.data;
+      const optimizationContent = `Here's your optimized resume content:
+
+Analysis Type: ${optimizationData.analysisType}
+Positioning Level: ${optimizationData.positioningLevel}
+Industry Context: ${optimizationData.industry}
+
+${Object.entries(optimizationData.sections).map(([section, content]: [string, any]) => `
+${section}:
+${content.optimized}
+
+Key Improvements:
+${content.improvements.map((improvement: string) => `• ${improvement}`).join('\n')}
+`).join('\n')}
+
+Review these optimizations and update your resume accordingly. The changes focus on highlighting your achievements and aligning with ${optimizationData.positioningLevel} level positions in the ${optimizationData.industry} industry.`;
+
+      const assistantMessage: Message = {
+        role: "assistant",
+        content: optimizationContent
+      };
+      
+      setMessages(prev => [...prev, assistantMessage]);
+    };
+
     window.addEventListener('execSummaryGenerated', handleExecSummary as EventListener);
     window.addEventListener('companyProfileGenerated', handleCompanyProfile as EventListener);
     window.addEventListener('linkedInOptimized', handleLinkedInOptimization as EventListener);
+    window.addEventListener('resumeOptimized', handleResumeOptimization as EventListener);
     
     return () => {
       window.removeEventListener('execSummaryGenerated', handleExecSummary as EventListener);
       window.removeEventListener('companyProfileGenerated', handleCompanyProfile as EventListener);
       window.removeEventListener('linkedInOptimized', handleLinkedInOptimization as EventListener);
+      window.removeEventListener('resumeOptimized', handleResumeOptimization as EventListener);
     };
   }, []);
 
