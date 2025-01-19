@@ -114,9 +114,9 @@ export const LinkedInOptimizerDialog = ({
                 className="grid gap-1.5"
               >
                 {[
-                  { value: 'strategic-narrative', label: 'Strategic Narrative', description: 'VISION-DRIVEN LEADERSHIP' },
-                  { value: 'achievement-focused', label: 'Achievement Focused', description: 'RESULTS & IMPACT' },
-                  { value: 'domain-authority', label: 'Domain Authority', description: 'INDUSTRY EXPERTISE' }
+                  { value: 'strategic-narrative', label: 'Strategic Narrative', description: 'Vision-Driven Leadership' },
+                  { value: 'achievement-focused', label: 'Achievement Focused', description: 'Results & Impact' },
+                  { value: 'domain-authority', label: 'Domain Authority', description: 'Industry Expertise' }
                 ].map(({ value, label, description }) => (
                   <div key={value} className="flex items-center space-x-2">
                     <RadioGroupItem value={value} id={`format-${value}`} className="border-purple-300 text-purple-300" />
@@ -147,7 +147,6 @@ export const LinkedInOptimizerDialog = ({
                     <RadioGroupItem value={value} id={`tone-${value}`} className="border-purple-300 text-purple-300" />
                     <Label htmlFor={`tone-${value}`} className="flex flex-col cursor-pointer">
                       <span className="font-medium text-white">{label}</span>
-                      <span className="text-xs text-gray-300">{description}</span>
                     </Label>
                   </div>
                 ))}
