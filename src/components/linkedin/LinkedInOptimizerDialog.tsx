@@ -21,8 +21,8 @@ interface OptimizerOptions {
     recommendations: boolean;
     headline: boolean;
   };
-  format: 'c-suite' | 'senior-leadership' | 'industry-expert';
-  tone: 'ceo' | 'c-level' | 'aspiring';
+  format: 'strategic-narrative' | 'achievement-focused' | 'domain-authority';
+  tone: 'ceo-board' | 'c-level' | 'senior-leader';
 }
 
 export const LinkedInOptimizerDialog = ({
@@ -39,7 +39,7 @@ export const LinkedInOptimizerDialog = ({
       recommendations: true,
       headline: true
     },
-    format: 'senior-leadership',
+    format: 'achievement-focused',
     tone: 'c-level'
   });
 
@@ -102,7 +102,7 @@ export const LinkedInOptimizerDialog = ({
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <Label className="text-base font-semibold text-white">Format</Label>
+              <Label className="text-base font-semibold text-white">Content Approach</Label>
               <RadioGroup
                 value={options.format}
                 onValueChange={(value: OptimizerOptions['format']) => 
@@ -111,9 +111,9 @@ export const LinkedInOptimizerDialog = ({
                 className="grid gap-1.5"
               >
                 {[
-                  { value: 'c-suite', label: 'C-Suite Ready', description: 'Top executive positioning' },
-                  { value: 'senior-leadership', label: 'Senior Leadership', description: 'VP/Director level' },
-                  { value: 'industry-expert', label: 'Industry Expert', description: 'Domain authority' }
+                  { value: 'strategic-narrative', label: 'Strategic Narrative', description: 'Vision-driven leadership' },
+                  { value: 'achievement-focused', label: 'Achievement Focused', description: 'Results & impact' },
+                  { value: 'domain-authority', label: 'Domain Authority', description: 'Industry expertise' }
                 ].map(({ value, label, description }) => (
                   <div key={value} className="flex items-center space-x-2">
                     <RadioGroupItem value={value} id={`format-${value}`} className="border-purple-300 text-purple-300" />
@@ -127,7 +127,7 @@ export const LinkedInOptimizerDialog = ({
             </div>
 
             <div className="space-y-1.5">
-              <Label className="text-base font-semibold text-white">Tone</Label>
+              <Label className="text-base font-semibold text-white">Positioning Level</Label>
               <RadioGroup
                 value={options.tone}
                 onValueChange={(value: OptimizerOptions['tone']) => 
@@ -136,9 +136,9 @@ export const LinkedInOptimizerDialog = ({
                 className="grid gap-1.5"
               >
                 {[
-                  { value: 'ceo', label: 'CEO', description: 'Visionary leadership' },
+                  { value: 'ceo-board', label: 'CEO/Board Level', description: 'Strategic leadership' },
                   { value: 'c-level', label: 'C-Level Executive', description: 'Enterprise impact' },
-                  { value: 'aspiring', label: 'Aspiring Leader', description: 'Growth trajectory' }
+                  { value: 'senior-leader', label: 'Senior Leader', description: 'Operational excellence' }
                 ].map(({ value, label, description }) => (
                   <div key={value} className="flex items-center space-x-2">
                     <RadioGroupItem value={value} id={`tone-${value}`} className="border-purple-300 text-purple-300" />
