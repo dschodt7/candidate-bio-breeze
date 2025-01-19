@@ -1,5 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { supabase } from "../_shared/supabase.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -13,26 +14,36 @@ serve(async (req) => {
 
   try {
     const { candidateId, analysisType, positioningLevel, industry, sections } = await req.json();
-    console.log('[optimize-resume-content] Processing request:', { analysisType, positioningLevel, industry });
+    console.log('[optimize-resume-content] Starting optimization:', { analysisType, positioningLevel, industry });
     console.log('[optimize-resume-content] Sections to optimize:', sections);
 
-    const systemPrompt = `You are an expert resume optimizer for executive leaders. Your task is to enhance their EXISTING resume content while maintaining authenticity and impact.
+    // Fetch candidate's resume text
+    const { data: candidate, error: candidateError } = await supabase
+      .from('candidates')
+      .select('resume_text')
+      .eq('id', candidateId)
+      .single();
 
-Analysis Type Requirements:
-${analysisType === 'quick-scan' ? 'Provide a rapid assessment and essential improvements.' :
-  analysisType === 'deep-dive' ? 'Deliver comprehensive analysis and detailed optimization suggestions.' :
-  'Focus on strategic positioning and executive-level enhancements.'}
+    if (candidateError) throw candidateError;
+    if (!candidate?.resume_text) throw new Error('No resume text found');
 
-Positioning Level Requirements:
-${positioningLevel === 'ceo' ? 'Optimize for board-level audience while maintaining their current role context.' :
-  positioningLevel === 'c-level' ? 'Enhance for C-suite peers while preserving their actual position and impact.' :
-  'Refine for senior leadership while keeping their authentic experience.'}
+    const systemPrompt = `You are an expert resume optimization agent for executive leaders. Your role is to enhance their EXISTING resume content while maintaining authenticity and professional credibility.
+
+Analysis Approach:
+${analysisType === 'quick-scan' ? 'Focus on high-impact, essential improvements that can be quickly implemented.' :
+  analysisType === 'deep-dive' ? 'Provide comprehensive analysis and detailed optimization suggestions.' :
+  'Deliver strategic enhancements focused on executive positioning and market differentiation.'}
+
+Position Level Context:
+${positioningLevel === 'ceo' ? 'Optimize for board and investor audiences while preserving authentic experience.' :
+  positioningLevel === 'c-level' ? 'Enhance for peer executive assessment while maintaining role authenticity.' :
+  'Refine for senior leadership evaluation while keeping genuine achievements.'}
 
 Industry Context: ${industry}
 
-For each selected section, analyze their existing content and return:
-1. Optimized version that maintains their actual role and experience
-2. List of specific improvements made to their original content
+For each selected section, analyze the existing content and provide:
+1. An optimized version that maintains authenticity
+2. Specific improvements made to enhance impact
 
 Return a JSON object with:
 {
@@ -42,28 +53,25 @@ Return a JSON object with:
       "improvements": ["Specific improvement 1", "Specific improvement 2"]
     }
   },
-  "analysisType": "Description of analysis approach",
-  "positioning": "Description of positioning strategy"
+  "analysisType": "Description of analysis approach used",
+  "positioning": "How the content was aligned to the position level"
 }`;
 
-    const { data: resumeData, error: resumeError } = await supabase
-      .from('resume_analyses')
-      .select('*')
-      .eq('candidate_id', candidateId)
-      .single();
-
-    if (resumeError) throw resumeError;
-
-    const userPrompt = `Please optimize these actual resume sections while maintaining the authenticity of their role and experience:
+    const userPrompt = `Please optimize these resume sections while maintaining authenticity:
 
 ${Object.entries(sections)
-  .filter(([key, isSelected]) => isSelected)
+  .filter(([_, isSelected]) => isSelected)
   .map(([key]) => `
 ${key.toUpperCase()}:
-${resumeData[key] || 'No content available'}
+${candidate.resume_text}
 `).join('\n')}
 
-Enhance their existing content using the selected analysis type (${analysisType}), positioning level (${positioningLevel}), and industry context (${industry}) while preserving their actual role and experience.`;
+Enhance the content using:
+- Analysis Type: ${analysisType}
+- Position Level: ${positioningLevel}
+- Industry Context: ${industry}
+
+Maintain authenticity and credibility while optimizing impact.`;
 
     console.log('[optimize-resume-content] Sending request to OpenAI');
 
@@ -93,26 +101,17 @@ Enhance their existing content using the selected analysis type (${analysisType}
     const openAIData = await openAIResponse.json();
     console.log('[optimize-resume-content] Received OpenAI response');
 
-    const content = openAIData.choices[0].message.content;
-    console.log('[optimize-resume-content] Raw OpenAI response:', content);
+    const optimization = JSON.parse(openAIData.choices[0].message.content);
+    console.log('[optimize-resume-content] Parsed optimization:', optimization);
 
-    let optimization;
-    try {
-      optimization = JSON.parse(content);
-      console.log('[optimize-resume-content] Parsed optimization:', optimization);
+    return new Response(
+      JSON.stringify({ 
+        success: true, 
+        data: optimization 
+      }),
+      { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+    );
 
-      return new Response(
-        JSON.stringify({ 
-          success: true, 
-          data: optimization
-        }),
-        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-
-    } catch (error) {
-      console.error('[optimize-resume-content] Error processing OpenAI response:', error);
-      throw new Error(`Failed to process optimization: ${error.message}`);
-    }
   } catch (error) {
     console.error('[optimize-resume-content] Error:', error);
     return new Response(
@@ -120,7 +119,7 @@ Enhance their existing content using the selected analysis type (${analysisType}
         success: false, 
         error: error.message 
       }),
-      {
+      { 
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
