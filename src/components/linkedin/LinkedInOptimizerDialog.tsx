@@ -5,6 +5,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
 import { Bot, CheckSquare, Square, Wand2 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface LinkedInOptimizerDialogProps {
   open: boolean;
@@ -32,6 +34,7 @@ export const LinkedInOptimizerDialog = ({
   onOptimize,
   isOptimizing
 }: LinkedInOptimizerDialogProps) => {
+  const { toast } = useToast();
   const [options, setOptions] = useState<OptimizerOptions>({
     sections: {
       about: true,
@@ -55,8 +58,30 @@ export const LinkedInOptimizerDialog = ({
     }));
   };
 
-  const handleOptimize = () => {
-    onOptimize(options);
+  const handleOptimize = async () => {
+    try {
+      const selectedSections = Object.entries(options.sections)
+        .filter(([_, isSelected]) => isSelected)
+        .map(([key]) => key);
+
+      if (selectedSections.length === 0) {
+        toast({
+          title: "Error",
+          description: "Please select at least one section to optimize",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      onOptimize(options);
+    } catch (error) {
+      console.error('Error in LinkedIn optimization:', error);
+      toast({
+        title: "Error",
+        description: "Failed to optimize LinkedIn content",
+        variant: "destructive",
+      });
+    }
   };
 
   return (

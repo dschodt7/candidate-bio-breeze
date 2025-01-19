@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -88,12 +89,6 @@ Apply the selected format (${format}) and tone (${tone}) while maintaining authe
     try {
       optimization = JSON.parse(content);
       console.log('[optimize-linkedin-content] Parsed optimization:', optimization);
-
-      // Dispatch a custom event to update the AI Assistant
-      const event = new CustomEvent('linkedInOptimized', {
-        detail: { data: optimization }
-      });
-      window.dispatchEvent(event);
 
       return new Response(
         JSON.stringify({ 
