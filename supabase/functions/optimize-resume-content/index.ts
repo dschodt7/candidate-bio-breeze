@@ -1,6 +1,6 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { supabase } from "../_shared/supabase.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.39.3';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -18,6 +18,10 @@ serve(async (req) => {
     console.log('[optimize-resume-content] Sections to optimize:', sections);
 
     // Fetch candidate's resume text
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
     const { data: candidate, error: candidateError } = await supabase
       .from('candidates')
       .select('resume_text')
@@ -82,7 +86,7 @@ Maintain authenticity and credibility while optimizing impact.`;
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: analysisType === 'strategic' ? 'gpt-4o' : 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
           { role: 'system', content: systemPrompt },
           { role: 'user', content: userPrompt }
