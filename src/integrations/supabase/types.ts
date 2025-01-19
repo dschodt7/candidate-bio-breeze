@@ -151,6 +151,98 @@ export type Database = {
           },
         ]
       }
+      ideal_company_profiles: {
+        Row: {
+          candidate_id: string
+          created_at: string
+          culture_values: string | null
+          culture_values_submitted: boolean | null
+          growth_stage: string | null
+          growth_stage_submitted: boolean | null
+          id: string
+          innovation_focus: string | null
+          innovation_focus_submitted: boolean | null
+          leadership_style: string | null
+          leadership_style_submitted: boolean | null
+          linkedin_source: Json | null
+          market_position: string | null
+          market_position_submitted: boolean | null
+          preferred_format:
+            | Database["public"]["Enums"]["company_profile_format"]
+            | null
+          preferred_tone:
+            | Database["public"]["Enums"]["company_profile_tone"]
+            | null
+          resume_source: Json | null
+          screening_source: Json | null
+          team_composition: string | null
+          team_composition_submitted: boolean | null
+          updated_at: string
+        }
+        Insert: {
+          candidate_id: string
+          created_at?: string
+          culture_values?: string | null
+          culture_values_submitted?: boolean | null
+          growth_stage?: string | null
+          growth_stage_submitted?: boolean | null
+          id?: string
+          innovation_focus?: string | null
+          innovation_focus_submitted?: boolean | null
+          leadership_style?: string | null
+          leadership_style_submitted?: boolean | null
+          linkedin_source?: Json | null
+          market_position?: string | null
+          market_position_submitted?: boolean | null
+          preferred_format?:
+            | Database["public"]["Enums"]["company_profile_format"]
+            | null
+          preferred_tone?:
+            | Database["public"]["Enums"]["company_profile_tone"]
+            | null
+          resume_source?: Json | null
+          screening_source?: Json | null
+          team_composition?: string | null
+          team_composition_submitted?: boolean | null
+          updated_at?: string
+        }
+        Update: {
+          candidate_id?: string
+          created_at?: string
+          culture_values?: string | null
+          culture_values_submitted?: boolean | null
+          growth_stage?: string | null
+          growth_stage_submitted?: boolean | null
+          id?: string
+          innovation_focus?: string | null
+          innovation_focus_submitted?: boolean | null
+          leadership_style?: string | null
+          leadership_style_submitted?: boolean | null
+          linkedin_source?: Json | null
+          market_position?: string | null
+          market_position_submitted?: boolean | null
+          preferred_format?:
+            | Database["public"]["Enums"]["company_profile_format"]
+            | null
+          preferred_tone?:
+            | Database["public"]["Enums"]["company_profile_tone"]
+            | null
+          resume_source?: Json | null
+          screening_source?: Json | null
+          team_composition?: string | null
+          team_composition_submitted?: boolean | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ideal_company_profiles_candidate_id_fkey"
+            columns: ["candidate_id"]
+            isOneToOne: true
+            referencedRelation: "candidates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       linkedin_sections: {
         Row: {
           analysis: Json | null
@@ -315,6 +407,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
+      company_profile_format: "snapshot" | "detailed" | "strategic"
+      company_profile_tone: "strategic" | "visionary" | "pragmatic"
       linkedin_section_type:
         | "about"
         | "experience"
