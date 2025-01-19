@@ -3,7 +3,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Button } from "@/components/ui/button";
-import { Bot, Briefcase, CheckSquare, Square, Wand2 } from "lucide-react";
+import { Bot, Briefcase, CheckSquare, Square, Wand2, Lock, FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 
@@ -22,7 +22,6 @@ interface OptimizerOptions {
     summary: boolean;
     experience: boolean;
     skills: boolean;
-    education: boolean;
     achievements: boolean;
     competencies: boolean;
   };
@@ -42,7 +41,6 @@ export const ResumeOptimizerDialog = ({
       summary: true,
       experience: true,
       skills: true,
-      education: true,
       achievements: true,
       competencies: true
     }
@@ -137,13 +135,17 @@ export const ResumeOptimizerDialog = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-base font-semibold text-white">Sections to Optimize</Label>
+            <Label className="text-base font-semibold text-white">Target Sections to Optimize</Label>
             <div className="grid gap-1">
+              <div className="flex items-center gap-2 p-1.5 rounded-md bg-[#4A235A]/30 text-white">
+                <Lock className="h-4 w-4 text-purple-300" />
+                <FileText className="h-4 w-4 text-purple-300" />
+                <span className="font-medium">Full Resume Text</span>
+              </div>
               {[
                 { key: 'summary', label: 'Professional Summary' },
                 { key: 'experience', label: 'Work Experience' },
                 { key: 'skills', label: 'Skills & Expertise' },
-                { key: 'education', label: 'Education & Certifications' },
                 { key: 'achievements', label: 'Key Achievements' },
                 { key: 'competencies', label: 'Core Competencies' }
               ].map(({ key, label }) => (
