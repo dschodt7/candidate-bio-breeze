@@ -160,12 +160,12 @@ export const ResumeOptimizerDialog = ({
           </div>
 
           <div className="space-y-2">
-            <Label className="text-base font-semibold text-white">Industry Context</Label>
+            <Label className="text-base font-semibold text-white">Industry</Label>
             <div className="relative">
               <Input
                 value={options.industry}
                 onChange={(e) => setOptions(prev => ({ ...prev, industry: e.target.value }))}
-                placeholder="Enter your industry"
+                placeholder="e.g. Technology, FinTech, Healthcare, Manufacturing, Retail"
                 className="pl-9 bg-[#1A202C] border-purple-300/20 text-white placeholder:text-gray-400"
               />
               <Briefcase className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-purple-300" />
