@@ -1,4 +1,4 @@
-import { Circle } from "lucide-react";
+import { Upload, Bot, Combine } from "lucide-react";
 
 export const MinimalistConnector = () => {
   return (
@@ -9,10 +9,10 @@ export const MinimalistConnector = () => {
         <div className="flex-1 border-t border-dashed border-slate-200 mx-4" />
       </div>
       <div className="absolute inset-0 flex items-center justify-between">
-        {/* Circles */}
-        <Circle className="h-2 w-2 text-slate-200 fill-white" strokeWidth={1} />
-        <Circle className="h-2 w-2 text-slate-200 fill-white" strokeWidth={1} />
-        <Circle className="h-2 w-2 text-slate-200 fill-white" strokeWidth={1} />
+        {/* Icons */}
+        <Upload className="h-2 w-2 text-primary fill-white" strokeWidth={1} />
+        <Combine className="h-2 w-2 text-primary fill-white" strokeWidth={1} />
+        <Bot className="h-2 w-2 text-primary fill-white" strokeWidth={1} />
       </div>
     </div>
   );
