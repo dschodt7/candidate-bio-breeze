@@ -53,7 +53,7 @@ function DisplayCard(props: DisplayCardProps) {
         </span>
         <p className={cn("text-lg font-medium", props.titleClassName)}>{props.title || "Featured"}</p>
       </div>
-      <p className="whitespace-nowrap text-lg">{props.description || "Discover amazing content"}</p>
+      <div className="whitespace-nowrap text-lg">{props.description || "Discover amazing content"}</div>
       {props.date && <p className="text-muted-foreground">{props.date}</p>}
       {props.isComplete && (
         <div className="absolute top-2 right-2">
