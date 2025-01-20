@@ -14,7 +14,7 @@ export const ChatMessage = ({ role, content }: ChatMessageProps) => {
     <div
       className={cn(
         "flex gap-3 p-4 rounded-lg",
-        role === "assistant" ? "bg-muted/50" : "bg-background"
+        role === "assistant" ? "bg-white/50" : "bg-white/50"
       )}
     >
       <div className="w-6 h-6">
