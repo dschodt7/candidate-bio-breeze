@@ -13,7 +13,7 @@ export const ExecutiveSummaryForm = () => {
   const candidateId = searchParams.get('candidate');
 
   return (
-    <Card className="bg-white/50 backdrop-blur-sm shadow-lg border-white/20 p-6 animate-fadeIn">
+    <Card className="bg-white shadow-lg border border-white/20 p-6 animate-fadeIn hover:bg-black/5">
       <h3 className="text-lg font-medium mb-6">Executive Summary Components</h3>
       <div className="space-y-8">
         <div>

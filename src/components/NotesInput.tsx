@@ -143,7 +143,7 @@ export const NotesInput = () => {
   };
 
   return (
-    <Card className="p-6 animate-fadeIn bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20">
+    <Card className="p-6 animate-fadeIn bg-white shadow-lg transition-all duration-300 border border-white/20 hover:bg-black/5">
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           {isSubmitted && <CircleCheck className="h-4 w-4 text-green-500" />}

@@ -9,7 +9,7 @@ export const LinkedInInput = () => {
   const { candidate } = useCandidate();
 
   return (
-    <Card className="p-6 animate-fadeIn bg-white/30 shadow-lg hover:shadow-xl transition-all duration-300 border-none backdrop-blur-[2px]">
+    <Card className="p-6 animate-fadeIn bg-white shadow-lg transition-all duration-300 border border-white/20 hover:bg-black/5">
       <LinkedInUrlInput />
       <Accordion type="single" collapsible className="mt-6">
         <LinkedInSection 
