@@ -108,7 +108,7 @@ Review the changes and update your LinkedIn profile accordingly.`;
       setMessages(prev => [...prev, assistantMessage]);
     };
 
-    // New handler for resume optimization
+    // Updated handler for resume optimization
     const handleResumeOptimization = (event: CustomEvent<any>) => {
       console.log("[AIAssistantPanel] Received resume optimization:", event.detail);
       
@@ -123,8 +123,12 @@ ${Object.entries(optimizationData.sections).map(([section, content]: [string, an
 ${section}:
 ${content.optimized}
 
-Key Improvements:
-${content.improvements.map((improvement: string) => `• ${improvement}`).join('\n')}
+Improvements Made:
+${content.improvements.map((improvement: any) => `
+• Original: "${improvement.original}"
+  Changed to: "${improvement.change}"
+  Rationale: ${improvement.rationale}
+`).join('')}
 `).join('\n')}
 
 Review these optimizations and update your resume accordingly. The changes focus on highlighting your achievements and aligning with ${optimizationData.positioningLevel} level positions in the ${optimizationData.industry} industry.`;

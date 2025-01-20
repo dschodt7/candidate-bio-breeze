@@ -46,19 +46,29 @@ ${positioningLevel === 'ceo' ? 'Optimize for board and investor audiences while 
 Industry Context: ${industry}
 
 For each selected section, analyze the existing content and provide:
-1. An optimized version that maintains authenticity
-2. Specific improvements made to enhance impact
+1. An optimized version that maintains authenticity (no markdown formatting)
+2. A list of specific improvements, each containing:
+   - The original text snippet that was changed
+   - The specific change made
+   - The rationale for the improvement
 
 Return a JSON object with:
 {
+  "analysisType": "${analysisType}",
+  "positioningLevel": "${positioningLevel}",
+  "industry": "${industry}",
   "sections": {
     "sectionKey": {
-      "optimized": "Enhanced content",
-      "improvements": ["Specific improvement 1", "Specific improvement 2"]
+      "optimized": "Enhanced content without markdown",
+      "improvements": [
+        {
+          "original": "Original text snippet",
+          "change": "Changed version",
+          "rationale": "Why this improves the content"
+        }
+      ]
     }
-  },
-  "analysisType": "Description of analysis approach used",
-  "positioning": "How the content was aligned to the position level"
+  }
 }`;
 
     const userPrompt = `Please optimize these resume sections while maintaining authenticity:
