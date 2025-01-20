@@ -108,7 +108,7 @@ export const FileUpload = () => {
   };
 
   return (
-    <Card className="p-6 animate-fadeIn bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20">
+    <Card className="p-6 animate-fadeIn bg-white hover:bg-black/5 transition-colors shadow-lg border border-white/20">
       <div className="space-y-4">
         <FileUploadZone
           isDragging={isDragging}
