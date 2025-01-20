@@ -1,8 +1,8 @@
 import { Card } from "@/components/ui/card";
-import { LinkedInUrlInput } from "./LinkedInUrlInput";
+import { LinkedInUrlInput } from "@/components/linkedin/LinkedInUrlInput";
 import { Accordion } from "@/components/ui/accordion";
-import { LinkedInSection } from "./LinkedInSection";
-import { LinkedInAnalysis } from "./LinkedInAnalysis";
+import { LinkedInSection } from "@/components/linkedin/LinkedInSection";
+import { LinkedInAnalysis } from "@/components/linkedin/LinkedInAnalysis";
 import { useCandidate } from "@/hooks/useCandidate";
 
 export const LinkedInInput = () => {
