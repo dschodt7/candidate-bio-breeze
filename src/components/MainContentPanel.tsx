@@ -384,7 +384,7 @@ const MainContentPanel = () => {
       date: "1 of 3",
       iconClassName: "text-blue-500",
       titleClassName: "text-blue-500",
-      className: `bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 hover:scale-[1.02] ${activeSection === 'linkedin' ? 'ring-2 ring-blue-500' : ''}`,
+      className: `bg-white backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 hover:scale-[1.02] ${activeSection === 'linkedin' ? 'ring-2 ring-blue-500' : ''}`,
       onClick: () => handleCardClick('linkedin'),
       isComplete: !!linkedInAnalysis && Object.keys(linkedInAnalysis).length > 0,
     },
