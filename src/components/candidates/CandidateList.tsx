@@ -61,7 +61,7 @@ export const CandidateList = ({
         <div key={candidate.id} className="group relative">
           <Button
             variant={candidate.id === selectedCandidateId ? "outline" : "ghost"}
-            className="w-full justify-start text-left pr-12"
+            className="w-full justify-start text-left pr-12 border-black/5"
             onClick={() => onCandidateClick(candidate)}
           >
             {candidate.name}
@@ -72,7 +72,7 @@ export const CandidateList = ({
                 <Button
                   variant="ghost"
                   size="icon"
-                  className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute right-0 top-0 opacity-0 group-hover:opacity-100 transition-opacity border-black/5"
                   onClick={(e) => {
                     e.stopPropagation();
                     setCandidateToDelete(candidate.id);
@@ -111,7 +111,7 @@ export const CandidateList = ({
         <DialogTrigger asChild>
           <Button
             variant="ghost"
-            className="w-full justify-start gap-2"
+            className="w-full justify-start gap-2 border-black/5"
           >
             <UserPlus className="h-4 w-4" />
             New Candidate
