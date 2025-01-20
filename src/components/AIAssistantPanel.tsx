@@ -186,7 +186,7 @@ Review these optimizations and update your resume accordingly. The changes focus
 
   return (
     <ResizablePanel defaultSize={25} minSize={20} className="p-0">
-      <div className="flex h-full flex-col bg-background border-l border-t border-black/5 rounded-tl-lg">
+      <div className="flex h-full flex-col bg-[#F5F0E6] border-l border-t border-black/5 rounded-tl-lg">
         <div className="border-b border-black/5 p-4">
           <div className="flex items-center gap-2">
             <Bot className="h-6 w-6" />
