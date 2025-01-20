@@ -6,7 +6,7 @@ import { ResizablePanelGroup } from "@/components/ui/resizable";
 
 const Index = () => {
   return (
-    <div className="flex flex-col h-screen bg-gradient-to-br from-white via-gray-50 to-gray-100">
+    <div className="flex flex-col h-screen">
       <Header />
       <main className="flex-1 overflow-hidden">
         <div className="flex h-full">
