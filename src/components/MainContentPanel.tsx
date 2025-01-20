@@ -384,7 +384,7 @@ const MainContentPanel = () => {
       date: "1 of 3",
       iconClassName: "text-blue-500",
       titleClassName: "text-blue-500",
-      className: `hover:bg-accent/50 cursor-pointer ${activeSection === 'linkedin' ? 'ring-2 ring-blue-500' : ''}`,
+      className: `bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 hover:scale-[1.02] ${activeSection === 'linkedin' ? 'ring-2 ring-blue-500' : ''}`,
       onClick: () => handleCardClick('linkedin'),
       isComplete: !!linkedInAnalysis && Object.keys(linkedInAnalysis).length > 0,
     },
@@ -395,7 +395,7 @@ const MainContentPanel = () => {
       date: "2 of 3",
       iconClassName: "text-blue-500",
       titleClassName: "text-blue-500",
-      className: `hover:bg-accent/50 cursor-pointer ${activeSection === 'resume' ? 'ring-2 ring-blue-500' : ''}`,
+      className: `bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 hover:scale-[1.02] ${activeSection === 'resume' ? 'ring-2 ring-blue-500' : ''}`,
       onClick: () => handleCardClick('resume'),
       isComplete: !!candidate?.resume_path,
     },
@@ -406,7 +406,7 @@ const MainContentPanel = () => {
       date: "3 of 3",
       iconClassName: "text-blue-500",
       titleClassName: "text-blue-500",
-      className: `hover:bg-accent/50 cursor-pointer ${activeSection === 'screening' ? 'ring-2 ring-blue-500' : ''}`,
+      className: `bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 hover:scale-[1.02] ${activeSection === 'screening' ? 'ring-2 ring-blue-500' : ''}`,
       onClick: () => handleCardClick('screening'),
       isComplete: !!candidate?.screening_notes,
     },
@@ -442,25 +442,20 @@ const MainContentPanel = () => {
       <ResizablePanel defaultSize={55} className="p-0">
         <div className="h-full overflow-y-auto">
           <div className="max-w-6xl mx-auto">
-            {/* Hero Section with Glow */}
             <div className="relative">
               <div className="relative h-[400px] px-8 bg-background/80 backdrop-blur-sm">
-                {/* Glow Effect */}
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                   <div className="absolute left-1/2 -translate-x-1/2 top-0 h-[400px] w-[90%] bg-[radial-gradient(ellipse_at_top,_#D3E4FD75_0%,_#D3E4FD35_35%,_transparent_50%)] animate-aurora" />
                 </div>
                 
-                {/* Title - Adjusted padding from pt-12 to pt-6 */}
                 <div className="relative z-10 mb-8 pt-6 text-center">
                   <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-b from-foreground via-foreground/90 to-muted-foreground bg-clip-text text-transparent">
                     Executive Pipeline
                   </h2>
                 </div>
 
-                {/* Content Grid */}
                 {candidate && (
                   <div className="grid grid-cols-[300px_1fr_300px] gap-8 relative z-10">
-                    {/* Left Column - Display Cards */}
                     <div className="flex flex-col items-center space-y-6">
                       <h3 className="text-lg font-semibold">AI Input Analysis</h3>
                       <div className="mt-2">
@@ -468,7 +463,6 @@ const MainContentPanel = () => {
                       </div>
                     </div>
 
-                    {/* Center Column - Exec Components */}
                     <div className="flex flex-col items-center space-y-6">
                       <h3 className="text-lg font-semibold">AI Compiler</h3>
                       <DisplayCards cards={[{
@@ -497,38 +491,34 @@ const MainContentPanel = () => {
                         date: "",
                         iconClassName: "text-blue-500",
                         titleClassName: "text-blue-500",
-                        className: `hover:bg-accent/50 cursor-pointer transition-colors ${activeSection === null ? 'ring-2 ring-blue-500' : ''}`,
+                        className: `bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 hover:scale-[1.02] ${activeSection === null ? 'ring-2 ring-blue-500' : ''}`,
                         onClick: () => handleCardClick(null),
                         isComplete: isFullyComplete,
                       }]} />
                     </div>
 
-                    {/* Right Column - AI Agents */}
                     <div className="flex flex-col items-center space-y-6">
                       <h3 className="text-lg font-semibold">AI Agents</h3>
-                      <div className="flex flex-col items-center gap-4">
-                        <ButtonDemo 
-                          label="Executive Summary" 
-                          onClick={handleExecSummaryClick}
-                        />
-                        <ButtonDemo 
-                          label="Ideal Company Profile" 
-                          onClick={handleCompanyProfileClick}
-                        />
-                        <ButtonDemo 
-                          label="LinkedIn Optimizer" 
-                          onClick={handleLinkedInOptimizerClick}
-                        />
-                        <ButtonDemo 
-                          label="Resume Optimizer" 
-                          onClick={handleResumeOptimizerClick}
-                        />
+                      <div className="flex flex-col items-center gap-4 w-full">
+                        {[
+                          { label: "Executive Summary", onClick: handleExecSummaryClick },
+                          { label: "Ideal Company Profile", onClick: handleCompanyProfileClick },
+                          { label: "LinkedIn Optimizer", onClick: handleLinkedInOptimizerClick },
+                          { label: "Resume Optimizer", onClick: handleResumeOptimizerClick }
+                        ].map((button, index) => (
+                          <button
+                            key={index}
+                            onClick={button.onClick}
+                            className="w-full bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 hover:scale-[1.02] py-2 px-4 rounded-md text-sm font-medium text-gray-900"
+                          >
+                            {button.label}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   </div>
                 )}
 
-                {/* Subtle Border */}
                 <div className="absolute bottom-0 left-1/2 w-[90%] h-px -translate-x-1/2 bg-gradient-to-r from-transparent via-border to-transparent opacity-50" />
               </div>
 
@@ -539,7 +529,6 @@ const MainContentPanel = () => {
               )}
             </div>
 
-            {/* Active Section Content */}
             <div className="space-y-6 px-6 pt-2 pb-6">
               {renderActiveSection()}
               <ExecutiveSummaryForm />
