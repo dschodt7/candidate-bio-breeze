@@ -22,7 +22,7 @@ const CandidatesPanel = () => {
         </button>
         
         <div className={cn(
-          "min-h-screen bg-gray-50 border-r border-white/20 transition-[width] duration-300 ease-in-out",
+          "min-h-screen bg-white/50 backdrop-blur-sm border-r border-white/20 transition-[width] duration-300 ease-in-out",
           isCollapsed ? "w-[50px]" : "w-[200px] p-4"
         )}>
           <h2 className={cn(
