@@ -52,11 +52,11 @@ For each selected section, analyze the existing content and provide:
    - The specific change made
    - The rationale for the improvement
 
-Return a JSON object with:
+Return a JSON object with this exact structure:
 {
-  "analysisType": "${analysisType}",
-  "positioningLevel": "${positioningLevel}",
-  "industry": "${industry}",
+  "analysisType": "[analysis type]",
+  "positioningLevel": "[position level]",
+  "industry": "[industry]",
   "sections": {
     "sectionKey": {
       "optimized": "Enhanced content without markdown",
@@ -73,6 +73,11 @@ Return a JSON object with:
 
     const userPrompt = `Please optimize these resume sections while maintaining authenticity:
 
+Analysis Type: ${analysisType}
+Position Level: ${positioningLevel}
+Industry Context: ${industry}
+
+Sections to optimize:
 ${Object.entries(sections)
   .filter(([_, isSelected]) => isSelected)
   .map(([key]) => `
@@ -80,12 +85,7 @@ ${key.toUpperCase()}:
 ${candidate.resume_text}
 `).join('\n')}
 
-Enhance the content using:
-- Analysis Type: ${analysisType}
-- Position Level: ${positioningLevel}
-- Industry Context: ${industry}
-
-Maintain authenticity and credibility while optimizing impact.`;
+Enhance the content using the specified analysis type, position level, and industry context while maintaining authenticity and credibility.`;
 
     console.log('[optimize-resume-content] Sending request to OpenAI');
 
