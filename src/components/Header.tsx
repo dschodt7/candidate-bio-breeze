@@ -4,7 +4,6 @@ import { useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
 import { ProfileMenu } from "./header/ProfileMenu";
 import { ResetPasswordDialog } from "./header/ResetPasswordDialog";
-import { AuroraBackground } from "./ui/aurora-background";
 
 const Header = () => {
   const navigate = useNavigate();
@@ -104,7 +103,7 @@ const Header = () => {
   };
 
   return (
-    <AuroraBackground className="h-auto border-b border-white/20">
+    <div className="bg-[#F2EDE3] border-b border-white/20">
       <header className="w-full px-6 py-4 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Executive Career Catalyst</h1>
         <ProfileMenu
@@ -122,7 +121,7 @@ const Header = () => {
           onSubmit={handleResetPassword}
         />
       </header>
-    </AuroraBackground>
+    </div>
   );
 };
 
