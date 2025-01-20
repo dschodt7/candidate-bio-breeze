@@ -23,15 +23,19 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
+        background: "#F9F5ED", // Claude-inspired warm beige
+        panel: {
+          DEFAULT: "#F9F5ED", // Main panel background
+          lighter: "#FAF7F0", // Lighter shade for side panels
+        },
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#0EA5E9", // Ocean Blue
+          DEFAULT: "#0EA5E9",
           hover: "#0284C7",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#1E293B", // Deep Navy
+          DEFAULT: "#1E293B",
           foreground: "#FFFFFF",
         },
         destructive: {
@@ -39,20 +43,20 @@ export default {
           foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "#F1F0FB", // Soft Gray
-          foreground: "#1E293B", // Deep Navy for text
+          DEFAULT: "#F9F5ED", // Updated to match new background
+          foreground: "#1E293B",
         },
         accent: {
-          DEFAULT: "#8B5CF6", // Vivid Purple
+          DEFAULT: "#8B5CF6",
           foreground: "#FFFFFF",
         },
         popover: {
           DEFAULT: "#FFFFFF",
-          foreground: "#1E293B", // Deep Navy for text
+          foreground: "#1E293B",
         },
         card: {
           DEFAULT: "#FFFFFF",
-          foreground: "#1E293B", // Deep Navy for text
+          foreground: "#1E293B",
         },
       },
       borderRadius: {
