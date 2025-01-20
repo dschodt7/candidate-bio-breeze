@@ -96,7 +96,7 @@ export const ResumeAnalysis = () => {
   return (
     <div className="mt-4">
       <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="analysis">
+        <AccordionItem value="analysis" className="bg-white hover:bg-black/5 transition-colors">
           <AccordionTrigger className="text-sm font-medium">
             <div className="flex items-center gap-2">
               {isLoading ? (
