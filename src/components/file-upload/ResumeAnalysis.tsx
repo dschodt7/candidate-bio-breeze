@@ -8,8 +8,8 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from "@/components/ui/accordion";
-import { AnalysisSection } from "./analysis/AnalysisSection";
-import { useAnalysisState } from "./analysis/useAnalysisState";
+import { AnalysisSection } from "./AnalysisSection";
+import { useAnalysisState } from "./useAnalysisState";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const ANALYSIS_SECTIONS = [
@@ -51,7 +51,7 @@ export const ResumeAnalysis = () => {
       return data;
     },
     enabled: !!candidateId,
-    staleTime: 0, // Always fetch fresh data
+    staleTime: 0,
   });
 
   const {
@@ -62,17 +62,21 @@ export const ResumeAnalysis = () => {
     setEditedContent
   } = useAnalysisState(candidateId, analysis);
 
-  console.log("[ResumeAnalysis] Component state:", {
-    analysis,
-    isLoading,
-    error,
-    candidateId,
-    hasContent: analysis && Object.values(analysis).some(value => 
+  const hasValidContent = (analysis: any) => {
+    return analysis && Object.values(analysis).some(value => 
       value && 
       typeof value === 'string' && 
       value.trim() !== "" && 
       value !== "No data found"
-    )
+    );
+  };
+
+  console.log("[ResumeAnalysis] Component state:", {
+    hasAnalysis: !!analysis,
+    isLoading,
+    error,
+    candidateId,
+    hasValidContent: hasValidContent(analysis)
   });
 
   if (error) {
@@ -80,31 +84,18 @@ export const ResumeAnalysis = () => {
     return <div className="text-sm text-red-500">Error loading analysis</div>;
   }
 
-  // Don't show anything until we have analysis data
-  if (!analysis && !isLoading) {
-    console.log("[ResumeAnalysis] No analysis data found");
-    return null;
-  }
-
-  const hasContent = analysis && Object.values(analysis).some(value => 
-    value && 
-    typeof value === 'string' && 
-    value.trim() !== "" && 
-    value !== "No data found"
-  );
-
   return (
     <div className="mt-4">
       <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="analysis">
-          <AccordionTrigger className="text-sm font-medium">
+        <AccordionItem value="analysis" className="bg-white rounded-lg transition-all duration-300 hover:bg-black/5">
+          <AccordionTrigger className="text-lg font-medium">
             <div className="flex items-center gap-2">
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               ) : (
-                hasContent && <CheckCircle className="h-4 w-4 text-green-500" />
+                hasValidContent(analysis) && <CheckCircle className="h-4 w-4 text-green-500" />
               )}
-              Resume: Leader Discovery Criteria
+              Resume: Analysis Results
             </div>
           </AccordionTrigger>
           <AccordionContent>
@@ -122,7 +113,7 @@ export const ResumeAnalysis = () => {
                   ))}
                 </div>
               ) : (
-                hasContent && ANALYSIS_SECTIONS.map(({ key, title }) => (
+                hasValidContent(analysis) && ANALYSIS_SECTIONS.map(({ key, title }) => (
                   <AnalysisSection
                     key={key}
                     title={title}
@@ -135,7 +126,7 @@ export const ResumeAnalysis = () => {
                   />
                 ))
               )}
-              {!isLoading && !hasContent && (
+              {!isLoading && !hasValidContent(analysis) && (
                 <div className="flex items-center justify-center py-4">
                   <span className="text-sm text-muted-foreground">
                     Click "Analyze Resume" to generate insights
