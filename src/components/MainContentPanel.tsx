@@ -505,7 +505,7 @@ const MainContentPanel = () => {
                           <button
                             key={index}
                             onClick={button.onClick}
-                            className="group relative w-52 bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 hover:scale-[1.02] py-2 px-4 rounded-md text-sm font-medium text-gray-900"
+                            className="group relative w-52 bg-white shadow-lg transition-all duration-300 border border-white/20 hover:bg-black/5 py-2 px-4 rounded-md text-sm font-medium text-gray-900"
                           >
                             <span className="flex items-center justify-center gap-2">
                               <Sparkle className="h-4 w-4 text-yellow-400 animate-pulse transition-transform group-hover:rotate-12" />
