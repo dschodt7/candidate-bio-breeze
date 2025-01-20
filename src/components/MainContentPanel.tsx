@@ -443,7 +443,7 @@ const MainContentPanel = () => {
         <div className="h-full overflow-y-auto">
           <div className="max-w-6xl mx-auto">
             <div className="relative">
-              <div className="relative h-[400px] px-8 bg-background/80 backdrop-blur-sm">
+              <div className="relative h-[400px] px-8 bg-[#F1F0FB]">
                 <div className="absolute inset-0 overflow-hidden pointer-events-none">
                   <div className="absolute left-1/2 -translate-x-1/2 top-0 h-[400px] w-[90%] bg-[radial-gradient(ellipse_at_top,_#D3E4FD75_0%,_#D3E4FD35_35%,_transparent_50%)] animate-aurora" />
                 </div>
