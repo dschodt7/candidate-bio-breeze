@@ -5,7 +5,7 @@ import { NotesInput } from "@/components/NotesInput";
 import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
 import { useCandidate } from "@/hooks/useCandidate";
 import DisplayCards from "@/components/ui/display-cards";
-import { User, FileText, Users, Package, Circle, CheckCircle, Sparkle } from "lucide-react";
+import { User, FileText, Users, Package, Circle, CheckCircle, Sparkles } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -508,7 +508,7 @@ const MainContentPanel = () => {
                             className="group relative w-52 bg-white shadow-lg transition-all duration-300 border border-white/20 hover:bg-black/5 py-2 px-4 rounded-md text-sm font-medium text-gray-900"
                           >
                             <span className="flex items-center justify-center gap-2">
-                              <Sparkle className="h-4 w-4 text-yellow-400 animate-pulse transition-transform group-hover:rotate-12" />
+                              <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse transition-transform group-hover:rotate-12" />
                               {button.label}
                             </span>
                           </button>
