@@ -59,75 +59,80 @@ const Login = () => {
   }, [navigate, toast]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-sm">
-        <div className="text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">
-            Executive Career Catalyst
-          </h1>
-          <p className="text-lg text-gray-600">
-            Sign in to your account
-          </p>
-        </div>
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-white to-gray-50">
+      <div className="relative w-full max-w-md">
+        {/* Background blur effect */}
+        <div className="absolute inset-0 bg-white/40 backdrop-blur-sm rounded-2xl" />
         
-        {showResetAlert && (
-          <Alert variant="default" className="mb-4 border-blue-200 bg-blue-50">
-            <AlertCircle className="h-4 w-4 text-blue-600" />
-            <AlertDescription className="text-blue-700">
-              Check your email for the password reset link. The email will come from noreply@olwrgthvydukavmpfeiw.supabase.co. 
-              If you don't see it, please check your spam folder.
-            </AlertDescription>
-          </Alert>
-        )}
+        <div className="relative z-10 w-full space-y-6 bg-white/60 p-8 rounded-2xl shadow-sm border border-gray-200/30">
+          <div className="text-center space-y-2">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-violet-500 bg-clip-text text-transparent">
+              Executive Career Catalyst
+            </h1>
+            <p className="text-lg text-gray-600">
+              Sign in to your account
+            </p>
+          </div>
+          
+          {showResetAlert && (
+            <Alert variant="default" className="border-blue-200/50 bg-blue-50/50 backdrop-blur-sm">
+              <AlertCircle className="h-4 w-4 text-blue-600" />
+              <AlertDescription className="text-blue-700">
+                Check your email for the password reset link. The email will come from noreply@olwrgthvydukavmpfeiw.supabase.co. 
+                If you don't see it, please check your spam folder.
+              </AlertDescription>
+            </Alert>
+          )}
 
-        <div className="mt-8">
-          <Auth
-            supabaseClient={supabase}
-            appearance={{ 
-              theme: ThemeSupa,
-              variables: {
-                default: {
-                  colors: {
-                    brand: '#10b981',
-                    brandAccent: '#059669',
-                    brandButtonText: 'white',
-                    defaultButtonBackground: 'white',
-                    defaultButtonBackgroundHover: '#f9fafb',
-                    inputBackground: 'white',
-                    inputBorder: '#e5e7eb',
-                    inputBorderHover: '#9ca3af',
-                    inputBorderFocus: '#10b981',
-                  },
-                  borderWidths: {
-                    buttonBorderWidth: '1px',
-                    inputBorderWidth: '1px',
-                  },
-                  radii: {
-                    borderRadiusButton: '0.5rem',
-                    buttonBorderRadius: '0.5rem',
-                    inputBorderRadius: '0.5rem',
-                  },
-                  space: {
-                    inputPadding: '0.75rem',
-                    buttonPadding: '0.75rem',
-                  },
-                  fonts: {
-                    bodyFontFamily: `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
-                    buttonFontFamily: `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
+          <div className="mt-8">
+            <Auth
+              supabaseClient={supabase}
+              appearance={{ 
+                theme: ThemeSupa,
+                variables: {
+                  default: {
+                    colors: {
+                      brand: '#0EA5E9',
+                      brandAccent: '#0284C7',
+                      brandButtonText: 'white',
+                      defaultButtonBackground: 'white',
+                      defaultButtonBackgroundHover: '#f9fafb',
+                      inputBackground: 'white',
+                      inputBorder: '#e5e7eb',
+                      inputBorderHover: '#9ca3af',
+                      inputBorderFocus: '#0EA5E9',
+                    },
+                    borderWidths: {
+                      buttonBorderWidth: '1px',
+                      inputBorderWidth: '1px',
+                    },
+                    radii: {
+                      borderRadiusButton: '0.75rem',
+                      buttonBorderRadius: '0.75rem',
+                      inputBorderRadius: '0.75rem',
+                    },
+                    space: {
+                      inputPadding: '0.75rem',
+                      buttonPadding: '0.75rem',
+                    },
+                    fonts: {
+                      bodyFontFamily: `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
+                      buttonFontFamily: `ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji"`,
+                    },
                   },
                 },
-              },
-              className: {
-                container: 'space-y-4',
-                label: 'text-sm font-medium text-gray-700',
-                button: 'w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-emerald-500 hover:bg-emerald-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500',
-                input: 'appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm',
-              },
-            }}
-            theme="light"
-            providers={[]}
-            redirectTo={window.location.origin}
-          />
+                className: {
+                  container: 'space-y-4',
+                  label: 'text-sm font-medium text-gray-700',
+                  button: 'w-full flex justify-center py-2 px-4 border border-transparent rounded-xl shadow-sm text-sm font-medium text-white bg-primary hover:bg-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary transition-colors',
+                  input: 'appearance-none block w-full px-3 py-2 border border-gray-200/60 rounded-xl shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent sm:text-sm bg-white/80',
+                },
+              }}
+              theme="light"
+              providers={[]}
+              redirectTo={window.location.origin}
+            />
+          </div>
         </div>
       </div>
     </div>
