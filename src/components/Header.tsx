@@ -103,8 +103,8 @@ const Header = () => {
   };
 
   return (
-    <div className="bg-[#F2EDE3] border-b border-white/20">
-      <header className="w-full px-6 py-4 flex justify-between items-center">
+    <div className="bg-[#EDE5D6] border-b border-white/20">
+      <header className="w-full px-6 py-3 flex justify-between items-center">
         <h1 className="text-2xl font-bold text-gray-800">Executive Career Catalyst</h1>
         <ProfileMenu
           firstName={firstName}
