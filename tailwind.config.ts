@@ -30,8 +30,8 @@ export default {
         },
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#0EA5E9",
-          hover: "#0284C7",
+          DEFAULT: "#074E9F", // Updated to new darker blue
+          hover: "#063E7F", // 20% darker for hover state
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
