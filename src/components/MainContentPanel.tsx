@@ -15,6 +15,7 @@ import { IdealCompanyProfileDialog } from "@/components/company-profile/IdealCom
 import { useToast } from "@/hooks/use-toast";
 import { LinkedInOptimizerDialog } from "@/components/linkedin/LinkedInOptimizerDialog";
 import { ResumeOptimizerDialog } from "@/components/resume/ResumeOptimizerDialog";
+import { MinimalistConnector } from "@/components/progress/MinimalistConnector";
 
 type ActiveSection = "linkedin" | "resume" | "screening" | null;
 
@@ -451,71 +452,74 @@ const MainContentPanel = () => {
                 </div>
 
                 {candidate && (
-                  <div className="grid grid-cols-[300px_1fr_300px] gap-8 relative z-10">
-                    <div className="flex flex-col items-center space-y-6">
-                      <h3 className="text-lg font-semibold">AI Input Analysis</h3>
-                      <div className="mt-2">
-                        <DisplayCards cards={displayCards} />
+                  <>
+                    <MinimalistConnector />
+                    <div className="grid grid-cols-[300px_1fr_300px] gap-8 relative z-10">
+                      <div className="flex flex-col items-center space-y-6">
+                        <h3 className="text-lg font-semibold">AI Input Analysis</h3>
+                        <div className="mt-2">
+                          <DisplayCards cards={displayCards} />
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-center space-y-6">
+                        <h3 className="text-lg font-semibold">AI Compiler</h3>
+                        <DisplayCards cards={[{
+                          icon: <Package className="size-4 text-blue-500" />,
+                          title: "Exec Components",
+                          description: (
+                            <div className="space-y-2">
+                              <div className="text-sm text-muted-foreground">{completedSections}/5 AI Compile Complete</div>
+                              <ul className="space-y-1.5 mt-3 text-sm">
+                                {execSections.map((section, index) => (
+                                  <li key={index} className="flex items-center space-x-2">
+                                    {section.submitted ? (
+                                      <CheckCircle className="h-2 w-2 text-green-500" />
+                                    ) : (
+                                      <Circle className="h-2 w-2 text-gray-300" />
+                                    )}
+                                    <span>
+                                      {section.name}
+                                    </span>
+                                  </li>
+                                ))}
+                              </ul>
+                              <div className="text-sm text-muted-foreground">{completedCriteria}/8 More Criteria</div>
+                            </div>
+                          ),
+                          date: "",
+                          iconClassName: "text-blue-500",
+                          titleClassName: "text-blue-500",
+                          className: `bg-white backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 hover:scale-[1.02] ${activeSection === null ? 'ring-2 ring-blue-500' : ''}`,
+                          onClick: () => handleCardClick(null),
+                          isComplete: isFullyComplete,
+                        }]} />
+                      </div>
+
+                      <div className="flex flex-col items-center space-y-6">
+                        <h3 className="text-lg font-semibold">AI Agents</h3>
+                        <div className="flex flex-col items-center gap-4 w-full">
+                          {[
+                            { label: "Executive Summary", onClick: handleExecSummaryClick },
+                            { label: "Ideal Company Profile", onClick: handleCompanyProfileClick },
+                            { label: "LinkedIn Optimizer", onClick: handleLinkedInOptimizerClick },
+                            { label: "Resume Optimizer", onClick: handleResumeOptimizerClick }
+                          ].map((button, index) => (
+                            <button
+                              key={index}
+                              onClick={button.onClick}
+                              className="group relative w-52 bg-white shadow-lg transition-all duration-300 border border-white/20 hover:bg-black/5 py-2 px-4 rounded-md text-sm font-medium text-gray-900"
+                            >
+                              <span className="flex items-center justify-center gap-2">
+                                <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse transition-transform group-hover:rotate-12" />
+                                {button.label}
+                              </span>
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
-
-                    <div className="flex flex-col items-center space-y-6">
-                      <h3 className="text-lg font-semibold">AI Compiler</h3>
-                      <DisplayCards cards={[{
-                        icon: <Package className="size-4 text-blue-500" />,
-                        title: "Exec Components",
-                        description: (
-                          <div className="space-y-2">
-                            <div className="text-sm text-muted-foreground">{completedSections}/5 AI Compile Complete</div>
-                            <ul className="space-y-1.5 mt-3 text-sm">
-                              {execSections.map((section, index) => (
-                                <li key={index} className="flex items-center space-x-2">
-                                  {section.submitted ? (
-                                    <CheckCircle className="h-2 w-2 text-green-500" />
-                                  ) : (
-                                    <Circle className="h-2 w-2 text-gray-300" />
-                                  )}
-                                  <span>
-                                    {section.name}
-                                  </span>
-                                </li>
-                              ))}
-                            </ul>
-                            <div className="text-sm text-muted-foreground">{completedCriteria}/8 More Criteria</div>
-                          </div>
-                        ),
-                        date: "",
-                        iconClassName: "text-blue-500",
-                        titleClassName: "text-blue-500",
-                        className: `bg-white backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20 hover:scale-[1.02] ${activeSection === null ? 'ring-2 ring-blue-500' : ''}`,
-                        onClick: () => handleCardClick(null),
-                        isComplete: isFullyComplete,
-                      }]} />
-                    </div>
-
-                    <div className="flex flex-col items-center space-y-6">
-                      <h3 className="text-lg font-semibold">AI Agents</h3>
-                      <div className="flex flex-col items-center gap-4 w-full">
-                        {[
-                          { label: "Executive Summary", onClick: handleExecSummaryClick },
-                          { label: "Ideal Company Profile", onClick: handleCompanyProfileClick },
-                          { label: "LinkedIn Optimizer", onClick: handleLinkedInOptimizerClick },
-                          { label: "Resume Optimizer", onClick: handleResumeOptimizerClick }
-                        ].map((button, index) => (
-                          <button
-                            key={index}
-                            onClick={button.onClick}
-                            className="group relative w-52 bg-white shadow-lg transition-all duration-300 border border-white/20 hover:bg-black/5 py-2 px-4 rounded-md text-sm font-medium text-gray-900"
-                          >
-                            <span className="flex items-center justify-center gap-2">
-                              <Sparkles className="h-4 w-4 text-yellow-400 animate-pulse transition-transform group-hover:rotate-12" />
-                              {button.label}
-                            </span>
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  </>
                 )}
 
                 <div className="absolute bottom-0 left-1/2 w-[90%] h-px -translate-x-1/2 bg-gradient-to-r from-transparent via-black/5 to-transparent" />
