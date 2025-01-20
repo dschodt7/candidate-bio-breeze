@@ -48,10 +48,12 @@ function DisplayCard(props: DisplayCardProps) {
       onClick={props.onClick}
     >
       <div>
-        <span className="relative inline-block rounded-full bg-blue-50 p-1">
-          {props.icon || <Sparkles className="size-4 text-blue-300" />}
-        </span>
-        <p className={cn("text-lg font-medium", props.titleClassName)}>{props.title || "Featured"}</p>
+        <div className="flex items-center gap-2">
+          <span className="relative inline-block rounded-full bg-blue-50 p-1">
+            {props.icon || <Sparkles className="size-4 text-blue-300" />}
+          </span>
+          <p className={cn("text-lg font-medium", props.titleClassName)}>{props.title || "Featured"}</p>
+        </div>
       </div>
       <div className="whitespace-nowrap text-lg">{props.description || "Discover amazing content"}</div>
       {props.date && <p className="text-muted-foreground">{props.date}</p>}
