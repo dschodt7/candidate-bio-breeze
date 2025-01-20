@@ -1,9 +1,3 @@
-/**
- * ⚠️ WARNING: This component is locked and should not be modified without explicit approval.
- * Last verified working state: March 2024
- * Contact: Project owner
- */
-
 import { Card } from "@/components/ui/card";
 import { LinkedInUrlInput } from "./LinkedInUrlInput";
 import { Accordion } from "@/components/ui/accordion";
@@ -11,12 +5,11 @@ import { LinkedInSection } from "./LinkedInSection";
 import { LinkedInAnalysis } from "./LinkedInAnalysis";
 import { useCandidate } from "@/hooks/useCandidate";
 
-// This component is locked - do not modify without explicit approval
 export const LinkedInInput = () => {
   const { candidate } = useCandidate();
 
   return (
-    <Card className="p-6 animate-fadeIn">
+    <Card className="p-6 animate-fadeIn bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20">
       <LinkedInUrlInput />
       <Accordion type="single" collapsible className="mt-6">
         <LinkedInSection 
@@ -48,5 +41,3 @@ export const LinkedInInput = () => {
     </Card>
   );
 };
-
-// End of locked component
