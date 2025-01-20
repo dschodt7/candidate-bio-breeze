@@ -522,7 +522,7 @@ const MainContentPanel = () => {
               </div>
 
               {!candidate && (
-                <p className="text-lg text-muted-foreground animate-fadeIn">
+                <p className="text-lg text-muted-foreground animate-fadeIn pl-8">
                   Select a candidate from the left panel to view and edit their information
                 </p>
               )}
