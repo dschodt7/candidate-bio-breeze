@@ -26,9 +26,8 @@ function DisplayCard(props: DisplayCardProps) {
       iconClassName={props.iconClassName}
       titleClassName={props.titleClassName}
       className={cn(
-        "relative flex h-[80px] w-[16rem] select-none flex-col rounded-lg bg-white/30 shadow-sm p-2",
-        "transition-all duration-300 hover:shadow-md cursor-pointer backdrop-blur-[2px] border-none",
-        "hover:bg-white/40 hover:scale-[1.02]",
+        "relative flex h-[80px] w-[16rem] select-none flex-col rounded-lg bg-white shadow-sm p-2",
+        "transition-all duration-300 hover:shadow-md cursor-pointer hover:bg-black/5 border-none",
         props.className
       )}
       onClick={props.onClick}
@@ -41,7 +40,8 @@ function DisplayCard(props: DisplayCardProps) {
   return (
     <div
       className={cn(
-        "relative flex select-none flex-col justify-between rounded-lg bg-white shadow-sm px-3 py-2 transition-all duration-300 hover:shadow-md [&>*]:flex [&>*]:items-center [&>*]:gap-2",
+        "relative flex select-none flex-col justify-between rounded-lg bg-white shadow-sm px-3 py-2",
+        "transition-all duration-300 hover:shadow-md hover:bg-black/5 cursor-pointer",
         isExecComponents ? "w-[16rem]" : "",
         props.className
       )}

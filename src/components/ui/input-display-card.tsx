@@ -27,7 +27,7 @@ export function InputDisplayCard({
   return (
     <div
       className={cn(
-        "relative flex h-[80px] w-[16rem] select-none flex-col rounded-lg border bg-white shadow-sm p-2 transition-all duration-300 hover:shadow-md cursor-pointer",
+        "relative flex h-[80px] w-[16rem] select-none flex-col rounded-lg border bg-white shadow-sm p-2 transition-all duration-300 hover:shadow-md cursor-pointer hover:bg-black/5",
         className
       )}
       onClick={onClick}
