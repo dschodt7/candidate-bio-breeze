@@ -440,14 +440,10 @@ const MainContentPanel = () => {
   return (
     <>
       <ResizablePanel defaultSize={55} className="p-0">
-        <div className="h-full overflow-y-auto bg-panel">
+        <div className="h-full overflow-y-auto bg-background">
           <div className="max-w-6xl mx-auto">
             <div className="relative">
-              <div className="relative h-[400px] px-8 bg-panel">
-                <div className="absolute inset-0 overflow-hidden pointer-events-none">
-                  <div className="absolute left-1/2 -translate-x-1/2 top-0 h-[400px] w-[90%] bg-[radial-gradient(ellipse_at_top,_#D3E4FD75_0%,_#D3E4FD35_35%,_transparent_50%)] animate-aurora" />
-                </div>
-                
+              <div className="relative h-[400px] px-8 bg-background">
                 <div className="relative z-10 mb-8 pt-6 text-center">
                   <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-b from-foreground via-foreground/90 to-muted-foreground bg-clip-text text-transparent">
                     Executive Pipeline
@@ -532,7 +528,7 @@ const MainContentPanel = () => {
               )}
             </div>
 
-            <div className="space-y-6 px-6 pt-2 pb-6 bg-panel">
+            <div className="space-y-6 px-6 pt-2 pb-6 bg-background">
               {renderActiveSection()}
               <ExecutiveSummaryForm />
             </div>
