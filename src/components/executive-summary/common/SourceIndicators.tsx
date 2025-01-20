@@ -11,8 +11,8 @@ export const SourceIndicators = ({ hasResume, hasLinkedIn, hasScreening }: Sourc
   return (
     <div className="flex items-center gap-2">
       <Tooltip>
-        <TooltipTrigger>
-          <div className={`p-1 rounded-full ${hasResume ? 'bg-green-100' : 'bg-gray-100'}`}>
+        <TooltipTrigger asChild>
+          <div className={`p-1 rounded-full cursor-pointer ${hasResume ? 'bg-green-100' : 'bg-gray-100'}`}>
             <FileText className={`h-4 w-4 ${hasResume ? 'text-green-600' : 'text-gray-400'}`} />
           </div>
         </TooltipTrigger>
@@ -20,8 +20,8 @@ export const SourceIndicators = ({ hasResume, hasLinkedIn, hasScreening }: Sourc
       </Tooltip>
 
       <Tooltip>
-        <TooltipTrigger>
-          <div className={`p-1 rounded-full ${hasLinkedIn ? 'bg-green-100' : 'bg-gray-100'}`}>
+        <TooltipTrigger asChild>
+          <div className={`p-1 rounded-full cursor-pointer ${hasLinkedIn ? 'bg-green-100' : 'bg-gray-100'}`}>
             <Linkedin className={`h-4 w-4 ${hasLinkedIn ? 'text-green-600' : 'text-gray-400'}`} />
           </div>
         </TooltipTrigger>
@@ -29,8 +29,8 @@ export const SourceIndicators = ({ hasResume, hasLinkedIn, hasScreening }: Sourc
       </Tooltip>
 
       <Tooltip>
-        <TooltipTrigger>
-          <div className={`p-1 rounded-full ${hasScreening ? 'bg-green-100' : 'bg-gray-100'}`}>
+        <TooltipTrigger asChild>
+          <div className={`p-1 rounded-full cursor-pointer ${hasScreening ? 'bg-green-100' : 'bg-gray-100'}`}>
             <User className={`h-4 w-4 ${hasScreening ? 'text-green-600' : 'text-gray-400'}`} />
           </div>
         </TooltipTrigger>
