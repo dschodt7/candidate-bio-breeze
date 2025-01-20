@@ -1,15 +1,15 @@
 import { Card } from "@/components/ui/card";
-import { LinkedInUrlInput } from "./linkedin/LinkedInUrlInput";
+import { LinkedInUrlInput } from "./LinkedInUrlInput";
 import { Accordion } from "@/components/ui/accordion";
-import { LinkedInSection } from "./linkedin/LinkedInSection";
-import { LinkedInAnalysis } from "./linkedin/LinkedInAnalysis";
+import { LinkedInSection } from "./LinkedInSection";
+import { LinkedInAnalysis } from "./LinkedInAnalysis";
 import { useCandidate } from "@/hooks/useCandidate";
 
 export const LinkedInInput = () => {
   const { candidate } = useCandidate();
 
   return (
-    <Card className="p-6 animate-fadeIn">
+    <Card className="p-6 animate-fadeIn bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20">
       <LinkedInUrlInput />
       <Accordion type="single" collapsible className="mt-6">
         <LinkedInSection 

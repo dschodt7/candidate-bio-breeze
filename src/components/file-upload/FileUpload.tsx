@@ -108,7 +108,7 @@ export const FileUpload = () => {
   };
 
   return (
-    <Card className="p-6 animate-fadeIn">
+    <Card className="p-6 animate-fadeIn bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20">
       <div className="space-y-4">
         <FileUploadZone
           isDragging={isDragging}
@@ -125,7 +125,7 @@ export const FileUpload = () => {
           <>
             <Button
               onClick={handleAnalyzeResume}
-              className="w-full"
+              className="w-full bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg transition-all duration-300"
               disabled={isAnalyzing}
             >
               <FileSearch className="w-4 h-4 mr-2" />

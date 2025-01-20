@@ -143,11 +143,11 @@ export const NotesInput = () => {
   };
 
   return (
-    <Card className="p-6 animate-fadeIn">
+    <Card className="p-6 animate-fadeIn bg-white/50 backdrop-blur-sm shadow-lg hover:shadow-xl transition-all duration-300 border border-white/20">
       <div className="space-y-4">
         <div className="flex items-center gap-2">
           {isSubmitted && <CircleCheck className="h-4 w-4 text-green-500" />}
-          <Label htmlFor="screening-notes">Leader Discovery Screening</Label>
+          <Label htmlFor="screening-notes" className="text-lg font-medium text-gray-800">Leader Discovery Screening</Label>
         </div>
         <Textarea
           id="screening-notes"
@@ -164,12 +164,15 @@ export const NotesInput = () => {
               setIsSubmitted(false);
             }
           }}
-          className="min-h-[200px] resize-none"
+          className="min-h-[200px] resize-none bg-white/70 backdrop-blur-sm border-gray-200 focus:border-primary/50 focus:ring-primary/50 transition-colors"
           disabled={isSubmitted}
         />
         <div className="flex justify-end gap-2">
           {!isSubmitted && (
-            <Button onClick={handleSubmit}>
+            <Button 
+              onClick={handleSubmit}
+              className="bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg transition-all duration-300"
+            >
               Submit
             </Button>
           )}
@@ -177,7 +180,7 @@ export const NotesInput = () => {
             <Button 
               variant="outline" 
               onClick={handleReset} 
-              className="gap-2"
+              className="gap-2 border-gray-200 hover:bg-gray-50/50 transition-colors"
               disabled={isResetting}
             >
               {isResetting ? (
