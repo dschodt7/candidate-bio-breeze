@@ -6,14 +6,11 @@ export async function analyzeResumeWithAI(resumeText: string, apiKey: string) {
   const openai = new OpenAI({ apiKey });
 
   try {
-    console.log('[analyze-resume/openai] Sending request to OpenAI');
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o",
-      temperature: 0.8,
-      messages: [
-        {
-          role: "system",
-          content: `You are an expert executive recruiter with 20+ years of experience analyzing C-suite careers. Your analysis will be conducted in two phases and organized into six specific sections.
+    console.log('[analyze-resume/openai] Preparing OpenAI request');
+    const messages = [
+      {
+        role: "system",
+        content: `You are an expert executive recruiter with 20+ years of experience analyzing C-suite careers. Your analysis will be conducted in two phases and organized into six specific sections.
 
 PHASE 1 - FACT EXTRACTION:
 First, methodically extract concrete FACTS from the resume, organizing them by:
@@ -58,31 +55,53 @@ Using these facts as evidence, provide deep insights for each required section:
 - Identify potential growth areas
 
 Format each section with bullet points. Make insights bold and specific, always tied to extracted facts. Do not use the candidate's name. Focus on insights that would be valuable to hiring executives.`
-        },
-        {
-          role: "user",
-          content: `Please analyze this executive resume and provide detailed insights:\n\n${resumeText}`
-        }
-      ]
+      },
+      {
+        role: "user",
+        content: `Please analyze this executive resume and provide detailed insights:\n\n${resumeText}`
+      }
+    ];
+
+    console.log('[analyze-resume/openai] Sending request to OpenAI API');
+    const response = await openai.chat.completions.create({
+      model: "gpt-4o",
+      temperature: 0.8,
+      messages
     });
 
-    const content = response.choices[0].message?.content;
-    if (!content) {
-      throw new Error('No content received from OpenAI');
+    console.log('[analyze-resume/openai] OpenAI API response status:', {
+      id: response.id,
+      model: response.model,
+      choicesLength: response.choices?.length,
+      hasChoices: !!response.choices,
+      firstChoice: response.choices?.[0] ? {
+        finishReason: response.choices[0].finish_reason,
+        hasMessage: !!response.choices[0].message,
+        messageRole: response.choices[0].message?.role,
+        contentLength: response.choices[0].message?.content?.length
+      } : 'No first choice'
+    });
+
+    if (!response.choices?.[0]?.message?.content) {
+      console.error('[analyze-resume/openai] Invalid response structure:', response);
+      throw new Error('Invalid response structure from OpenAI API');
     }
 
-    console.log('[analyze-resume/openai] Full OpenAI response:', {
-      responseStatus: response.status,
-      contentLength: content.length,
-      contentPreview: content.substring(0, 500) + '...',
-      sections: content.split(/\d\.\s+/).map(section => 
-        section ? section.substring(0, 100) + `... (${section.length} chars)` : 'empty'
-      )
-    });
-
+    const content = response.choices[0].message.content;
+    console.log('[analyze-resume/openai] Successfully received content, length:', content.length);
+    
     return content;
   } catch (error) {
-    console.error('[analyze-resume/openai] Error in OpenAI analysis:', error);
+    console.error('[analyze-resume/openai] Error in OpenAI analysis:', {
+      error: error.message,
+      name: error.name,
+      stack: error.stack,
+      response: error.response ? {
+        status: error.response.status,
+        statusText: error.response.statusText,
+        data: error.response.data
+      } : 'No response data'
+    });
     throw error;
   }
 }
