@@ -445,7 +445,7 @@ const MainContentPanel = () => {
           <div className="max-w-6xl mx-auto">
             <div className="relative">
               <div className="relative h-[400px] px-8 bg-background">
-                <div className="relative z-10 mb-8 pt-6 text-center">
+                <div className="relative z-10 mb-2 pt-2 text-center">
                   <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-b from-foreground via-foreground/90 to-muted-foreground bg-clip-text text-transparent">
                     Executive Pipeline
                   </h2>
