@@ -5,7 +5,7 @@ import { NotesInput } from "@/components/NotesInput";
 import { ExecutiveSummaryForm } from "@/components/ExecutiveSummaryForm";
 import { useCandidate } from "@/hooks/useCandidate";
 import DisplayCards from "@/components/ui/display-cards";
-import { User, FileText, Users, Package, Circle, CheckCircle, Sparkles } from "lucide-react";
+import { User, FileText, Users, Package, Circle, CheckCircle, Sparkles, Wand, Bot, Combine } from "lucide-react";
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { supabase } from "@/integrations/supabase/client";
@@ -445,7 +445,7 @@ const MainContentPanel = () => {
           <div className="max-w-6xl mx-auto">
             <div className="relative">
               <div className="relative h-[400px] px-8 bg-background">
-                <div className="relative z-10 mb-2 pt-2 text-center">
+                <div className="relative z-10 mb-3 pt-2 text-center">
                   <h2 className="text-2xl font-bold tracking-tight bg-gradient-to-b from-foreground via-foreground/90 to-muted-foreground bg-clip-text text-transparent">
                     Executive Pipeline
                   </h2>
@@ -453,7 +453,9 @@ const MainContentPanel = () => {
 
                 {candidate && (
                   <>
-                    <MinimalistConnector />
+                    <div className="mb-3">
+                      <MinimalistConnector />
+                    </div>
                     <div className="grid grid-cols-[300px_1fr_300px] gap-8 relative z-10">
                       <div className="flex flex-col items-center space-y-6">
                         <h3 className="text-lg font-semibold">AI Input Analysis</h3>
