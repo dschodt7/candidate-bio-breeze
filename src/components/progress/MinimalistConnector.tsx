@@ -7,8 +7,20 @@ export const MinimalistConnector = () => {
         <div className="flex justify-center">
           <Upload className="size-6 text-primary fill-white" strokeWidth={1} />
         </div>
-        <div className="flex justify-center">
+        <div className="flex justify-center gap-12">
+          {/* First set of dots */}
+          <div className="flex gap-4">
+            <div className="h-1.5 w-1.5 rounded-full bg-gray-200" />
+            <div className="h-1.5 w-1.5 rounded-full bg-gray-200" />
+            <div className="h-1.5 w-1.5 rounded-full bg-gray-200" />
+          </div>
           <Combine className="size-6 text-primary fill-white" strokeWidth={1} />
+          {/* Second set of dots */}
+          <div className="flex gap-4">
+            <div className="h-1.5 w-1.5 rounded-full bg-gray-200" />
+            <div className="h-1.5 w-1.5 rounded-full bg-gray-200" />
+            <div className="h-1.5 w-1.5 rounded-full bg-gray-200" />
+          </div>
         </div>
         <div className="flex justify-center">
           <Bot className="size-6 text-primary fill-white" strokeWidth={1} />
