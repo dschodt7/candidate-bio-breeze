@@ -1,17 +1,15 @@
 import { Upload, Bot, Combine } from "lucide-react";
 
 export const MinimalistConnector = () => {
-  // Create an array of 21 dots (using index for key)
   const dots = Array.from({ length: 21 });
 
   return (
-    <div className="relative h-4 mx-auto max-w-6xl px-8">
+    <div className="relative h-16">
       <div className="absolute inset-0 grid grid-cols-[300px_1fr_300px] items-center">
-        <div className="flex justify-center">
+        <div className="flex justify-center items-center">
           <Upload className="size-6 text-primary fill-white" strokeWidth={1} />
         </div>
-        <div className="flex justify-center gap-24">
-          {/* First set of dots */}
+        <div className="flex justify-center items-center gap-24">
           <div className="flex gap-2">
             {dots.map((_, i) => (
               <div
@@ -21,7 +19,6 @@ export const MinimalistConnector = () => {
             ))}
           </div>
           <Combine className="size-6 text-primary fill-white" strokeWidth={1} />
-          {/* Second set of dots */}
           <div className="flex gap-2">
             {dots.map((_, i) => (
               <div
@@ -31,7 +28,7 @@ export const MinimalistConnector = () => {
             ))}
           </div>
         </div>
-        <div className="flex justify-center">
+        <div className="flex justify-center items-center">
           <Bot className="size-6 text-primary fill-white" strokeWidth={1} />
         </div>
       </div>
