@@ -10,9 +10,9 @@ export const MinimalistConnector = () => {
       </div>
       <div className="absolute inset-0 flex items-center justify-between">
         {/* Icons */}
-        <Upload className="h-2 w-2 text-primary fill-white" strokeWidth={1} />
-        <Combine className="h-2 w-2 text-primary fill-white" strokeWidth={1} />
-        <Bot className="h-2 w-2 text-primary fill-white" strokeWidth={1} />
+        <Upload className="size-4 text-primary fill-white" strokeWidth={1} />
+        <Combine className="size-4 text-primary fill-white" strokeWidth={1} />
+        <Bot className="size-4 text-primary fill-white" strokeWidth={1} />
       </div>
     </div>
   );
