@@ -4,6 +4,7 @@ import { useSearchParams } from "react-router-dom";
 import { useFileState } from "@/hooks/useFileState";
 import { validateFile } from "@/utils/fileValidation";
 import { extractText } from "@/utils/fileProcessing";
+import { uploadToStorage } from "@/utils/storageUtils";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
