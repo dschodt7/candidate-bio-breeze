@@ -3,7 +3,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useSearchParams } from "react-router-dom";
 import { useFileState } from "@/hooks/useFileState";
 import { validateFile } from "@/utils/fileValidation";
-import { extractText, uploadToStorage } from "@/utils/fileProcessing";
+import { extractText } from "@/utils/fileProcessing";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -127,6 +127,19 @@ export const useFileUpload = (): FileUploadState => {
       setFile(uploadedFile);
       setUploadProgress(0);
 
+      // First verify candidate ownership
+      console.log("[FileUpload] Verifying candidate ownership");
+      const { data: candidate, error: verifyError } = await supabase
+        .from('candidates')
+        .select('profile_id')
+        .eq('id', candidateId)
+        .maybeSingle();
+
+      if (verifyError || !candidate) {
+        console.error("[FileUpload] Verification error:", verifyError);
+        throw new Error('Failed to verify candidate ownership');
+      }
+
       // Upload file to storage
       setUploadProgress(20);
       const filePath = await uploadToStorage(uploadedFile, candidateId);
@@ -147,16 +160,11 @@ export const useFileUpload = (): FileUploadState => {
         if (!data?.text) {
           throw new Error('No text extracted from PDF');
         }
-        if (data.text.length > 15000) {
-          throw new Error('PDF text exceeds maximum length of 15,000 characters');
-        }
-
         resumeText = data.text;
-        setUploadProgress(90);
       }
 
-      // Update candidate record
-      setUploadProgress(90);
+      // Update candidate with both file path and text
+      console.log("[FileUpload] Updating candidate with text length:", resumeText?.length);
       const { error: updateError } = await supabase
         .from('candidates')
         .update({
@@ -164,10 +172,14 @@ export const useFileUpload = (): FileUploadState => {
           original_filename: uploadedFile.name,
           resume_text: resumeText
         })
-        .eq('id', candidateId);
+        .eq('id', candidateId)
+        .eq('profile_id', candidate.profile_id);
 
-      if (updateError) throw updateError;
-      
+      if (updateError) {
+        console.error("[FileUpload] Update error:", updateError);
+        throw updateError;
+      }
+
       setUploadProgress(100);
       
       // Invalidate the query to refresh the UI
@@ -180,7 +192,7 @@ export const useFileUpload = (): FileUploadState => {
         description: "Resume uploaded successfully"
       });
     } catch (error) {
-      console.error("Error in upload process:", error);
+      console.error("[FileUpload] Error in upload process:", error);
       toast({
         title: "Upload failed",
         description: error.message || "There was an error uploading your file",
