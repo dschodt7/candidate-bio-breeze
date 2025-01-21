@@ -8,9 +8,9 @@ export const MinimalistConnector = () => {
           <Upload className="size-6 text-primary fill-white" strokeWidth={1} />
         </div>
         <div className="flex items-center justify-center">
-          <div className="w-[240px] h-[1px] bg-gradient-to-r from-gray-300/40 via-gray-300/40 to-transparent" />
+          <div className="w-[280px] h-[1px] bg-gradient-to-r from-gray-300/40 via-gray-300/40 to-transparent" />
           <Combine className="size-6 text-primary fill-white" strokeWidth={1} />
-          <div className="w-[240px] h-[1px] bg-gradient-to-r from-transparent via-gray-300/40 to-gray-300/40" />
+          <div className="w-[280px] h-[1px] bg-gradient-to-r from-transparent via-gray-300/40 to-gray-300/40" />
         </div>
         <div className="flex items-center justify-center">
           <Bot className="size-6 text-primary fill-white" strokeWidth={1} />
