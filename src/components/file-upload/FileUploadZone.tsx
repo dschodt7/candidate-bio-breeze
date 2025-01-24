@@ -80,10 +80,10 @@ export const FileUploadZone = ({
           </Button>
         </label>
         {isUploading && (
-          <div className="w-full max-w-xs mt-4 space-y-2">
+          <div className="w-full max-w-xs mt-4">
             <Progress value={uploadProgress} className="h-2" />
-            <p className="text-sm text-center text-muted-foreground">
-              {uploadProgress < 100 ? `Uploading... ${Math.round(uploadProgress)}%` : "Processing..."}
+            <p className="text-sm text-center text-muted-foreground mt-2">
+              {uploadProgress < 100 ? "Uploading..." : "Processing..."}
             </p>
           </div>
         )}
