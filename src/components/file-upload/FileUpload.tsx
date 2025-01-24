@@ -85,7 +85,6 @@ export const FileUpload = () => {
         firstSection: data.data?.credibility_statements?.substring(0, 100)
       });
 
-      // Immediate query invalidation
       await queryClient.invalidateQueries({
         queryKey: ['resumeAnalysis', candidateId],
         refetchType: 'active',
@@ -125,7 +124,18 @@ export const FileUpload = () => {
           <>
             <Button
               onClick={handleAnalyzeResume}
-              className="w-full bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg transition-all duration-300"
+              className={`w-full shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden
+                ${isAnalyzing ? 
+                  'bg-primary/80 animate-aurora before:absolute before:inset-0 before:bg-gradient-to-r before:from-primary/0 before:via-primary/30 before:to-primary/0' : 
+                  'bg-primary hover:bg-primary/90'
+                }
+              `}
+              style={{
+                backgroundSize: '200% 200%',
+                backgroundImage: isAnalyzing ? 
+                  'linear-gradient(115deg, var(--primary) 0%, var(--primary-hover) 25%, var(--primary) 50%, var(--primary-hover) 75%, var(--primary) 100%)' : 
+                  'none'
+              }}
               disabled={isAnalyzing}
             >
               {isAnalyzing ? (
