@@ -158,7 +158,6 @@ export const ScreeningAnalysis = ({
           <Progress 
             value={progress} 
             className="h-2 w-full bg-gray-100"
-            indicatorClassName="bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 ease-in-out"
           />
         )}
       </div>
