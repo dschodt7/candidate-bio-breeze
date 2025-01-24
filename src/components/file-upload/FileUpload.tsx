@@ -9,12 +9,14 @@ import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 import { DocxAnalysis } from "./analysis/DocxAnalysis";
 import { useQueryClient } from "@tanstack/react-query";
+import { Progress } from "@/components/ui/progress";
 
 export const FileUpload = () => {
   const [searchParams] = useSearchParams();
   const { toast } = useToast();
   const queryClient = useQueryClient();
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [analysisProgress, setAnalysisProgress] = useState(0);
   
   const {
     isDragging,
@@ -49,6 +51,10 @@ export const FileUpload = () => {
     }
 
     try {
+      setIsAnalyzing(true);
+      setAnalysisProgress(10);
+      console.log("[FileUpload] Starting resume analysis for candidate:", candidateId);
+      
       const { data: candidate, error: fetchError } = await supabase
         .from('candidates')
         .select('resume_text')
@@ -56,17 +62,16 @@ export const FileUpload = () => {
         .single();
 
       if (fetchError) {
-        console.error("Error fetching candidate resume text:", fetchError);
+        console.error("[FileUpload] Error fetching candidate resume text:", fetchError);
       } else {
-        console.log("Candidate resume text status:", {
+        console.log("[FileUpload] Candidate resume text status:", {
           hasText: !!candidate?.resume_text,
           textLength: candidate?.resume_text?.length,
           preview: candidate?.resume_text?.substring(0, 100)
         });
       }
 
-      setIsAnalyzing(true);
-      console.log("[FileUpload] Starting resume analysis for candidate:", candidateId);
+      setAnalysisProgress(30);
       toast({
         title: "Processing",
         description: "Starting resume analysis...",
@@ -75,6 +80,8 @@ export const FileUpload = () => {
       const { data, error } = await supabase.functions.invoke('analyze-resume', {
         body: { candidateId }
       });
+
+      setAnalysisProgress(70);
 
       if (error) throw error;
 
@@ -85,10 +92,14 @@ export const FileUpload = () => {
         firstSection: data.data?.credibility_statements?.substring(0, 100)
       });
 
+      setAnalysisProgress(90);
+
       await queryClient.invalidateQueries({
         queryKey: ['resumeAnalysis', candidateId],
         refetchType: 'active',
       });
+
+      setAnalysisProgress(100);
 
       toast({
         title: "Success",
@@ -102,7 +113,10 @@ export const FileUpload = () => {
         variant: "destructive"
       });
     } finally {
-      setIsAnalyzing(false);
+      setTimeout(() => {
+        setIsAnalyzing(false);
+        setAnalysisProgress(0);
+      }, 500);
     }
   };
 
@@ -122,36 +136,31 @@ export const FileUpload = () => {
         />
         {uploadedFileName && (
           <>
-            <Button
-              onClick={handleAnalyzeResume}
-              className={`w-full shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden
-                ${isAnalyzing ? 
-                  'bg-primary/80 before:absolute before:inset-0 before:bg-gradient-to-r before:from-primary/10 before:via-accent/30 before:to-primary/10 before:animate-aurora' : 
-                  'bg-primary hover:bg-primary/90'
-                }
-              `}
-              style={{
-                backgroundSize: '400% 400%',
-                backgroundImage: isAnalyzing ? 
-                  'linear-gradient(115deg, var(--primary) 0%, #4F46E5 25%, var(--accent) 50%, #4F46E5 75%, var(--primary) 100%)' : 
-                  'none',
-                animation: isAnalyzing ? 'aurora 15s linear infinite' : 'none',
-                boxShadow: isAnalyzing ? '0 0 15px rgba(139, 92, 246, 0.3)' : undefined
-              }}
-              disabled={isAnalyzing}
-            >
-              {isAnalyzing ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Analyzing Resume...
-                </>
-              ) : (
-                <>
-                  <FileSearch className="w-4 h-4 mr-2" />
-                  Analyze Resume
-                </>
+            <div className="space-y-2">
+              <Button
+                onClick={handleAnalyzeResume}
+                className="w-full shadow-md hover:shadow-lg transition-all duration-300 bg-primary hover:bg-primary/90 disabled:bg-primary/80"
+                disabled={isAnalyzing}
+              >
+                {isAnalyzing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Analyzing Resume...
+                  </>
+                ) : (
+                  <>
+                    <FileSearch className="w-4 h-4 mr-2" />
+                    Analyze Resume
+                  </>
+                )}
+              </Button>
+              {isAnalyzing && (
+                <Progress 
+                  value={analysisProgress} 
+                  className="h-2 w-full bg-secondary/20"
+                />
               )}
-            </Button>
+            </div>
             <DocxAnalysis />
           </>
         )}
