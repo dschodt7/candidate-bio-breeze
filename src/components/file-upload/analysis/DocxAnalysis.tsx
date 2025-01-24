@@ -14,8 +14,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const ANALYSIS_SECTIONS = [
   { key: 'job_assessment', title: 'Assessment of Current Skills and Experiences' },
-  { key: 'case_studies', title: 'Case Studies' },
   { key: 'credibility_statements', title: 'Results and Achievements' },
+  { key: 'case_studies', title: 'Case Studies' },
   { key: 'motivations', title: 'Motivations' },
   { key: 'business_problems', title: 'Business Problems They Solve Better Than Most' },
   { key: 'additional_observations', title: 'Additional Observations' },
