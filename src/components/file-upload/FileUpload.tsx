@@ -126,15 +126,17 @@ export const FileUpload = () => {
               onClick={handleAnalyzeResume}
               className={`w-full shadow-md hover:shadow-lg transition-all duration-300 relative overflow-hidden
                 ${isAnalyzing ? 
-                  'bg-primary/80 animate-aurora before:absolute before:inset-0 before:bg-gradient-to-r before:from-primary/0 before:via-primary/30 before:to-primary/0' : 
+                  'bg-primary/80 before:absolute before:inset-0 before:bg-gradient-to-r before:from-primary/10 before:via-accent/30 before:to-primary/10 before:animate-aurora' : 
                   'bg-primary hover:bg-primary/90'
                 }
               `}
               style={{
-                backgroundSize: '200% 200%',
+                backgroundSize: '400% 400%',
                 backgroundImage: isAnalyzing ? 
-                  'linear-gradient(115deg, var(--primary) 0%, var(--primary-hover) 25%, var(--primary) 50%, var(--primary-hover) 75%, var(--primary) 100%)' : 
-                  'none'
+                  'linear-gradient(115deg, var(--primary) 0%, #4F46E5 25%, var(--accent) 50%, #4F46E5 75%, var(--primary) 100%)' : 
+                  'none',
+                animation: isAnalyzing ? 'aurora 15s linear infinite' : 'none',
+                boxShadow: isAnalyzing ? '0 0 15px rgba(139, 92, 246, 0.3)' : undefined
               }}
               disabled={isAnalyzing}
             >

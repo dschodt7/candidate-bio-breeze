@@ -23,15 +23,15 @@ export default {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
-        background: "#F9F5ED", // Claude-inspired warm beige
+        background: "#F9F5ED",
         panel: {
-          DEFAULT: "#F9F5ED", // Main panel background
-          lighter: "#FAF7F0", // Lighter shade for side panels
+          DEFAULT: "#F9F5ED",
+          lighter: "#FAF7F0",
         },
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "#074E9F", // Updated to new darker blue
-          hover: "#063E7F", // 20% darker for hover state
+          DEFAULT: "#074E9F",
+          hover: "#063E7F",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
@@ -43,7 +43,7 @@ export default {
           foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "#F9F5ED", // Updated to match new background
+          DEFAULT: "#F9F5ED",
           foreground: "#1E293B",
         },
         accent: {
@@ -86,11 +86,17 @@ export default {
           "50%": { opacity: "1", transform: "scale(1.2)" },
         },
         aurora: {
-          from: {
-            backgroundPosition: "50% 50%, 50% 50%",
+          "0%": {
+            backgroundPosition: "0% 50%",
+            opacity: "0.8"
           },
-          to: {
-            backgroundPosition: "350% 50%, 350% 50%",
+          "50%": {
+            backgroundPosition: "100% 50%",
+            opacity: "1"
+          },
+          "100%": {
+            backgroundPosition: "0% 50%",
+            opacity: "0.8"
           },
         },
       },
@@ -100,7 +106,7 @@ export default {
         fadeIn: "fadeIn 0.5s ease-out",
         slideUp: "slideUp 0.5s ease-out",
         sparkle: "sparkle 2s ease-in-out infinite",
-        aurora: "aurora 60s linear infinite",
+        aurora: "aurora 15s linear infinite",
       },
     },
   },
@@ -110,7 +116,6 @@ export default {
   ],
 } satisfies Config;
 
-// This plugin adds each Tailwind color as a global CSS variable, e.g. var(--gray-200).
 function addVariablesForColors({ addBase, theme }: any) {
   let allColors = flattenColorPalette(theme("colors"));
   let newVars = Object.fromEntries(
