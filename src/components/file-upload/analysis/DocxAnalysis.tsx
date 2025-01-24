@@ -29,7 +29,7 @@ export const DocxAnalysis = () => {
     queryKey: ['resumeAnalysis', candidateId],
     queryFn: async () => {
       if (!candidateId) return null;
-      console.log("[DocxAnalysis] Fetching analysis for candidate:", candidateId);
+      console.log("[ResumeAnalysis] Fetching analysis for candidate:", candidateId);
       const { data, error } = await supabase
         .from('resume_analyses')
         .select('*')
@@ -39,11 +39,11 @@ export const DocxAnalysis = () => {
         .maybeSingle();
 
       if (error) {
-        console.error("[DocxAnalysis] Error fetching analysis:", error);
+        console.error("[ResumeAnalysis] Error fetching analysis:", error);
         throw error;
       }
 
-      console.log("[DocxAnalysis] Database query result:", {
+      console.log("[ResumeAnalysis] Database query result:", {
         hasData: !!data,
         sections: data ? Object.keys(data) : [],
         firstSection: data?.credibility_statements?.substring(0, 100)
@@ -52,31 +52,22 @@ export const DocxAnalysis = () => {
     },
     enabled: !!candidateId,
     staleTime: 0,
+    refetchInterval: 1000,
+    refetchIntervalInBackground: true,
+    retry: 3,
   });
-
-  const {
-    editingSection,
-    editedContent,
-    handleEdit,
-    handleSave,
-    setEditedContent
-  } = useAnalysisState(candidateId, analysis);
-
-  const hasValidContent = (analysis: any) => {
-    return analysis && Object.values(analysis).some(value => 
-      value && 
-      typeof value === 'string' && 
-      value.trim() !== "" && 
-      value !== "No data found"
-    );
-  };
 
   console.log("[DocxAnalysis] Component state:", {
     hasAnalysis: !!analysis,
     isLoading,
     error,
     candidateId,
-    hasValidContent: hasValidContent(analysis)
+    hasValidContent: analysis && Object.values(analysis).some(value => 
+      value && 
+      typeof value === 'string' && 
+      value.trim() !== "" && 
+      value !== "No data found"
+    )
   });
 
   if (error) {
@@ -84,18 +75,31 @@ export const DocxAnalysis = () => {
     return <div className="text-sm text-red-500">Error loading analysis</div>;
   }
 
+  // Don't show anything until we have analysis data
+  if (!analysis && !isLoading) {
+    console.log("[DocxAnalysis] No analysis data found");
+    return null;
+  }
+
+  const hasContent = analysis && Object.values(analysis).some(value => 
+    value && 
+    typeof value === 'string' && 
+    value.trim() !== "" && 
+    value !== "No data found"
+  );
+
   return (
     <div className="mt-4">
       <Accordion type="single" collapsible className="w-full">
-        <AccordionItem value="analysis">
-          <AccordionTrigger className="text-lg font-medium">
+        <AccordionItem value="analysis" className="bg-white hover:bg-black/5 transition-colors">
+          <AccordionTrigger className="text-sm font-medium">
             <div className="flex items-center gap-2">
               {isLoading ? (
                 <Loader2 className="h-4 w-4 animate-spin text-muted-foreground" />
               ) : (
-                hasValidContent(analysis) && <CheckCircle className="h-4 w-4 text-green-500" />
+                hasContent && <CheckCircle className="h-4 w-4 text-green-500" />
               )}
-              Resume: Analysis Results
+              Resume: Leader Discovery Criteria
             </div>
           </AccordionTrigger>
           <AccordionContent>
@@ -113,7 +117,7 @@ export const DocxAnalysis = () => {
                   ))}
                 </div>
               ) : (
-                hasValidContent(analysis) && ANALYSIS_SECTIONS.map(({ key, title }) => (
+                hasContent && ANALYSIS_SECTIONS.map(({ key, title }) => (
                   <AnalysisSection
                     key={key}
                     title={title}
@@ -126,7 +130,7 @@ export const DocxAnalysis = () => {
                   />
                 ))
               )}
-              {!isLoading && !hasValidContent(analysis) && (
+              {!isLoading && !hasContent && (
                 <div className="flex items-center justify-center py-4">
                   <span className="text-sm text-muted-foreground">
                     Click "Analyze Resume" to generate insights

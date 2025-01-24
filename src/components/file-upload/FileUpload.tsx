@@ -49,7 +49,6 @@ export const FileUpload = () => {
     }
 
     try {
-      // First, let's check if the text extraction worked
       const { data: candidate, error: fetchError } = await supabase
         .from('candidates')
         .select('resume_text')
@@ -86,9 +85,10 @@ export const FileUpload = () => {
         firstSection: data.data?.credibility_statements?.substring(0, 100)
       });
 
-      // Invalidate the resumeAnalysis query to force a refresh
+      // Immediate query invalidation
       await queryClient.invalidateQueries({
-        queryKey: ['resumeAnalysis', candidateId]
+        queryKey: ['resumeAnalysis', candidateId],
+        refetchType: 'active',
       });
 
       toast({
