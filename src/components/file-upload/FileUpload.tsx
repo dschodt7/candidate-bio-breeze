@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { FileUploadZone } from "./FileUploadZone";
 import { useFileUpload } from "@/hooks/useFileUpload";
 import { Button } from "@/components/ui/button";
-import { FileSearch } from "lucide-react";
+import { FileSearch, Loader2 } from "lucide-react";
 import { useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
@@ -128,8 +128,17 @@ export const FileUpload = () => {
               className="w-full bg-primary hover:bg-primary/90 text-white shadow-md hover:shadow-lg transition-all duration-300"
               disabled={isAnalyzing}
             >
-              <FileSearch className="w-4 h-4 mr-2" />
-              {isAnalyzing ? "Analyzing Resume..." : "Analyze Resume"}
+              {isAnalyzing ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Analyzing Resume...
+                </>
+              ) : (
+                <>
+                  <FileSearch className="w-4 h-4 mr-2" />
+                  Analyze Resume
+                </>
+              )}
             </Button>
             <DocxAnalysis />
           </>
