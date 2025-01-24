@@ -7,6 +7,7 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 import { Textarea } from "@/components/ui/textarea";
+import { Progress } from "@/components/ui/progress";
 import { useScreeningAnalysis } from "./hooks/useScreeningAnalysis";
 import { ScreeningAnalysisSection, ScreeningAnalysisProps } from "./types/screening-analysis";
 
@@ -118,6 +119,7 @@ export const ScreeningAnalysis = ({
     analysis,
     isLoadingAnalysis,
     isAnalyzing,
+    progress,
     editingSection,
     setEditingSection,
     analyzeNotes,
@@ -130,27 +132,36 @@ export const ScreeningAnalysis = ({
 
   return (
     <div className="space-y-4 mt-4">
-      <Button
-        onClick={() => analyzeNotes(notes)}
-        disabled={isAnalyzing || !notes.trim()}
-        className="w-full relative group"
-      >
-        <span className="flex items-center justify-center gap-2">
-          {isAnalyzing ? (
-            <>
-              <Loader2 className="h-4 w-4 animate-spin" />
-              Analyzing...
-            </>
-          ) : (
-            <>
-              <Wand2 className="h-4 w-4 transition-transform group-hover:rotate-12" />
-              <span className="group-hover:scale-105 transition-transform">
-                Analyze Screening Notes
-              </span>
-            </>
-          )}
-        </span>
-      </Button>
+      <div className="w-full space-y-2">
+        <Button
+          onClick={() => analyzeNotes(notes)}
+          disabled={isAnalyzing || !notes.trim()}
+          className="w-full relative group"
+        >
+          <span className="flex items-center justify-center gap-2">
+            {isAnalyzing ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                Analyzing...
+              </>
+            ) : (
+              <>
+                <Wand2 className="h-4 w-4 transition-transform group-hover:rotate-12" />
+                <span className="group-hover:scale-105 transition-transform">
+                  Analyze Screening Notes
+                </span>
+              </>
+            )}
+          </span>
+        </Button>
+        {isAnalyzing && (
+          <Progress 
+            value={progress} 
+            className="h-2 w-full bg-gray-100"
+            indicatorClassName="bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 ease-in-out"
+          />
+        )}
+      </div>
 
       <Accordion type="single" collapsible className="w-full">
         <AccordionItem value="analysis">

@@ -9,6 +9,7 @@ export const useScreeningAnalysis = (candidateId: string | null) => {
   const queryClient = useQueryClient();
   const [editingSection, setEditingSection] = useState<string | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+  const [progress, setProgress] = useState(0);
 
   // Fetch existing analysis
   const { data: analysis, isLoading: isLoadingAnalysis } = useQuery({
@@ -69,15 +70,25 @@ export const useScreeningAnalysis = (candidateId: string | null) => {
 
     try {
       setIsAnalyzing(true);
+      setProgress(10);
       console.log("Starting screening notes analysis for candidate:", candidateId);
+
+      setTimeout(() => setProgress(30), 1000);
 
       const { error } = await supabase.functions.invoke('analyze-screening-notes', {
         body: { candidateId, notes }
       });
 
+      setProgress(70);
+
       if (error) throw error;
 
+      setProgress(90);
+
       queryClient.invalidateQueries({ queryKey: ['screeningAnalysis', candidateId] });
+
+      setProgress(100);
+
       toast({
         title: "Success",
         description: "Screening notes analyzed successfully",
@@ -91,6 +102,7 @@ export const useScreeningAnalysis = (candidateId: string | null) => {
       });
     } finally {
       setIsAnalyzing(false);
+      setProgress(0);
     }
   };
 
@@ -98,6 +110,7 @@ export const useScreeningAnalysis = (candidateId: string | null) => {
     analysis,
     isLoadingAnalysis,
     isAnalyzing,
+    progress,
     editingSection,
     setEditingSection,
     analyzeNotes,
