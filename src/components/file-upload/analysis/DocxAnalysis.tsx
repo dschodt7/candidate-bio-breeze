@@ -57,6 +57,14 @@ export const DocxAnalysis = () => {
     retry: 3,
   });
 
+  const {
+    editingSection,
+    editedContent,
+    handleEdit,
+    handleSave,
+    setEditedContent
+  } = useAnalysisState(candidateId, analysis);
+
   console.log("[DocxAnalysis] Component state:", {
     hasAnalysis: !!analysis,
     isLoading,
