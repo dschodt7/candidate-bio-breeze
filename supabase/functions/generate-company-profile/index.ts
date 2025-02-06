@@ -70,49 +70,50 @@ serve(async (req) => {
       strategic: "Produce an in-depth strategic analysis of fit, potential, and long-term value alignment."
     };
 
-    const systemPrompt = `You are an expert executive recruiter creating ideal company profile matches. Your task is to analyze candidate data and create a compelling profile of their ideal company environment.
-
-Format Requirements: ${formatInstructions[format]}
-
-Tone Requirements: ${toneInstructions[tone]}
+    const systemPrompt = `You are an expert executive recruiter creating ideal company profile matches. Your task is to analyze candidate data and create a compelling profile of their ideal company environment that aligns perfectly with their interests, motivations and subject expertise.
 
 Focus on:
 1. Cultural alignment and values fit
+- Leadership philosophy alignment
+- Decision-making style
+- Communication preferences
+- Innovation mindset
+- Work-life balance approach
+
 2. Leadership style compatibility
+- Management structure preferences
+- Reporting relationships
+- Team dynamics
+- Authority levels
+- Mentorship opportunities
+
 3. Growth stage preferences
+- Company maturity level
+- Scale-up vs. established
+- Risk tolerance
+- Change management needs
+- Resource availability
+
 4. Market positioning preferences
+- Industry sector focus
+- Competitive landscape
+- Market leadership position
+- Geographic presence
+- Customer segment
+
 5. Innovation and technology orientation
+- Digital transformation stage
+- Tech stack sophistication
+- R&D investment level
+- Innovation culture
+- Adoption of new technologies
+
 6. Team dynamics and organizational structure
-
-Return a JSON object with:
-{
-  "profile": "The formatted company profile text",
-  "highlights": ["Key highlight 1", "Key highlight 2", ...],
-  "fitAnalysis": {
-    "culturalFit": "Assessment of cultural alignment",
-    "leadershipFit": "Assessment of leadership style compatibility",
-    "growthFit": "Assessment of growth stage alignment",
-    "marketFit": "Assessment of market position preferences",
-    "innovationFit": "Assessment of technology orientation",
-    "teamFit": "Assessment of organizational fit"
-  }
-}`;
-
-    const userPrompt = `Please analyze this candidate data to create an ideal company profile:
-
-LinkedIn Analysis:
-${JSON.stringify(linkedInAnalysis.data?.analysis, null, 2)}
-
-Screening Analysis:
-${JSON.stringify(screeningAnalysis.data, null, 2)}
-
-Resume Analysis:
-${JSON.stringify(resumeAnalysis.data, null, 2)}
-
-Selected Components to Include:
-${JSON.stringify(components, null, 2)}
-
-Create a compelling profile of the ideal company environment for this leader.`;
+- Team size and composition
+- Matrix vs. hierarchical
+- Cross-functional collaboration
+- Global vs. local teams
+- Decision-making processes`;
 
     console.log('[generate-company-profile] Sending request to OpenAI');
 
