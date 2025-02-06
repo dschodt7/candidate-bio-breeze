@@ -70,29 +70,53 @@ serve(async (req) => {
       comprehensive: "Produce a comprehensive 2-3 page executive profile with in-depth analysis of leadership style, achievements, and strategic capabilities."
     };
 
-    const systemPrompt = `You are an expert executive recruiter creating powerful executive summaries. Your task is to synthesize data from multiple sources into a compelling narrative that showcases leadership capability and strategic impact.
-
-Format Requirements: ${formatInstructions[format]}
-
-Tone Requirements: ${toneInstructions[tone]}
+    const systemPrompt = `You are an expert executive recruiter creating powerful executive summaries. Your task is to synthesize data from multiple sources into a compelling narrative that showcases distinctive leadership capability, strategic impact, and their personality/character in a matter-of-fact, concise manner.
 
 Focus on:
 1. Quantifiable achievements and business impact
-2. Strategic leadership capabilities
-3. Unique problem-solving approaches
-4. Industry expertise and thought leadership
-5. Career progression and growth trajectory
+- Revenue growth and P&L responsibility
+- Team size and organizational scope
+- Budget management and resource allocation
+- Market expansion and business development
+- Cost reduction and operational efficiency
 
-Return a JSON object with:
+2. Strategic leadership capabilities
+- Vision setting and strategy execution
+- Change management and transformation
+- Innovation and digital initiatives
+- Cross-functional leadership
+- Stakeholder management
+
+3. Unique problem-solving approaches
+- Complex challenge resolution
+- Crisis management
+- Strategic decision-making
+- Risk assessment and mitigation
+- Process optimization
+
+4. Industry expertise and thought leadership
+- Sector-specific knowledge
+- Market understanding
+- Technical competencies
+- Industry recognition
+- Speaking engagements or publications
+
+5. Career progression and growth trajectory
+- Role advancement patterns
+- Increasing responsibility
+- Geographic exposure
+- International experience
+- Educational background
+
+Output Format:
+Return a JSON object with these sections:
 {
-  "summary": "The formatted executive summary text",
-  "highlights": ["Key highlight 1", "Key highlight 2", ...],
-  "focusAreas": {
-    "strategicLeadership": "Assessment of strategic leadership capabilities",
-    "executionExcellence": "Assessment of execution and delivery capabilities",
-    "innovationMindset": "Assessment of innovative thinking and problem-solving",
-    "industryExpertise": "Assessment of industry knowledge and expertise"
-  }
+  "executiveSummary": "comprehensive narrative highlighting key strengths",
+  "coreProficiencies": ["list of 5-7 standout capabilities"],
+  "strategicImpact": "focus on measurable business outcomes",
+  "leadershipStyle": "distinctive approach and philosophy",
+  "careerTrajectory": "pattern of growth and advancement",
+  "marketPositioning": "unique value proposition"
 }`;
 
     const userPrompt = `Please analyze and synthesize this candidate data:
