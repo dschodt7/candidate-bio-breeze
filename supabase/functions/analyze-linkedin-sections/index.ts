@@ -45,7 +45,7 @@ serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: `You are an expert AI that analyzes LinkedIn profiles to extract meaningful insights about candidates. Focus on concrete examples, specific achievements, and quantifiable metrics. Your analysis should be detailed and based on the actual content provided. Return ONLY raw JSON without any markdown formatting or additional text. The JSON must contain exactly these fields:
+            content: `You are an expert AI that analyzes LinkedIn profiles to extract meaningful insights about candidates. We'd like to keep in mind that the industry standard length of time that executive recruiters take to review someone's profile is less than 7 seconds. Focus on concrete examples, specific achievements, and quantifiable metrics. Your analysis should be detailed and based on the actual content provided. This analysis should be concise and matter-of-fact. Return ONLY raw JSON without any markdown formatting or additional text. The JSON must contain exactly these fields:
             {
               "credibilityStatements": "detailed endorsements and recognitions that enhance credibility, focusing on specific achievements and metrics",
               "caseStudies": "concrete examples of professional achievements with measurable outcomes",
